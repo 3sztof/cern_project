@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="b2c70280-3e46-45ab-b1ea-03a1023fefc3" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/LHCb.db" beforeDir="false" afterPath="$PROJECT_DIR$/LHCb.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/asd.py" beforeDir="false" afterPath="$PROJECT_DIR$/asd.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/initDB.py" beforeDir="false" afterPath="$PROJECT_DIR$/initDB.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -40,11 +38,12 @@
       <file leaf-file-name="asd.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/asd.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="205">
-              <caret line="537" lean-forward="true" selection-start-line="537" selection-end-line="537" />
+            <state relative-caret-position="146">
+              <caret line="563" column="28" selection-start-line="563" selection-start-column="28" selection-end-line="563" selection-end-column="28" />
               <folding>
                 <element signature="e#13206#16656#0" />
                 <element signature="e#14904#15202#0" />
+                <element signature="e#23016#24627#0" />
               </folding>
             </state>
           </provider>
@@ -82,7 +81,7 @@
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="1365" />
-    <option name="y" value="-11" />
+    <option name="y" value="-779" />
     <option name="width" value="1368" />
     <option name="height" value="780" />
   </component>
@@ -181,7 +180,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1" y="-11" width="1368" height="780" extended-state="6" />
+    <frame x="1365" y="-779" width="1368" height="780" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.17789166" />
@@ -245,6 +244,7 @@
           <folding>
             <element signature="e#13206#16656#0" />
             <element signature="e#14904#15202#0" />
+            <element signature="e#23016#24627#0" />
           </folding>
         </state>
       </provider>
@@ -263,6 +263,7 @@
           <folding>
             <element signature="e#13206#16656#0" />
             <element signature="e#14904#15202#0" />
+            <element signature="e#23016#24627#0" />
           </folding>
         </state>
       </provider>
@@ -281,6 +282,7 @@
           <folding>
             <element signature="e#13206#16656#0" />
             <element signature="e#14904#15202#0" />
+            <element signature="e#23016#24627#0" />
           </folding>
         </state>
       </provider>
@@ -302,11 +304,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/asd.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="205">
-          <caret line="537" lean-forward="true" selection-start-line="537" selection-end-line="537" />
+        <state relative-caret-position="146">
+          <caret line="563" column="28" selection-start-line="563" selection-start-column="28" selection-end-line="563" selection-end-column="28" />
           <folding>
             <element signature="e#13206#16656#0" />
             <element signature="e#14904#15202#0" />
+            <element signature="e#23016#24627#0" />
           </folding>
         </state>
       </provider>
