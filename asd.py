@@ -215,12 +215,16 @@ def selectTask(name):
 
         ]))
 
+        data = c.fetchall()
+        if len(data) == 0:
+            print 'The specified task does not exist in the database.'
+
         i = 0
         for row in c:
             if i == 0:
                 FORMAT = '%-16s%-16s%-16s%-16s%-20s%-40s'
                 print FORMAT % ('task', 'utgid', 'command', 'parameters', 'pcAdd parameters', 'description')
-                print '-' * 100
+                print '-' * 124
             print FORMAT % row
             i += 1
         print os.linesep
@@ -292,33 +296,227 @@ def deleteTaskSet(task_set):
         c.execute("PRAGMA foreign_keys = OFF")
         c.execute(''.join([
 
-            'DELETE * ',
+            'DELETE ',
             'FROM Task_Sets ',
-            'WHERE Task_Sets.task_set="', task_set, '\"',
+            'WHERE task_set="', task_set, '\"',
 
         ]))
-        print 'The task_set has been deleted from the database.' + os.linesep
+        c.execute(''.join([
+
+            'DELETE ',
+            'FROM Tasks_to_Task_Sets ',
+            'WHERE task_set="', task_set, '\"',
+
+        ]))
         c.execute("PRAGMA foreign_keys = ON")
+        print 'The task_set has been deleted from the database.' + os.linesep
 
     except sqlite3.Error as e:
         handleDbError(e)
 
 # ---------------------------------------------------------------------------------------------------------------------
 
-def modifyTaskSet():
-    return
+def modifyTaskSet(task_set):
+    c = connectDb()
+
+    # Do nothing if there is no such task
+    if not existsInDb(c, task_set, 'task_set', 'Task_Sets'):
+        print 'The specified task could not be found in the database.' + os.linesep
+        return
+
+    if yes_or_no('Do you want to modify the tasks assigned to the specified task set?', 'yes'):
+        try:
+            c.execute(''.join([
+
+                'SELECT DISTINCT task ',
+                'FROM Tasks_to_Task_Sets ',
+                'WHERE task_set="', task_set, '\" ',
+                'ORDER BY task ASC ',
+
+            ]))
+            i = 0
+            for row in c:
+                if i == 0:
+                    print "The task set consists of the following tasks:" + os.linesep
+                    FORMAT = '%-16s'
+                    print FORMAT % ('task')
+                    print '-' * 20
+                print FORMAT % row
+                i += 1
+            print os.linesep
+        except sqlite3.Error as e:
+            handleDbError(e)
+
+        if yes_or_no('Do you want to add tasks to the task set?', 'no'):
+            iaddtask = 1
+            while iaddtask == 1:
+                addtask = raw_input('Please specify a name of the task you want to add: ')
+                if existsInDb(c, addtask, 'task', 'Tasks') and not existsInDbPair(c, addtask, 'task', task_set, 'task_set', 'Tasks_to_Task_Sets'):
+                    try:
+                        c.execute("PRAGMA foreign_keys = OFF")
+                        c.execute('insert into Tasks_to_Task_Sets values (?,?)', (addtask, task_set))
+                        c.execute("PRAGMA foreign_keys = ON")
+                        print 'The task has been added to the task set.' + os.linesep
+                    except sqlite3.Error as e:
+                        handleDbError(e)
+                else:
+                    print 'The task is not defined or already exists in this task set, please use the function addTask() to add it to the database and selectTaskSet() to check if it is not already there.' + os.linesep
+                if not yes_or_no('Do you want to add another task?', 'no'):
+                    iaddtask = 0
+
+
+        if yes_or_no('Do you want to delete tasks from the task set?', 'no'):
+            iremtask = 1
+            while iremtask == 1:
+                remtask = raw_input('Please specify a name of the task you want to remove: ')
+                if existsInDbPair(c, remtask, 'task', task_set, 'task_set', 'Tasks_to_Task_Sets'):
+                    try:
+                        c.execute("PRAGMA foreign_keys = OFF")
+                        c.execute('delete from Tasks_to_Task_Sets where task="' + remtask + '\" AND task_set="' + task_set + '\"')
+                        c.execute("PRAGMA foreign_keys = ON")
+                        print 'The task has been removed from the task set.' + os.linesep
+                    except sqlite3.Error as e:
+                        handleDbError(e)
+                else:
+                    print 'The specified task could not be found in the database, please check your spelling.' + os.linesep
+                if not yes_or_no('Do you want to remove another task?', 'no'):
+                    iremtask = 0
+
+
+    if yes_or_no('Do you want to modify the task set\'s description?', 'no'):
+            mod_description = raw_input('Please specify the new description for the tas set: ')
+            try:
+                c.execute(''.join([
+
+                    'UPDATE Task_Sets ',
+                    'SET ',
+                    'description = "', mod_description, '\" ',
+                    'WHERE Task_Sets.task_set = "', task_set, '\"',
+
+                ]))
+            except sqlite3.Error as e:
+                handleDbError(e)
+    if yes_or_no('Do you want to modify the task set\'s name?', 'no'):
+            mod_task_set = raw_input('Please specify the new name for the task set: ')
+            try:
+                c.execute("PRAGMA foreign_keys = OFF")
+                c.execute(''.join([
+
+                    'UPDATE Task_Sets ',
+                    'SET ',
+                    'task_set = "', mod_task_set, '\" ',
+                    'WHERE Task_Sets.task_set = "', task_set, '\"',
+
+                ]))
+                c.execute("PRAGMA foreign_keys = ON")
+                print 'The task set has been updated.' + os.linesep
+            except sqlite3.Error as e:
+                handleDbError(e)
+
 
 # ---------------------------------------------------------------------------------------------------------------------
 
-def selectTaskSet():
-    return
+def selectTaskSet(task_set):
+    c = connectDb()
+
+    # Display the task set info:
+    try:
+        c.execute(''.join([
+
+            'SELECT Task_Sets.task_set, Task_Sets.description ',
+            'FROM Task_Sets ',
+            'WHERE Task_Sets.task_set="', task_set, '\"',
+
+        ]))
+
+        data = c.fetchall()
+        if len(data) == 0:
+            print 'The specified task set does not exist in the database.'
+
+        i = 0
+        for row in c:
+            if i == 0:
+                FORMAT = '%-16s%-40s'
+                print FORMAT % ('task set', 'description')
+                print '-' * 56
+            print FORMAT % row
+            i += 1
+        print os.linesep
+
+        # Display the tasks in the set
+        # Thats super cool because it wont display non-existant tasks (although there should not be those in the set)
+        c.execute(''.join([
+
+            'SELECT DISTINCT Tasks.* ',
+            'FROM Tasks ',
+            'INNER JOIN Tasks_to_Task_Sets ON Tasks_to_Task_Sets.task = Tasks.task ',
+            'WHERE Tasks_to_Task_Sets.task_set="', task_set, '\"',
+
+        ]))
+
+        i = 0
+        for row in c:
+            if i == 0:
+                FORMAT = '%-16s%-16s%-16s%-16s%-20s%-40s'
+                print FORMAT % ('task', 'utgid', 'command', 'parameters', 'pcAdd parameters', 'description')
+                print '-' * 124
+            print FORMAT % row
+            i += 1
+        print os.linesep
+
+    except sqlite3.Error as e:
+        handleDbError(e)
 
 # =====================================================================================================================
 #                           NODE CLASSES
 # =====================================================================================================================
 
-def addClass():
-    return
+def addClass(node_class):
+    c = connectDb()
+
+    if existsInDb(c, node_class, 'class', 'Classes')
+
+    if yes_or_no('Do you want to add task sets to this new node class?', 'yes'):
+        nextclass = 1
+        addedclasses = 0
+        while nextclass == 1:
+            addset = raw_input('Specify the name of the task set: ')
+            # Check if the task exists in the Tasks table, if it does, add it
+            if existsInDb(c, addset, 'task_set', 'Task_Sets'):
+                # The task exists in the Task_Sets table, so it can be added to a class safely
+                try:
+                    c.execute("PRAGMA foreign_keys = OFF")
+                    c.execute('insert into Tasks_to_Task_Sets values (?,?)', (addtask, task_set))
+                    c.execute("PRAGMA foreign_keys = ON")
+                    addedclasses += 1
+                    print 'Node class added succesfully.' + os.linesep
+                except sqlite3.Error as e:
+                    handleDbError(e)
+            else:
+                if not yes_or_no("The specified task set doesn't exist in the database, do you want to add another task set?"):
+                    nextclass = 0
+                    if addedclasses == 0:
+                        print 'It is impossible to define a node class with no task sets assigned to it, breaking.' + os.linesep
+                        break
+
+            if yes_or_no('Do you want to add another task?', 'no'):
+                nexttask = 1
+            else:
+                nexttask = 0
+
+
+    if description == 'The description has not been specified.':
+        if yes_or_no('The description of the task has not been specified, do you want to do this now?', 'no'):
+            description = raw_input('Please provide the description for your task: \n')
+            print 'Success.' + os.linesep
+
+    SET = (task_set, description)
+    c.execute("PRAGMA foreign_keys = OFF")
+    c.execute('insert into Task_Sets values (?,?)', SET)
+    c.execute("PRAGMA foreign_keys = ON")
+    print 'The task set has been added to the database.' + os.linesep
+
+
 
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -414,11 +612,25 @@ def LHCb():
     f = Figlet(font='smkeyboard')
     print(f.renderText('Online'))
 
+# ---------------------------------------------------------------------------------------------------------------------
 
+def existsInDb(db_connection, variable, column, table):
+    c = db_connection
+    c.execute('SELECT ' + column + ' FROM ' + table + ' WHERE ' + column + '="' + variable + '\"')
+    data = c.fetchall()
+    if len(data) == 0:
+        return False
+    else:
+        return True
 
-
-
-
+def existsInDbPair(db_connection, variable1, column1, variable2, column2, table):
+    c = db_connection
+    c.execute('SELECT * ' + 'FROM ' + table + ' WHERE ' + column1 + '="' + variable1 + '\" AND ' + column2 + '="' + variable2 + '\"')
+    data = c.fetchall()
+    if len(data) == 0:
+        return False
+    else:
+        return True
 
 
 
