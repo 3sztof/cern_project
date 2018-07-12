@@ -4,6 +4,7 @@ import sqlite3
 import os
 import sys
 
+# The followig module contains add/delete/modify/select functions definitions for the database created in initDB.py script.
 
 # =====================================================================================================================
 #                           DEFINITIONS
