@@ -120,7 +120,7 @@ c.execute('''create table Nodes(
         regex text NOT NULL,
         class text NOT NULL,
         
-        PRIMARY KEY (regex),
+        CONSTRAINT unique_regex_to_node_class UNIQUE (regex, class),
         FOREIGN KEY(class) REFERENCES Classes(class)
 
         )''')

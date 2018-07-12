@@ -59,6 +59,8 @@ def addTask(name, utgid = '', script = '', script_parameters = '', pcAdd_paramet
 def deleteTask(name):
     c = connectDb()
 
+    # TODO check if deleting a task doesnt break a task set
+
     try:
         c.execute(''.join([
 
@@ -711,13 +713,185 @@ def selectClass(node_class):
 #                              NODES
 # =====================================================================================================================
 
-def addNodes():
-    return
+def addNodes(regex):
+    c = connectDb()
+
+    if existsInDb(c, regex, 'regex', 'Nodes'):
+        print 'Nodes using this regular expression already exist in the database, please consider modifying them with modifyNodes() or use another name.' + os.linesep
+        return
+
+
+    nextclass = 1
+    addedclasses = 0
+    if yes_or_no('Do you want to add node classes associated with the specified nodes regular expression?', 'yes'):
+        while nextclass == 1:
+            addclass = raw_input('Specify the name of the node class: ')
+            # Check if the class exists in the class, if it does, add it
+            if existsInDb(c, addclass, 'class', 'Classes'):
+                # The class exists in the Classes table, so it can be added to a nodes safely
+                try:
+                    c.execute("PRAGMA foreign_keys = OFF")
+                    c.execute('insert into Nodes values (?,?)', (regex, addclass))
+                    c.execute("PRAGMA foreign_keys = ON")
+                    addedclasses += 1
+                    print 'Class associated succesfully.' + os.linesep
+                except sqlite3.Error as e:
+                    handleDbError(e)
+            else:
+                print 'The specified node class does not exist in the database' + os.linesep
+
+            if yes_or_no('Do you want to associate another node class to the specified regular expression?', 'no'):
+                nextclass = 1
+            else:
+                nextclass = 0
+
+    if addedclasses == 0:
+        print 'It is impossible to define a regular expression without assigning any node class to it, breaking.' + os.linesep
+        return
+    else:
+        print 'The node class has been added to the database.' + os.linesep
+
+# ---------------------------------------------------------------------------------------------------------------------
+
+def deleteNodes(regex):
+    c = connectDb()
+
+    try:
+        c.execute("PRAGMA foreign_keys = OFF")
+        c.execute(''.join([
+
+            'DELETE ',
+            'FROM Nodes ',
+            'WHERE regex="', regex, '\"',
+
+        ]))
+        c.execute("PRAGMA foreign_keys = ON")
+        print 'The records of classes assigned to the specified regular expression have been deleted from the database.' + os.linesep
+
+    except sqlite3.Error as e:
+        handleDbError(e)
+
+# ---------------------------------------------------------------------------------------------------------------------
+
+def modifyNodes(regex):
+    c = connectDb()
+
+    # Do nothing if there are no such nodes
+    if not existsInDb(c, regex, 'regex', 'Nodes'):
+        print 'The specified regular expression could not be found in the database.' + os.linesep
+        return
+
+    if yes_or_no('Do you want to modify the node classes assigned to the specified regular expression?', 'yes'):
+        try:
+            c.execute(''.join([
+
+                'SELECT DISTINCT class ',
+                'FROM Nodes ',
+                'WHERE regex="', regex, '\" ',
+                'ORDER BY class ASC ',
+
+            ]))
+            i = 0
+            for row in c:
+                if i == 0:
+                    print "The specified regular expression is associated with the following node classes:" + os.linesep
+                    FORMAT = '%-16s'
+                    print FORMAT % ('node class')
+                    print '-' * 20
+                print FORMAT % row
+                i += 1
+            print os.linesep
+        except sqlite3.Error as e:
+            handleDbError(e)
+
+        if yes_or_no('Do you want to add node class to the association list?', 'no'):
+            iaddclass = 1
+            while iaddclass == 1:
+                addclass = raw_input('Please specify a name of the node class you want to add: ')
+                if existsInDb(c, addclass, 'class', 'Classes') and not existsInDbPair(c, addclass, 'class', regex, 'regex', 'Nodes'):
+                    try:
+                        c.execute("PRAGMA foreign_keys = OFF")
+                        c.execute('insert into Nodes values (?,?)', (regex, addclass))
+                        c.execute("PRAGMA foreign_keys = ON")
+                        print 'The node class has been associated with the specified regular expression' + os.linesep
+                    except sqlite3.Error as e:
+                        handleDbError(e)
+                else:
+                    print 'The node class is not defined or is already associated with the specified regular expression, please use the function addClass() to add it to the database and selectNodes() to check if it is not already there.' + os.linesep
+                if not yes_or_no('Do you want to associate another node class?', 'no'):
+                    iaddclass = 0
+
+        if yes_or_no('Do you want to delete node class from the association list?', 'no'):
+            iremclass = 1
+            while iremclass == 1:
+                remclass = raw_input('Please specify a name of the node class you want to remove: ')
+                if existsInDbPair(c, remclass, 'class', regex, 'regex', 'Nodes'):
+                    try:
+                        c.execute("PRAGMA foreign_keys = OFF")
+                        c.execute(
+                            'delete from Nodes where regex="' + regex + '\" AND class="' + remclass + '\"')
+                        c.execute("PRAGMA foreign_keys = ON")
+                        print 'The node class has been removed from the association list.' + os.linesep
+                    except sqlite3.Error as e:
+                        handleDbError(e)
+                else:
+                    print 'The specified node class could not be found in the database, please check your spelling.' + os.linesep
+                if not yes_or_no('Do you want to remove another node class?', 'no'):
+                    iremclass = 0
+
+
+    if yes_or_no('Do you want to modify the regular expression (or node name)?', 'no'):
+        mod_regex = raw_input('Please specify the new regular expression: ')
+        try:
+            c.execute("PRAGMA foreign_keys = OFF")
+            c.execute(''.join([
+
+                'UPDATE Nodes ',
+                'SET ',
+                'regex = "', mod_regex, '\" ',
+                'WHERE Nodes.regex = "', regex, '\"',
+
+            ]))
+            c.execute("PRAGMA foreign_keys = ON")
+            print 'The regular expression has been updated.' + os.linesep
+        except sqlite3.Error as e:
+            handleDbError(e)
+
+# ---------------------------------------------------------------------------------------------------------------------
+
+def selectNodes(regex):
+    c = connectDb()
+
+    if not existsInDb(c, regex, 'regex', 'Nodes'):
+        print 'The specified regular expression (or node name) could not be found in the database. Please check your spelling.' + os.linesep
+
+    # Display the nodes info:
+    try:
+        c.execute(''.join([
+
+            'SELECT DISTINCT regex, class ',
+            'FROM Nodes ',
+            'WHERE regex="', regex, '\"',
+            'ORDER BY regex ASC',
+
+        ]))
+
+        i = 0
+        for row in c:
+            if i == 0:
+                FORMAT = '%-30s%-26s'
+                print FORMAT % ('regular expression', 'class')
+                print '-' * 56
+            print FORMAT % row
+            i += 1
+        print os.linesep
+
+    except sqlite3.Error as e:
+        handleDbError(e)
+
 # =====================================================================================================================
 #                              OTHERS
 # =====================================================================================================================
-
-# ---------------------------------------------------------------------------------------------------------------------
 
 def connectDb():
     try:
@@ -797,6 +971,8 @@ def existsInDb(db_connection, variable, column, table):
     else:
         return True
 
+# ---------------------------------------------------------------------------------------------------------------------
+
 def existsInDbPair(db_connection, variable1, column1, variable2, column2, table):
     c = db_connection
     c.execute('SELECT * ' + 'FROM ' + table + ' WHERE ' + column1 + '="' + variable1 + '\" AND ' + column2 + '="' + variable2 + '\"')
@@ -805,6 +981,8 @@ def existsInDbPair(db_connection, variable1, column1, variable2, column2, table)
         return False
     else:
         return True
+
+# ---------------------------------------------------------------------------------------------------------------------
 
 
 
