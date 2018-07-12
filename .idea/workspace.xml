@@ -3,12 +3,17 @@
   <component name="ChangeListManager">
     <list default="true" id="b2c70280-3e46-45ab-b1ea-03a1023fefc3" name="Default" comment="">
 <<<<<<< HEAD
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bootScript.py" beforeDir="false" afterPath="$PROJECT_DIR$/bootScript.py" afterDir="false" />
 =======
       <change beforePath="$PROJECT_DIR$/LHCb.db" beforeDir="false" afterPath="$PROJECT_DIR$/LHCb.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/asd.py" beforeDir="false" afterPath="$PROJECT_DIR$/asd.py" afterDir="false" />
 >>>>>>> parent of de3282d... Everything up to Classes finished, modifyClass() pending as it will be a pain in the ass.
+=======
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bootScript.py" beforeDir="false" afterPath="$PROJECT_DIR$/bootScript.py" afterDir="false" />
+>>>>>>> master
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -36,12 +41,17 @@
         <entry file="file://$PROJECT_DIR$/initDB.py">
           <provider selected="true" editor-type-id="text-editor">
 <<<<<<< HEAD
+<<<<<<< HEAD
             <state relative-caret-position="915">
               <caret line="62" column="29" selection-start-line="62" selection-start-column="29" selection-end-line="62" selection-end-column="29" />
 =======
             <state relative-caret-position="-855">
               <caret line="31" lean-forward="true" selection-start-line="31" selection-end-line="31" />
 >>>>>>> parent of de3282d... Everything up to Classes finished, modifyClass() pending as it will be a pain in the ass.
+=======
+            <state relative-caret-position="915">
+              <caret line="62" column="29" selection-start-line="62" selection-start-column="29" selection-end-line="62" selection-end-column="29" />
+>>>>>>> master
             </state>
           </provider>
         </entry>
@@ -50,6 +60,9 @@
         <entry file="file://$PROJECT_DIR$/dbAPI.py">
           <provider selected="true" editor-type-id="text-editor">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> master
             <state relative-caret-position="345">
               <caret line="25" column="29" selection-start-line="25" selection-start-column="29" selection-end-line="25" selection-end-column="29" />
               <folding>
@@ -129,10 +142,14 @@
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
 <<<<<<< HEAD
+<<<<<<< HEAD
     <option name="x" value="-1" />
 =======
     <option name="x" value="1365" />
 >>>>>>> parent of de3282d... Everything up to Classes finished, modifyClass() pending as it will be a pain in the ass.
+=======
+    <option name="x" value="-1" />
+>>>>>>> master
     <option name="y" value="-779" />
     <option name="width" value="1368" />
     <option name="height" value="780" />
@@ -242,6 +259,7 @@
       <window_info anchor="bottom" id="TODO" order="6" visible="true" weight="0.060842432" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
 <<<<<<< HEAD
+<<<<<<< HEAD
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" weight="0.32882884" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.27145085" />
@@ -253,6 +271,12 @@
       <window_info anchor="bottom" id="Python Console" order="7" weight="0.32882884" />
       <window_info active="true" id="Structure" order="1" side_tool="true" visible="true" weight="0.15338793" />
 >>>>>>> parent of de3282d... Everything up to Classes finished, modifyClass() pending as it will be a pain in the ass.
+=======
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Python Console" order="7" weight="0.32882884" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.27145085" />
+      <window_info id="Structure" order="1" side_tool="true" visible="true" weight="0.15338793" />
+>>>>>>> master
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.45645645" />
@@ -451,6 +475,9 @@
     <entry file="file://$PROJECT_DIR$/initDB.py">
       <provider selected="true" editor-type-id="text-editor">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> master
         <state relative-caret-position="915">
           <caret line="62" column="29" selection-start-line="62" selection-start-column="29" selection-end-line="62" selection-end-column="29" />
         </state>
@@ -473,6 +500,9 @@
     <entry file="file://$PROJECT_DIR$/bootScript.py">
       <provider selected="true" editor-type-id="text-editor">
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> master
         <state relative-caret-position="170">
           <caret line="30" column="44" lean-forward="true" selection-start-line="30" selection-start-column="44" selection-end-line="30" selection-end-column="44" />
           <folding>
