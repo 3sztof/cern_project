@@ -396,6 +396,7 @@ def modifyTaskSet(task_set):
                 ]))
             except sqlite3.Error as e:
                 handleDbError(e)
+
     if yes_or_no('Do you want to modify the task set\'s name?', 'no'):
             mod_task_set = raw_input('Please specify the new name for the task set: ')
             try:
@@ -556,8 +557,101 @@ def deleteClass(node_class):
 
 # ---------------------------------------------------------------------------------------------------------------------
 
-def modifyClass():
-    return
+def modifyClass(node_class):
+    c = connectDb()
+
+    # Do nothing if there is no such class
+    if not existsInDb(c, node_class, 'class', 'Classes'):
+        print 'The specified node class could not be found in the database.' + os.linesep
+        return
+
+    if yes_or_no('Do you want to modify the task sets assigned to the specified node class?', 'yes'):
+        try:
+            c.execute(''.join([
+
+                'SELECT DISTINCT task_set ',
+                'FROM Task_Sets_to_Classes ',
+                'WHERE class="', node_class, '\" ',
+                'ORDER BY task_set ASC ',
+
+            ]))
+            i = 0
+            for row in c:
+                if i == 0:
+                    print "The node class consists of the following task sets:" + os.linesep
+                    FORMAT = '%-16s'
+                    print FORMAT % ('task set')
+                    print '-' * 20
+                print FORMAT % row
+                i += 1
+            print os.linesep
+        except sqlite3.Error as e:
+            handleDbError(e)
+
+        if yes_or_no('Do you want to add task sets to the node class?', 'no'):
+            iaddset = 1
+            while iaddset == 1:
+                addset = raw_input('Please specify a name of the task set you want to add: ')
+                if existsInDb(c, addset, 'task_set', 'Task_Sets') and not existsInDbPair(c, addset, 'task_set', node_class, 'class', 'Task_Sets_to_Classes'):
+                    try:
+                        c.execute("PRAGMA foreign_keys = OFF")
+                        c.execute('insert into Task_Sets_to_Classes values (?,?)', (addset, node_class))
+                        c.execute("PRAGMA foreign_keys = ON")
+                        print 'The task set has been added to the node class.' + os.linesep
+                    except sqlite3.Error as e:
+                        handleDbError(e)
+                else:
+                    print 'The task set is not defined or already exists in this node class, please use the function addTaskSet() to add it to the database and selectClass() to check if it is not already there.' + os.linesep
+                if not yes_or_no('Do you want to add another task set?', 'no'):
+                    iaddtask = 0
+
+        if yes_or_no('Do you want to delete task sets from the node class?', 'no'):
+            iremtask = 1
+            while iremset == 1:
+                remset = raw_input('Please specify a name of the task set you want to remove: ')
+                if existsInDbPair(c, remset, 'task_set', node_class, 'class', 'Task_Sets_to_Classes'):
+                    try:
+                        c.execute("PRAGMA foreign_keys = OFF")
+                        c.execute('delete from Task_Sets_to_Classes where task_set="' + remset + '\" AND class="' + node_class + '\"')
+                        c.execute("PRAGMA foreign_keys = ON")
+                        print 'The task set has been removed from the node class.' + os.linesep
+                    except sqlite3.Error as e:
+                        handleDbError(e)
+                else:
+                    print 'The specified task set could not be found in the database, please check your spelling.' + os.linesep
+                if not yes_or_no('Do you want to remove another task set?', 'no'):
+                    iremtask = 0
+
+    if yes_or_no('Do you want to modify the node class description?', 'no'):
+        mod_description = raw_input('Please specify the new description for the node class: ')
+        try:
+            c.execute(''.join([
+
+                'UPDATE Classes ',
+                'SET ',
+                'description = "', mod_description, '\" ',
+                'WHERE Task_Sets_to_Classes = "', node_class, '\"',
+
+            ]))
+        except sqlite3.Error as e:
+            handleDbError(e)
+
+    if yes_or_no('Do you want to modify the node class name?', 'no'):
+        mod_node_class = raw_input('Please specify the new name for the node class: ')
+        try:
+            c.execute("PRAGMA foreign_keys = OFF")
+            c.execute(''.join([
+
+                'UPDATE CLasses ',
+                'SET ',
+                'class = "', mod_node_class, '\" ',
+                'WHERE Classes.class = "', node_class, '\"',
+
+            ]))
+            c.execute("PRAGMA foreign_keys = ON")
+            print 'The node class has been updated.' + os.linesep
+        except sqlite3.Error as e:
+            handleDbError(e)
 
 # ---------------------------------------------------------------------------------------------------------------------
 
