@@ -475,16 +475,14 @@ def selectTaskSet(task_set):
 #                           NODE CLASSES
 # =====================================================================================================================
 
-def addClass(node_class, description = 'The description has not been specified.'):
+def addClass(node_class):
     c = connectDb()
 
-    if existsInDb(c, node_class, 'class', 'Classes'):
-        print 'A node class with this name already exists in the database, use another name.'
-        return
+    if existsInDb(c, node_class, 'class', 'Classes')
 
-    nextclass = 1
-    addedclasses = 0
     if yes_or_no('Do you want to add task sets to this new node class?', 'yes'):
+        nextclass = 1
+        addedclasses = 0
         while nextclass == 1:
             addset = raw_input('Specify the name of the task set: ')
             # Check if the task exists in the Tasks table, if it does, add it
@@ -492,71 +490,42 @@ def addClass(node_class, description = 'The description has not been specified.'
                 # The task exists in the Task_Sets table, so it can be added to a class safely
                 try:
                     c.execute("PRAGMA foreign_keys = OFF")
-                    c.execute('insert into Task_Sets_to_Classes values (?,?)', (addset, node_class))
+                    c.execute('insert into Tasks_to_Task_Sets values (?,?)', (addtask, task_set))
                     c.execute("PRAGMA foreign_keys = ON")
                     addedclasses += 1
-                    print 'Task set added succesfully.' + os.linesep
+                    print 'Node class added succesfully.' + os.linesep
                 except sqlite3.Error as e:
                     handleDbError(e)
             else:
-                print 'The specified task set does not exist in the database'
+                if not yes_or_no("The specified task set doesn't exist in the database, do you want to add another task set?"):
+                    nextclass = 0
+                    if addedclasses == 0:
+                        print 'It is impossible to define a node class with no task sets assigned to it, breaking.' + os.linesep
+                        break
 
-            if yes_or_no('Do you want to add another task set?', 'no'):
-                nextclass = 1
+            if yes_or_no('Do you want to add another task?', 'no'):
+                nexttask = 1
             else:
-                nextclass = 0
-
-    if addedclasses == 0:
-        print 'It is impossible to define a node class with no task sets assigned to it, breaking.' + os.linesep
-        return
+                nexttask = 0
 
 
     if description == 'The description has not been specified.':
-        if yes_or_no('The description of the node class has not been specified, do you want to do this now?', 'no'):
-            description = raw_input('Please provide the description for your new node class: \n')
+        if yes_or_no('The description of the task has not been specified, do you want to do this now?', 'no'):
+            description = raw_input('Please provide the description for your task: \n')
             print 'Success.' + os.linesep
 
-    try:
-        CLASS = (node_class, description)
-        c.execute("PRAGMA foreign_keys = OFF")
-        c.execute('insert into Classes values (?,?)', CLASS)
-        c.execute("PRAGMA foreign_keys = ON")
-        print 'The node class has been added to the database.' + os.linesep
-    except sqlite3.Error as e:
-        handleDbError(e)
+    SET = (task_set, description)
+    c.execute("PRAGMA foreign_keys = OFF")
+    c.execute('insert into Task_Sets values (?,?)', SET)
+    c.execute("PRAGMA foreign_keys = ON")
+    print 'The task set has been added to the database.' + os.linesep
 
 
 
 # ---------------------------------------------------------------------------------------------------------------------
 
-def deleteClass(node_class):
-
-    c = connectDb()
-
-    if not existsInDb(c, node_class, 'class', 'Classes'):
-        print 'The specified node class could not be found in the database, please check your spelling.' + os.linesep
-
-    try:
-        c.execute("PRAGMA foreign_keys = OFF")
-        c.execute(''.join([
-
-            'DELETE ',
-            'FROM Classes ',
-            'WHERE class="', node_class, '\"',
-
-        ]))
-        c.execute(''.join([
-
-            'DELETE ',
-            'FROM Task_Sets_to_Classes ',
-            'WHERE class="', node_class, '\"',
-
-        ]))
-        c.execute("PRAGMA foreign_keys = ON")
-        print 'The node class has been deleted from the database.' + os.linesep
-
-    except sqlite3.Error as e:
-        handleDbError(e)
+def deleteClass():
+    return
 
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -658,57 +627,8 @@ def modifyClass(node_class):
 
 # ---------------------------------------------------------------------------------------------------------------------
 
-def selectClass(node_class):
-    c = connectDb()
-
-    if not existsInDb(c, node_class, 'class', 'Classes'):
-        print 'The specified node class could not be found in the database. Please check your spelling.' + os.linesep
-
-    # Display the node class info:
-    try:
-        c.execute(''.join([
-
-            'SELECT Classes.class, Classes.description ',
-            'FROM Classes ',
-            'WHERE Classes.class="', node_class, '\"',
-
-        ]))
-
-
-        i = 0
-        for row in c:
-            if i == 0:
-                FORMAT = '%-16s%-40s'
-                print FORMAT % ('node class', 'description')
-                print '-' * 56
-            print FORMAT % row
-            i += 1
-        print os.linesep
-
-        # Display the task sets in the class
-        # Thats super cool because it wont display non-existant task sets (although there should not be those in the class)
-        c.execute(''.join([
-
-            'SELECT DISTINCT Task_Sets.* ',
-            'FROM Task_Sets ',
-            'INNER JOIN Task_Sets_to_Classes ON Task_Sets_to_Classes.task_set = Task_Sets.task_set ',
-            'WHERE Task_Sets_to_Classes.class="', node_class, '\"',
-
-        ]))
-
-        i = 0
-        for row in c:
-            if i == 0:
-                FORMAT = '%-16s%-40s'
-                print FORMAT % ('task set', 'description')
-                print '-' * 56
-            print FORMAT % row
-            i += 1
-        print os.linesep
-
-    except sqlite3.Error as e:
-        handleDbError(e)
-
+def selectClass():
+    return
 
 # =====================================================================================================================
 #                              NODES
