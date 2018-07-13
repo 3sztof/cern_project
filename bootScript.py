@@ -20,7 +20,7 @@ top_farm_host = 'hlt01'
 #                            BOOT SCRIPTS
 # =====================================================================================================================
 
-def boot(regex = '*'):    # Default to be replaced with * wchich will boot the whole system
+def boot(regex = '*'):
 
     tasklist = []
 
@@ -158,18 +158,13 @@ def bootnode(regex):
 
                 i = 0
                 for row4 in d:
-                    # FORMAT = '%-16s%-16s%-16s%-16s%-20s%-40s'
-                    # print FORMAT % row4
+                    # Collect the tasks for the current host in a list
                     tasklist.append(row4)
 
     # Remove duplicate tasks from the list created by looping SQL queries above
     tasklist = set(tasklist)
-    # Print the list of tasks after the duplicate removal
     print os.linesep + 'Tasks to be started on ' + regex + ":" + os.linesep
     for task in tasklist:
-        # FORMAT = '%-16s%-16s%-16s%-16s%-20s%-40s'
-        # print FORMAT % task
-
         # pcAdd
         log_opts = '-E ' + logDefaultFIFO + ' -O ' + logDefaultFIFO
         if task[3] != '':
@@ -180,7 +175,7 @@ def bootnode(regex):
             pcAdd_Params = '-K 120 -M 5 -X 300 -g onliners -p 0 -n online'
 
         #             user def or default       logs              host              utgid            path     script      script params
-        cmd = 'pcAdd ' + pcAdd_Params + ' ' + log_opts + ' -m ' + regex + ' -u ' + task[1] + ' ' + _scripts + task[2] + ' ' + task[4] + '";'
+        cmd = 'pcAdd ' + pcAdd_Params + ' ' + log_opts + ' -m ' + regex + ' -u ' + task[1] + ' ' + _scripts + task[2] + ' ' + script_params + '";'
         print 'echo "' + cmd + '";'
 
         # log_opts = '-E ' + str(fifo) + ' -O ' + str(fifo) was ommited for now! it depends on default None variable in the original script
