@@ -293,7 +293,7 @@ def addTaskSet(task_set, description = 'The description has not been specified.'
 def deleteTaskSet(task_set):
     c = connectDb()
 
-    # TODO: check if the task set is assigned to a node class, prompt the user if he is sure, if yes, delete the binding
+    # TODO: check if the task set is assigned to a node class, prompt the user if he is sure, if yes, delete the binding (handled by db constraints for now - should be safe anyway)
 
     try:
         c.execute("PRAGMA foreign_keys = OFF")
@@ -478,7 +478,9 @@ def selectTaskSet(task_set):
 def addClass(node_class):
     c = connectDb()
 
-    if existsInDb(c, node_class, 'class', 'Classes')
+    if existsInDb(c, node_class, 'class', 'Classes'):
+        print 'A node class using specified name already exists in the database. Please use another name.' + os.linesep
+        return
 
     if yes_or_no('Do you want to add task sets to this new node class?', 'yes'):
         nextclass = 1
