@@ -59,7 +59,7 @@ c.execute('''create table Tasks (
 
         task text NOT NULL,
         utgid text NOT NULL,
-        command text NOT NULL
+        command text NOT NULL,
         task_parameters text,
         command_parameters text,
         description text,

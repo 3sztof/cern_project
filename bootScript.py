@@ -175,7 +175,7 @@ def bootnode(regex):
             pcAdd_Params = '-K 120 -M 5 -X 300 -g onliners -p 0 -n online'
 
         #             user def or default       logs              host              utgid            path     script      script params
-        cmd = 'pcAdd ' + pcAdd_Params + ' ' + log_opts + ' -m ' + regex + ' -u ' + task[1] + ' ' + _scripts + task[2] + ' ' + script_params + '";'
+        cmd = 'pcAdd ' + pcAdd_Params + ' ' + log_opts + ' -m ' + regex + ' -u ' + task[1] + ' ' + _scripts + task[2] + ' ' + script_params + ';'
         print 'echo "' + cmd + '";'
 
         # log_opts = '-E ' + str(fifo) + ' -O ' + str(fifo) was ommited for now! it depends on default None variable in the original script
