@@ -169,10 +169,45 @@ def bootnode(regex):
         log_opts = '-E ' + logDefaultFIFO + ' -O ' + logDefaultFIFO
         if task[3] != '':
             script_params = task[3]
+        #if task[4] != '':
+        #    pcAdd_Params = task[4]
+        #else:
+        #    pcAdd_Params = '-K 120 -M 5 -X 300 -g onliners -p 0 -n online'
+
+        pcAdd_Params = '-K 120 -M 5 -X 300 -g onliners -p 0 -n online'
         if task[4] != '':
-            pcAdd_Params = task[4]
-        else:
-            pcAdd_Params = '-K 120 -M 5 -X 300 -g onliners -p 0 -n online'
+            # Create a dictionary with key: parameter and value: value, if parameter is empty, set it to empty, then merge the database input (this will prevent parameter overlapping) and convert the dictionary back to parameter string
+            split_default_params = pcAdd_Params.split()
+            l = len(split_default_params)
+            dic = {}
+            for i in range(0, l - 1):
+                if split_default_params[i].find('-') != -1:
+                    # This is a parameter name - key, we should check if it is not empty - check the next one
+                    if split_default_params[i + 1].find('-') != -1:
+                        # It is empty, append '' to it
+                        dic[split_default_params[i]] = ''
+                    # It was not empty, assign the next value to it.
+                    else:
+                        dic[split_default_params[i]] = split_default_params[i + 1]
+
+            split_user_params = task[4].split()
+
+            l = len(split_user_params)
+
+            for i in range(0, l - 1):
+                if split_user_params[i].find('-') != -1:
+                    # This is a parameter name - key, we should check if it is not empty - check the next one
+                    if split_user_params[i + 1].find('-') != -1:
+                        # It is empty, append '' to it
+                        dic[split_user_params[i]] = ''
+                    # It was not empty, assign the next value to it.
+                    else:
+                        dic[split_user_params[i]] = split_user_params[i + 1]
+            # Convert the dictionary back to a string...
+            pcAdd_Params = ''
+            for k, v in dic.items():
+                pcAdd_Params = pcAdd_Params + ' ' + k + ' ' + v
+
 
         #             user def or default       logs              host              utgid            path     script      script params
         cmd = 'pcAdd ' + pcAdd_Params + ' ' + log_opts + ' -m ' + regex + ' -u ' + task[1] + ' ' + _scripts + task[2] + ' ' + script_params + ';'
