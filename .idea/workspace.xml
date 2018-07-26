@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e8425d91-7493-40ee-b6c3-d781336eb43a" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/initDB.py" beforeDir="false" afterPath="$PROJECT_DIR$/initDB.py" afterDir="false" />
-    </list>
+    <list default="true" id="e8425d91-7493-40ee-b6c3-d781336eb43a" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,7 +12,7 @@
     <session id="450426223">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="1" />
+          <entry key="project.closed" value="2" />
           <entry key="project.open.time.52" value="1" />
           <entry key="project.open.time.53" value="1" />
           <entry key="project.opened" value="2" />
@@ -58,7 +55,7 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/RPC_Tests/restServer.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="240">
@@ -67,10 +64,10 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/initDB.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="690">
+            <state relative-caret-position="1815">
               <caret line="122" column="88" selection-start-line="122" selection-start-column="88" selection-end-line="122" selection-end-column="88" />
             </state>
           </provider>
@@ -164,7 +161,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="-11" width="1282" height="1036" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.23229912" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -220,6 +216,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/initDB.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1815">
+          <caret line="122" column="88" selection-start-line="122" selection-start-column="88" selection-end-line="122" selection-end-column="88" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/RPC_Tests/rpcTester.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -234,13 +237,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="240">
           <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/initDB.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="690">
-          <caret line="122" column="88" selection-start-line="122" selection-start-column="88" selection-end-line="122" selection-end-column="88" />
         </state>
       </provider>
     </entry>

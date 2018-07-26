@@ -20,6 +20,21 @@ class Tasks(Resource):
         #return {'Tasks': [i[0] for i in query.cursor.fetchall()]}  # Fetches first column that is Employee ID
         return jsonify(result)
 
+
+
+
+api.add_resource(Tasks, '/tasks')  # Route_1
+
+
+if __name__ == '__main__':
+    app.run(port='5002')
+
+
+
+
+
+# Examples from the original code:
+""" 
 class Tracks(Resource):
     def get(self):
         conn = db_connect.connect()
@@ -35,10 +50,7 @@ class Employees_Name(Resource):
         result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
         return jsonify(result)
 
-
-api.add_resource(Tasks, '/tasks')  # Route_1
 api.add_resource(Tracks, '/tracks')  # Route_2
 api.add_resource(Employees_Name, '/employees/<employee_id>')  # Route_3
 
-if __name__ == '__main__':
-    app.run(port='5002')
+"""
