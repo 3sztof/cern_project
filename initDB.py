@@ -76,8 +76,8 @@ c.execute('''create table Tasks_to_Task_Sets (
         task_set text NOT NULL,
         
         CONSTRAINT unique_task_to_task_set UNIQUE (task, task_set),
-        FOREIGN KEY(task) REFERENCES Tasks(task),
-        FOREIGN KEY(task_set) REFERENCES Task_Sets(task_set)
+        FOREIGN KEY(task) REFERENCES Tasks(task) ON UPDATE CASCADE ON DELETE CASCADE,
+        FOREIGN KEY(task_set) REFERENCES Task_Sets(task_set) ON UPDATE CASCADE ON DELETE CASCADE
                 
         )''')
 
@@ -98,8 +98,8 @@ c.execute('''create table Task_Sets_to_Classes(
         class text NOT NULL,
         
         CONSTRAINT unique_task_set_to_class UNIQUE (task_set, class),
-        FOREIGN KEY(task_set) REFERENCES Task_Sets(task_set),
-        FOREIGN KEY(class) REFERENCES Classes(class)
+        FOREIGN KEY(task_set) REFERENCES Task_Sets(task_set) ON UPDATE CASCADE ON DELETE CASCADE,
+        FOREIGN KEY(class) REFERENCES Classes(class) ON UPDATE CASCADE ON DELETE CASCADE
         
         )''')
 
@@ -120,7 +120,7 @@ c.execute('''create table Nodes(
         class text NOT NULL,
         
         CONSTRAINT unique_regex_to_node_class UNIQUE (regex, class),
-        FOREIGN KEY(class) REFERENCES Classes(class)
+        FOREIGN KEY(class) REFERENCES Classes(class) ON UPDATE CASCADE ON DELETE CASCADE
 
         )''')
 
