@@ -19,21 +19,15 @@ Ext.define('LHCb.view.main.MainController', {
         }
     },
 
-    testButton: function (b, e) {
-        Ext.create('Ext.panel.Panel', {
-            controller: 'main',
-            id: 'dummypanel',
-            items: [{
-                xtype: 'button',
-                //iconCls: 'button-home-small',
-                text: 'Back',
-                handler: function(){
-                    Ext.getCmp('dummypanel').destroy();
-                }
-            }],
-            renderTo: 'main-operation-window'
-        });
-    }
+    gotoView1: function() {
+        var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
+        operationwindow.setActiveItem(0);
+    },
+
+    gotoView2: function () {
+        var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
+        operationwindow.setActiveItem(1);
+    },
 
     
 

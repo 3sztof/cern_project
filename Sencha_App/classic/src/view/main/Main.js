@@ -61,20 +61,9 @@ Ext.define('LHCb.view.main.Main', {
                 ]
             },
             {
-                layout:{
-                    type: 'vbox'
-                },
                 items: [{
-                    xtype: 'panel',
-                    html: 'blabla',
-                    id: 'main-operation-window'
-                },
-                {
-                    xtype: 'button',
-                    text: 'Test',
-                    listeners: {
-                        click: 'testButton'
-                    }
+                    xtype: 'mainoperationwindow',
+                    itemId: 'mainoperationwindow'
                 }]
             }]
             

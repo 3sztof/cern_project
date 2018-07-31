@@ -18,6 +18,7 @@ Ext.define('LHCb.store.TaskTreeStore', {
             }]
     },
 
+
     constructor: function (config) {
         // Since records claim the data object given to them, clone the data
         // for each instance.
@@ -28,3 +29,29 @@ Ext.define('LHCb.store.TaskTreeStore', {
         this.callParent([config]);
     }
 });
+
+
+// Ext.define('LHCb.store.TaskTreeStore', {
+//     extend: 'Ext.data.TreeStore',
+//     alias: 'store.tasks',
+
+//     proxy: {
+//         type: 'ajax',
+//         url: 'data/tree/check-nodes.json',
+//         // reader: {
+//         //     type: 'json',
+//         //     rootProperty: 'data',
+
+//         //     // Do not attempt to load orders inline.
+//         //     // They are loaded through the proxy
+//         //     implicitIncludes: false
+//         // }
+//     },
+//     sorters: [{
+//         property: 'leaf',
+//         direction: 'ASC'
+//     }, {
+//         property: 'text',
+//         direction: 'ASC'
+//     }]
+// });
