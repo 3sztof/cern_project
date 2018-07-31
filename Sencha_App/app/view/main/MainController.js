@@ -17,5 +17,24 @@ Ext.define('LHCb.view.main.MainController', {
         if (choice === 'yes') {
             //
         }
+    },
+
+    testButton: function (b, e) {
+        Ext.create('Ext.panel.Panel', {
+            controller: 'main',
+            id: 'dummypanel',
+            items: [{
+                xtype: 'button',
+                //iconCls: 'button-home-small',
+                text: 'Back',
+                handler: function(){
+                    Ext.getCmp('dummypanel').destroy();
+                }
+            }],
+            renderTo: 'main-operation-window'
+        });
     }
-});
+
+    
+
+    });

@@ -9,48 +9,84 @@ Ext.define('LHCb.view.main.Main', {
     extend: 'Ext.Container',
     xtype: 'app-main',
 
-    
+    controller: 'main',
+    viewModel: 'main',
+
+
 
     layout: {
         type: 'vbox',
-        pack: 'center',
+        pack: 'start',
         align: 'stretch'
     },
-    margin: '0 10',
-    defaults: {
-        margin: '0 0 10 0',
-        bodyPadding: 10
-    },
+
+    margin: '5px 5px 5px 5px',
+    //defaults: {
+    //    margin: '5 5 5 5',
+    //    bodyPadding: 5
+    //},
     items: [
+        {
+            type: 'titlebar',
+            title: 'LHCb Proces Boot DB Explorer',
+            height: 50
+        },
         {
             layout: {
                 type: 'hbox',
-                pack: 'center',
+                pack: 'start',
                 align: 'stretch'
             },
-            defaults: {
-                flex: 1,
-                bodyPadding: 10,
-                html: 'test'
+            flex: 1,
+            items:[
+            {
+                layout: {
+                    type: 'vbox',
+                    pack: 'start',
+                    align: 'stretch'
+                },
+                items: [
+                    {
+                        xtype: 'tabpanel',
+                        flex: 1,
+                        width: 350,
+                        title: 'Navigation'
+                    },
+                    {
+                        xtype: 'panel',
+                        title: 'Selected item description',
+                        frame: true,
+                        height: 150
+                    }
+                ]
             },
-            items: [
-                {
+            {
+                layout:{
+                    type: 'vbox'
+                },
+                items: [{
                     xtype: 'panel',
-                    margin: '0 5 0 0'
+                    html: 'blabla',
+                    id: 'main-operation-window'
                 },
                 {
-                    xtype: 'panel',
-                    title: 'Title',
-                    margin: '0 0 0 5'
-                }
-            ]
-        },
-        {
-            xtype: 'panel',
-            title: 'Built in Tools',
-            html: 'Lorem ipsum',
-            tools: [
-                {type: 'minimize'},
-            ]
+                    xtype: 'button',
+                    text: 'Test',
+                    listeners: {
+                        click: 'testButton'
+                    }
+                }]
+            }]
+            
         }]
     });
+
+    
+
+
+
+
+
+
+
+

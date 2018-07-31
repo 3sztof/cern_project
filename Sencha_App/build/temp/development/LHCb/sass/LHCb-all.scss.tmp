@@ -909,10 +909,13 @@ $include-ext-window-toast: dynamic(true);;
 $include-ext-window-window: dynamic(true);;
 $include-lhcb-application: dynamic(true);;
 $include-lhcb-store-personnel: dynamic(true);;
+$include-lhcb-store-tasktreestore: dynamic(true);;
 $include-lhcb-view-main-list: dynamic(true);;
 $include-lhcb-view-main-main: dynamic(true);;
 $include-lhcb-view-main-maincontroller: dynamic(true);;
 $include-lhcb-view-main-mainmodel: dynamic(true);;
+$include-lhcb-view-tabpanel-tabpanel: dynamic(true);;
+$include-lhcb-view-tasktree-tasktree: dynamic(true);;
 $output-paths: ("path": "../../classic/resources", "shared": "../../resources");
 
 /* ======================== ETC ======================== */
