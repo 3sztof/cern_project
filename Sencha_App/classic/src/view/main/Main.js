@@ -21,10 +21,10 @@ Ext.define('LHCb.view.main.Main', {
     },
 
     margin: '5px 5px 5px 5px',
-    //defaults: {
+    // defaults: {
     //    margin: '5 5 5 5',
     //    bodyPadding: 5
-    //},
+    // },
     items: [
         {
             type: 'titlebar',
@@ -65,6 +65,7 @@ Ext.define('LHCb.view.main.Main', {
                 ]
             },
             {
+                flex: 1,
                 items: [{
                     xtype: 'mainoperationwindow',
                     itemId: 'mainoperationwindow'

@@ -11,21 +11,31 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
 
     activeItem: 0,
 
-
-    items:[ 
+    // View switcher - wichtig
+    items:[
+        // View 0 
         {
-            // View 0
             layout: {
                 type: 'vbox',
-                //pack: 'start',
+                pack: 'start',
                 align: 'stretch'
             },
             items: [
                 {
-                    xtype: 'taskstable',
-                    flex: 1
+                    layout: {
+                        type: 'fit',
+                        //pack: 'start',
+                        //align: 'stretch'
+                    },
+                    items: [
+                        {
+                            xtype: 'taskstable',
+                            flex: 1
+                        }
+                    ]
                 },
                 {
+                    height: '100',
                     xtype: 'button',
                     text: 'Go to view 2',
                     listeners: {
@@ -33,10 +43,9 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
                     }
                 }
             ]
-            
         }, 
+        // View 1
         {
-            // View 1
             xtype: 'button',
             text: 'Go back to view 1',
             listeners: {

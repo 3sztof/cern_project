@@ -8,9 +8,8 @@ Ext.define('LHCb.view.operationwindow.TasksTable', {
     bind: '{tasks}',
    
     //reference: 'tasksGrid',
-    flex: 1,
+    //flex: 1,
 
-    a: function(){debugger;},
 
     viewModel: {
         stores: {
@@ -36,7 +35,26 @@ Ext.define('LHCb.view.operationwindow.TasksTable', {
 });
 
 
-
+// Todo: later on, we will need to select only one task when its clicked in the hierarchy: copy the above and apply filter to the entry in the table
+// Like this:
+// columns: [{
+//     dataIndex: 'id',
+//     text: 'ID',
+//     width: 50
+// },{
+//     dataIndex: 'show',
+//     text: 'Show',
+//     flex: 1,
+//     filter: {
+//         // required configs
+//         type: 'string',
+//         // optional configs
+//         value: 'star',  // setting a value makes the filter active.
+//         itemDefaults: {
+//             // any Ext.form.field.Text configs accepted
+//         }
+//     }
+// }]
 
 
 

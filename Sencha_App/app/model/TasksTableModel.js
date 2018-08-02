@@ -8,8 +8,8 @@ Ext.define('LHCb.model.TasksTableModel', {
     alias: 'viewmodel.taskstable',
 
     fields: [
-        {name: 'task'},
-        {name: 'command'},
+        {name: 'task', type: 'string'},
+        {name: 'command', type: 'string'},
         // {name: 'phone', type: 'phonenumber' },
         // {name: 'price', type: 'float'},
         // { name: 'priceChange', type: 'float' },
@@ -41,9 +41,10 @@ Ext.define('LHCb.model.TasksTableModel', {
 
     proxy: {
         type: 'rest',
-        // reader: {
-        //     type: 'json'
-        // },
+        reader: {
+            type: 'json',
+            rootProperty: 'data'
+        },
         url: 'http://localhost/tasks'
     },
 
