@@ -22,6 +22,7 @@ Ext.define('LHCb.view.main.MainController', {
     gotoView1: function() {
         var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
         operationwindow.setActiveItem(0);
+        console.log(Ext.getStore("ExampleStore").data.length);
     },
 
     gotoView2: function () {
@@ -29,6 +30,10 @@ Ext.define('LHCb.view.main.MainController', {
         operationwindow.setActiveItem(1);
     },
 
+
+    onClickLoadData: function() {
+        debugger;
+    }
     
 
     });

@@ -56,7 +56,11 @@ Ext.define('LHCb.view.main.Main', {
                         xtype: 'panel',
                         title: 'Selected item description',
                         frame: true,
-                        height: 150
+                        height: 150,
+                        tbar: [{
+                            text: 'Load store data',
+                            handler: 'onClickLoadData'
+                        }]
                     }
                 ]
             },

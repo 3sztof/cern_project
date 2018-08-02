@@ -6,6 +6,33 @@ Ext.define('LHCb.view.main.MainModel', {
 
     alias: 'viewmodel.main',
 
+
+    // stores: {
+    //     tasktreestore: {
+    //         fields: ['command', 'command_parameters', 'description', 'task', 'task_parameters', 'utgid'],
+    //         autoLoad: true,
+    //         proxy: {
+    //             type: 'ajax',
+    //             url: 'app/data/tree/check-nodes.json',
+    //             reader: {
+    //                 type: 'json',
+    //                 rootProperty: 'data',
+        
+    //                 // Do not attempt to load orders inline.
+    //                 // They are loaded through the proxy
+    //                 //implicitIncludes: false
+    //             }
+    //         },
+    //         listeners: {
+    //             load: function() {
+    //                 console.log('Loadad the JSON from REST API...');
+    //                 console.log(Ext.getStore('ExampleStore'));
+    //             }
+    //         }
+    //     }
+        
+    // },
+
     data: {
         name: 'LHCb',
 

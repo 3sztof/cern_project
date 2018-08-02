@@ -27,9 +27,10 @@ api.add_resource(Tasks, '/tasks')  # Route_1
 
 
 if __name__ == '__main__':
-    app.run(port='5002')
+    app.run(port='80')
 
-
+# Achtung! In Chrome tests I ran intu CORS issue: an app is forbidden to access the resources from other ports, the plugin linked below fixes it by allowing foreign ajax requests:
+# https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi/related?utm_source=chrome-app-launcher-info-dialog
 
 
 

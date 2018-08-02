@@ -5,20 +5,38 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
 
     controller: 'main',
 
+    alias: 'mainoperationwindow',
 
     xtype: 'mainoperationwindow',
 
     activeItem: 0,
 
+
     items:[ 
         {
-            xtype: 'button',
-            text: 'Go to view 2',
-            listeners: {
-                click: 'gotoView2'
-            }
+            // View 0
+            layout: {
+                type: 'vbox',
+                //pack: 'start',
+                align: 'stretch'
+            },
+            items: [
+                {
+                    xtype: 'taskstable',
+                    flex: 1
+                },
+                {
+                    xtype: 'button',
+                    text: 'Go to view 2',
+                    listeners: {
+                        click: 'gotoView2'
+                    }
+                }
+            ]
+            
         }, 
         {
+            // View 1
             xtype: 'button',
             text: 'Go back to view 1',
             listeners: {

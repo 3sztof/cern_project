@@ -3,6 +3,10 @@ Ext.define('LHCb.store.Personnel', {
 
     alias: 'store.personnel',
 
+    storeId: 'PersonnelStore',
+
+    autoLoad: true,
+
     fields: [
         'name', 'email', 'phone'
     ],

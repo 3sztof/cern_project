@@ -9,7 +9,10 @@ Ext.application({
     extend: 'LHCb.Application',
 
     requires: [
-        'LHCb.view.main.Main'
+        'LHCb.view.main.Main',
+        'LHCb.store.TaskTreeStore',
+        'LHCb.view.operationwindow.TasksTable',
+        'LHCb.model.TasksTableModel'
     ],
 
 

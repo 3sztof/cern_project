@@ -915,8 +915,10 @@ $include-lhcb-view-main-main: dynamic(true);;
 $include-lhcb-view-main-maincontroller: dynamic(true);;
 $include-lhcb-view-main-mainmodel: dynamic(true);;
 $include-lhcb-view-operationwindow-operationwindow: dynamic(true);;
+$include-lhcb-view-operationwindow-taskstable: dynamic(true);;
 $include-lhcb-view-tabpanel-tabpanel: dynamic(true);;
 $include-lhcb-view-tasktree-tasktree: dynamic(true);;
+$include-lhcb-view-tasktree-tasktreecontroller: dynamic(true);;
 $output-paths: ("path": "../../classic/resources", "shared": "../../resources");
 
 /* ======================== ETC ======================== */
