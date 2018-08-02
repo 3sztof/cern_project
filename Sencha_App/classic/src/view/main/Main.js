@@ -13,67 +13,92 @@ Ext.define('LHCb.view.main.Main', {
     viewModel: 'main',
 
 
-
-    layout: {
-        type: 'vbox',
-        pack: 'start',
-        align: 'stretch'
+    //margin: '5px 5px 5px 5px',
+    defaults: {
+        margin: '3px 3px 3px 3px',
+        //padding: 5
     },
-
-    margin: '5px 5px 5px 5px',
-    // defaults: {
-    //    margin: '5 5 5 5',
-    //    bodyPadding: 5
-    // },
+    layout: {
+        type: 'fit',
+    },
     items: [
         {
-            type: 'titlebar',
-            title: 'LHCb Proces Boot DB Explorer',
-            height: 50
-        },
-        {
             layout: {
-                type: 'hbox',
+                type: 'vbox',
                 pack: 'start',
                 align: 'stretch'
             },
-            flex: 1,
-            items:[
-            {
-                layout: {
-                    type: 'vbox',
-                    pack: 'start',
-                    align: 'stretch'
+        
+            frame: true,
+            
+            items: [
+                {
+                    layout: {
+                        type: 'hbox',
+                        // pack: 'start',
+                        // align: 'stretch'
+                    },
+                    items: [
+                        {
+                            title: '<center><strong>LHCb Online Farm Process Explorer</strong></center>',
+                            flex: 1
+                        },
+                        {
+                            xtype: 'image',
+                            src: 'resources/LHCb_mod.png',
+                            flex: 0.12,
+                            height: 88
+                        }
+                    ]
                 },
-                items: [
+                {
+                    layout: {
+                        type: 'hbox',
+                        pack: 'start',
+                        align: 'stretch'
+                    },
+                    flex: 1,
+                    items:[
                     {
-                        xtype: 'tabpanel',
-                        flex: 1,
-                        width: 350,
-                        title: 'Navigation'
+                        layout: {
+                            type: 'vbox',
+                            pack: 'start',
+                            align: 'stretch'
+                        },
+                        items: [
+                            {
+                                xtype: 'tabpanel',
+                                flex: 1,
+                                width: 350,
+                                title: 'Navigation',
+                                margin: '0 0 5 0'
+                            },
+                            {
+                                xtype: 'panel',
+                                title: 'Selected item description',
+                                frame: true,
+                                height: 150,
+                                tbar: [{
+                                    text: 'Load store data',
+                                    handler: 'onClickLoadData'
+                                }]
+                            }
+                        ]
                     },
                     {
-                        xtype: 'panel',
-                        title: 'Selected item description',
-                        frame: true,
-                        height: 150,
-                        tbar: [{
-                            text: 'Load store data',
-                            handler: 'onClickLoadData'
+                        flex: 1,
+                        items: [{
+                            xtype: 'mainoperationwindow',
+                            itemId: 'mainoperationwindow'
                         }]
-                    }
-                ]
-            },
-            {
-                flex: 1,
-                items: [{
-                    xtype: 'mainoperationwindow',
-                    itemId: 'mainoperationwindow'
+                    }]
+                    
                 }]
-            }]
-            
-        }]
-    });
+        }
+    ]
+
+    
+});
 
     
 
