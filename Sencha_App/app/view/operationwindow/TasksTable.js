@@ -4,12 +4,16 @@ Ext.define('LHCb.view.operationwindow.TasksTable', {
 
     requires: ['LHCb.model.TasksTableModel'],
 
-    title: 'Tasks',
+    controller: 'main',
+
+    title: '<center>Tasks</center>',
     bind: '{tasks}',
    
     //reference: 'tasksGrid',
     //flex: 1,
 
+    columnLines: true,
+    selType: 'checkboxmodel',
 
     viewModel: {
         stores: {
@@ -39,6 +43,19 @@ Ext.define('LHCb.view.operationwindow.TasksTable', {
         {
             text: 'PcAdd parameters', dataIndex: 'command_parameters', flex: 1
         },
+        {
+            xtype: 'actioncolumn',
+            width: 40,
+            items: 
+            [
+                {
+                    glyph: 'f044@FontAwesome',
+                    handler: function(grid, rowIndex, colindex) {
+                        alert('Edit row: ' + rowIndex + ' column: ' + colindex);
+                    }
+                }
+            ]
+        }
         // {
         //     text: 'Process description', dataIndex: 'description', flex: 1.8
         // },

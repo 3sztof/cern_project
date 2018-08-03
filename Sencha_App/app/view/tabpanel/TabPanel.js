@@ -3,7 +3,7 @@ Ext.define('LHCb.view.tabpanel.TabPanel', {
 
     xtype: 'tabpanel',
 
-    controller: 'tabpanel',
+    controller: 'main',
 
     shadow: true,
     frame: true,

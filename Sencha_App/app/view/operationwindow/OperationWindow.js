@@ -32,26 +32,22 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
                     ]
                 },
                 {
-                    height: '100',
-                    xtype: 'button',
-                    text: 'Go to view 2 (to be replaced by table click events)',
-                    listeners: {
-                        click: 'gotoView2'
-                    }
-                },
-                {
                     bbar: [
                         {
                             flex: 1,
                             text: 'Add task',
                             glyph: 'f055@FontAwesome',
-                            handler: 'addTask'
+                            handler: function() {
+                                alert('Switch to "Add task" popup, PUT to DB via REST api');
+                            }
                         },
                         {
                             flex: 1,
                             text: 'Delete task',
                             glyph: 'f056@FontAwesome',
-                            handler: 'deleteTask'
+                            handler: function() {
+                                alert('Delete selected tasks trough REST api, optional: ask if the user is sure')
+                            }
                         }
                     ],
                     align: 'bottom'
@@ -60,11 +56,44 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
         }, 
         // View 1 - clicked (navigation) task details? - TODO
         {
-            xtype: 'button',
-            text: 'Go back to view 1',
-            listeners: {
-                click: 'gotoView1'
-            }
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            items: [
+                {
+                    layout: {
+                        type: 'fit',
+                    },
+                    items: [
+                        {
+                            xtype: 'singletask',
+                            flex: 1
+                        }
+                    ]
+                },
+                {
+                    bbar: [
+                        {
+                            flex: 1,
+                            text: 'Modify task',
+                            glyph: 'f044@FontAwesome',
+                            handler: function() {
+                                alert('Switch to modifying popup - store the task\'s data in the store.SelectedItemData singleton.');
+                            }
+                        },
+                        {
+                            flex: 1,
+                            text: 'Delete task',
+                            glyph: 'f056@FontAwesome',
+                            handler: function() {
+                                alert('Delete selected task trough REST api, optional: ask if the user is sure')
+                            }
+                        }
+                    ],
+                    align: 'bottom'
+                }
+            ]
         } 
     ]
 

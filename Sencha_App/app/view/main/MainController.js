@@ -9,30 +9,21 @@ Ext.define('LHCb.view.main.MainController', {
 
     alias: 'controller.main',
 
-    onItemSelected: function (sender, record) {
-        Ext.Msg.confirm('Confirm', 'Are you sure?', 'onConfirm', this);
-    },
+    // // Temporary - test
+    // gotoView1: function() {
+    //     var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
+    //     operationwindow.setActiveItem(0);
+    // },
 
-    onConfirm: function (choice) {
-        if (choice === 'yes') {
-            //
-        }
-    },
+    // // Temporary - test
+    // gotoView2: function() {
+    //     var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
+    //     operationwindow.setActiveItem(1);
+    // },
 
-    gotoView1: function() {
+    showFullTasksTable: function() {
         var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
         operationwindow.setActiveItem(0);
-    },
-
-    gotoView2: function () {
-        var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
-        operationwindow.setActiveItem(1);
-    },
-
-
-    onClickLoadData: function() {
-        debugger;
     }
-    
 
-    });
+});

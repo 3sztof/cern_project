@@ -41,7 +41,18 @@ Ext.define('LHCb.view.main.Main', {
                     items: [
                         {
                             title: '<center><strong>LHCb Online Farm Process Explorer</strong></center>',
-                            flex: 1
+                            flex: 1,
+                            header: {
+                                titlePosition: 1,
+                                items: [
+                                    {
+                                        glyph: 'f129@FontAwesome',
+                                        handler:function(){
+                                            Ext.MessageBox.alert('About', '<center><b>LHCb Online Farm Process Explorer</b><br><br>Author: Krzysztof Wilczynski<br>Contact me:<uk><li><a href="mailto:krzysztofwilczynski@mail.com">krzysztofwilczynski@mail.com</a></li><li><a href="https://www.linkedin.com/in/3sztof">www.linkedin.com/in/3sztof/</a></li><li><a href="tel:+48668876202">+48 669 876 202</a></li></ul><br>Supervisor: Markus Frank</center>', this.showResult, this);
+                                        }
+                                    }
+                                ]
+                            }
                         },
                         {
                             xtype: 'image',
@@ -70,18 +81,17 @@ Ext.define('LHCb.view.main.Main', {
                                 xtype: 'tabpanel',
                                 flex: 1,
                                 width: 350,
-                                title: 'Navigation',
+                                title: '<center>Navigation</center>',
                                 margin: '0 0 5 0'
                             },
                             {
                                 xtype: 'panel',
-                                title: 'Selected item\'s description',
+                                title: '<center>Selected item\'s description</center>',
+                                itemId: 'descriptionwindow',
                                 frame: true,
-                                height: 150,
-                                tbar: [{
-                                    text: 'Load store data',
-                                    handler: 'onClickLoadData'
-                                }]
+                                height: 150
+                                //calc: function () {return '<br>' +  LHCb.store.SelectedItemData.description},
+                                //html: this.calc
                             }
                         ]
                     },

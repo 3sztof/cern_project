@@ -12,7 +12,8 @@ Ext.application({
         'LHCb.view.main.Main',
         'LHCb.store.TaskTreeStore',
         'LHCb.view.operationwindow.TasksTable',
-        'LHCb.model.TasksTableModel'
+        'LHCb.model.TasksTableModel',
+        'LHCb.view.operationwindow.SingleTask'
     ],
 
 
