@@ -22,11 +22,27 @@ Ext.define('LHCb.view.operationwindow.TasksTable', {
 
     columns: [
         {
-            text: 'Name', dataIndex: 'task', flex: 1
+            xtype: 'rownumberer'
+        },
+        {
+            text: 'Unique name', dataIndex: 'task', flex: 1
         }, 
         {
-            text: 'Command', dataIndex: 'command', flex: 1
-        }
+            text: 'Script name', dataIndex: 'command', flex: 1
+        },
+        {
+            text: 'Script parameters', dataIndex: 'task_parameters', flex: 1
+        },
+        {
+            text: 'Process identifier', dataIndex: 'utgid', flex: 1
+        },
+        {
+            text: 'PcAdd parameters', dataIndex: 'command_parameters', flex: 1
+        },
+        // {
+        //     text: 'Process description', dataIndex: 'description', flex: 1.8
+        // },
+        
     ],
     viewConfig: {
         emptyText: 'No tasks in the database or database API offline...',

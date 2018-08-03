@@ -9,7 +9,7 @@ Ext.define('LHCb.model.TasksTableModel', {
 
     fields: [
         {name: 'task', type: 'string'},
-        {name: 'command', type: 'string'},
+        {name: 'command', type: 'string'}, // There is more (lookup DB table) but these descriptions are only for formatting which always is string in our case...
         // {name: 'phone', type: 'phonenumber' },
         // {name: 'price', type: 'float'},
         // { name: 'priceChange', type: 'float' },

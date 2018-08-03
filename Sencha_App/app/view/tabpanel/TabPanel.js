@@ -3,6 +3,8 @@ Ext.define('LHCb.view.tabpanel.TabPanel', {
 
     xtype: 'tabpanel',
 
+    controller: 'tabpanel',
+
     shadow: true,
     frame: true,
     cls: 'demo-solid-background',
@@ -11,7 +13,7 @@ Ext.define('LHCb.view.tabpanel.TabPanel', {
             pack: 'center'
         }
     },
-    activeTab: 0,
+    activeTab: 0, // Active by default
     defaults: {
         scrollable: true
     },
@@ -22,7 +24,8 @@ Ext.define('LHCb.view.tabpanel.TabPanel', {
             cls: 'card',
             items: [
                 {                
-                    xtype: 'tasktree'
+                    //xtype: 'tasktree' // Initial idea - task tree, replaced by regular associated table
+                    xtype: 'taskexplorer'
                 }
             ]
         },

@@ -13,19 +13,16 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
 
     // View switcher - wichtig
     items:[
-        // View 0 
+        // View 0 - Tasks full table
         {
             layout: {
                 type: 'vbox',
-                pack: 'start',
                 align: 'stretch'
             },
             items: [
                 {
                     layout: {
                         type: 'fit',
-                        //pack: 'start',
-                        //align: 'stretch'
                     },
                     items: [
                         {
@@ -37,14 +34,31 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
                 {
                     height: '100',
                     xtype: 'button',
-                    text: 'Go to view 2',
+                    text: 'Go to view 2 (to be replaced by table click events)',
                     listeners: {
                         click: 'gotoView2'
                     }
+                },
+                {
+                    bbar: [
+                        {
+                            flex: 1,
+                            text: 'Add task',
+                            glyph: 'f055@FontAwesome',
+                            handler: 'addTask'
+                        },
+                        {
+                            flex: 1,
+                            text: 'Delete task',
+                            glyph: 'f056@FontAwesome',
+                            handler: 'deleteTask'
+                        }
+                    ],
+                    align: 'bottom'
                 }
             ]
         }, 
-        // View 1
+        // View 1 - clicked (navigation) task details? - TODO
         {
             xtype: 'button',
             text: 'Go back to view 1',

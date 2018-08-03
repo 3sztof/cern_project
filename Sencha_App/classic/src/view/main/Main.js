@@ -75,7 +75,7 @@ Ext.define('LHCb.view.main.Main', {
                             },
                             {
                                 xtype: 'panel',
-                                title: 'Selected item description',
+                                title: 'Selected item\'s description',
                                 frame: true,
                                 height: 150,
                                 tbar: [{

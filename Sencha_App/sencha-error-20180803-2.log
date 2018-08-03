@@ -13,13 +13,9 @@ Diagnostic information:
    app.builds.classic.sass.generated.var : classic/sass/save.scss                            
                 app.builds.classic.theme : theme-triton                                      
               app.builds.classic.toolkit : classic                                           
-    app.builds.modern.sass.generated.src : modern/sass/save                                  
-    app.builds.modern.sass.generated.var : modern/sass/save.scss                             
-                 app.builds.modern.theme : theme-material                                    
-               app.builds.modern.toolkit : modern                                            
                         app.cache.deltas : ${build.id}/deltas                                
                         app.cache.enable : false                                             
-                   app.classic.js.0.path : /home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/ext/build/ext-all-rtl-debug.js
+                   app.classic.js.0.path : /home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/ext/build/ext-all-debug.js
                    app.classic.js.length : 1                                                 
                            app.classpath : app,${toolkit.name}/src                           
                          app.classpath.0 : app                                               
@@ -218,7 +214,7 @@ Exception information:
 /home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/build-impl.xml:252: The following error occurred while executing this line:
 /home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/watch-impl.xml:87: The following error occurred while executing this line:
 /home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/build-impl.xml:386: The following error occurred while executing this line:
-/home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/init-impl.xml:436: com.sencha.exceptions.ExBuild: Failed to find any files for /home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/app/view/tasktree/TaskTree.js::ClassRequire::Ext.grid.plugin.MultiSelection
+/home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/init-impl.xml:436: com.sencha.exceptions.ExNotFound: Unknown definition for dependency : Ext.Containter
      at com.sencha.ant.AntScript.execute(AntScript.java:121)
      at com.sencha.command.plugin.PluginManager.execute(PluginManager.java:104)
      at com.sencha.command.plugin.PluginManager.executeReverseFirst(PluginManager.java:145)
@@ -248,7 +244,7 @@ Exception information:
 /home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/build-impl.xml:252: The following error occurred while executing this line:
 /home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/watch-impl.xml:87: The following error occurred while executing this line:
 /home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/build-impl.xml:386: The following error occurred while executing this line:
-/home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/init-impl.xml:436: com.sencha.exceptions.ExBuild: Failed to find any files for /home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/app/view/tasktree/TaskTree.js::ClassRequire::Ext.grid.plugin.MultiSelection
+/home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/init-impl.xml:436: com.sencha.exceptions.ExNotFound: Unknown definition for dependency : Ext.Containter
      at org.apache.tools.ant.ProjectHelper.addLocationToBuildException(ProjectHelper.java:551)
      at org.apache.tools.ant.taskdefs.Ant.execute(Ant.java:444)
      at org.apache.tools.ant.UnknownElement.execute(UnknownElement.java:291)
@@ -305,7 +301,7 @@ Exception information:
    Caused by: The following error occurred while executing this line:
 /home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/watch-impl.xml:87: The following error occurred while executing this line:
 /home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/build-impl.xml:386: The following error occurred while executing this line:
-/home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/init-impl.xml:436: com.sencha.exceptions.ExBuild: Failed to find any files for /home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/app/view/tasktree/TaskTree.js::ClassRequire::Ext.grid.plugin.MultiSelection
+/home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/init-impl.xml:436: com.sencha.exceptions.ExNotFound: Unknown definition for dependency : Ext.Containter
      at org.apache.tools.ant.ProjectHelper.addLocationToBuildException(ProjectHelper.java:551)
      at org.apache.tools.ant.taskdefs.Ant.execute(Ant.java:444)
      at org.apache.tools.ant.taskdefs.CallTarget.execute(CallTarget.java:105)
@@ -375,7 +371,7 @@ Exception information:
      at com.install4j.runtime.launcher.UnixLauncher.main(UnixLauncher.java:57)
    Caused by: The following error occurred while executing this line:
 /home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/build-impl.xml:386: The following error occurred while executing this line:
-/home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/init-impl.xml:436: com.sencha.exceptions.ExBuild: Failed to find any files for /home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/app/view/tasktree/TaskTree.js::ClassRequire::Ext.grid.plugin.MultiSelection
+/home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/init-impl.xml:436: com.sencha.exceptions.ExNotFound: Unknown definition for dependency : Ext.Containter
      at org.apache.tools.ant.ProjectHelper.addLocationToBuildException(ProjectHelper.java:551)
      at org.apache.tools.ant.taskdefs.Ant.execute(Ant.java:444)
      at org.apache.tools.ant.taskdefs.CallTarget.execute(CallTarget.java:105)
@@ -472,7 +468,7 @@ Exception information:
      at com.exe4j.runtime.LauncherEngine.launch(LauncherEngine.java:65)
      at com.install4j.runtime.launcher.UnixLauncher.main(UnixLauncher.java:57)
    Caused by: The following error occurred while executing this line:
-/home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/init-impl.xml:436: com.sencha.exceptions.ExBuild: Failed to find any files for /home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/app/view/tasktree/TaskTree.js::ClassRequire::Ext.grid.plugin.MultiSelection
+/home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/.sencha/app/init-impl.xml:436: com.sencha.exceptions.ExNotFound: Unknown definition for dependency : Ext.Containter
      at org.apache.tools.ant.ProjectHelper.addLocationToBuildException(ProjectHelper.java:551)
      at org.apache.tools.ant.taskdefs.Ant.execute(Ant.java:444)
      at org.apache.tools.ant.taskdefs.CallTarget.execute(CallTarget.java:105)
@@ -582,7 +578,7 @@ Exception information:
      at java.lang.reflect.Method.invoke(Method.java:498)
      at com.exe4j.runtime.LauncherEngine.launch(LauncherEngine.java:65)
      at com.install4j.runtime.launcher.UnixLauncher.main(UnixLauncher.java:57)
-   Caused by: com.sencha.exceptions.ExBuild: Failed to find any files for /home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/app/view/tasktree/TaskTree.js::ClassRequire::Ext.grid.plugin.MultiSelection
+   Caused by: com.sencha.exceptions.ExNotFound: Unknown definition for dependency : Ext.Containter
      at org.apache.tools.ant.dispatch.DispatchUtils.execute(DispatchUtils.java:116)
      at org.apache.tools.ant.Task.perform(Task.java:348)
      at org.apache.tools.ant.Target.execute(Target.java:392)
@@ -698,11 +694,9 @@ Exception information:
      at java.lang.reflect.Method.invoke(Method.java:498)
      at com.exe4j.runtime.LauncherEngine.launch(LauncherEngine.java:65)
      at com.install4j.runtime.launcher.UnixLauncher.main(UnixLauncher.java:57)
-   Caused by: Failed to find any files for /home/leon/Desktop/Cern_Project/SQL_DB/Sencha_App/app/view/tasktree/TaskTree.js::ClassRequire::Ext.grid.plugin.MultiSelection
-     at com.sencha.tools.compiler.sources.SymbolCache.resolveDependencies(SymbolCache.java:714)
-     at com.sencha.tools.compiler.sources.SymbolCache.resolveDependencies(SymbolCache.java:653)
-     at com.sencha.tools.compiler.sources.SymbolCache.resolveDependencies(SymbolCache.java:648)
-     at com.sencha.tools.compiler.sources.SymbolCache.processSymbols(SymbolCache.java:383)
+   Caused by: Unknown definition for dependency : Ext.Containter
+     at com.sencha.tools.compiler.sources.SymbolCache.linkClassGraph(SymbolCache.java:213)
+     at com.sencha.tools.compiler.sources.SymbolCache.processSymbols(SymbolCache.java:379)
      at com.sencha.tools.compiler.sources.ClassPathScope.getScopeSymbols(ClassPathScope.java:417)
      at com.sencha.tools.compiler.sources.ClassPathScope.getScopeSymbols(ClassPathScope.java:408)
      at com.sencha.tools.compiler.sources.TransitiveEnabler.enableTransitiveDependencies(TransitiveEnabler.java:48)
