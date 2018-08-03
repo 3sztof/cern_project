@@ -47,7 +47,7 @@ Ext.define('LHCb.view.main.Main', {
                                 items: [
                                     {
                                         glyph: 'f129@FontAwesome',
-                                        handler:function(){
+                                        handler: function(){
                                             Ext.MessageBox.alert('About', '<center><b>LHCb Online Farm Process Explorer</b><br><br>Author: Krzysztof Wilczynski<br>Contact me:<uk><li><a href="mailto:krzysztofwilczynski@mail.com">krzysztofwilczynski@mail.com</a></li><li><a href="https://www.linkedin.com/in/3sztof">www.linkedin.com/in/3sztof/</a></li><li><a href="tel:+48668876202">+48 669 876 202</a></li></ul><br>Supervisor: Markus Frank</center>', this.showResult, this);
                                         }
                                     }
@@ -89,9 +89,8 @@ Ext.define('LHCb.view.main.Main', {
                                 title: '<center>Selected item\'s description</center>',
                                 itemId: 'descriptionwindow',
                                 frame: true,
+                                collapsible: true,
                                 height: 150
-                                //calc: function () {return '<br>' +  LHCb.store.SelectedItemData.description},
-                                //html: this.calc
                             }
                         ]
                     },

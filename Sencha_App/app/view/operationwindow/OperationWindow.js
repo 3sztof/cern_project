@@ -3,6 +3,8 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
 
     layout: 'card',
 
+    requires: ['LHCb.view.operationwindow.SingleTask'],
+
     controller: 'main',
 
     alias: 'mainoperationwindow',
@@ -43,7 +45,7 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
                         },
                         {
                             flex: 1,
-                            text: 'Delete task',
+                            text: 'Delete task(s)',
                             glyph: 'f056@FontAwesome',
                             handler: function() {
                                 alert('Delete selected tasks trough REST api, optional: ask if the user is sure')
@@ -60,6 +62,7 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
                 type: 'vbox',
                 align: 'stretch'
             },
+
             items: [
                 {
                     layout: {

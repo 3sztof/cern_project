@@ -8,10 +8,7 @@ Ext.define('LHCb.view.operationwindow.TasksTable', {
 
     title: '<center>Tasks</center>',
     bind: '{tasks}',
-   
-    //reference: 'tasksGrid',
-    //flex: 1,
-
+    
     columnLines: true,
     selType: 'checkboxmodel',
 
