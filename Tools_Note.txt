@@ -1,0 +1,9 @@
+Found the critical error - now the DB has workig constraints.
+
+
+Tools I use:
+Postman
+Sqlectron
+Visual Studio Code
+Sencha CMD Tool
+Gitkraken (+Bitbucket)

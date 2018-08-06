@@ -58,6 +58,17 @@ class Specific_Task(Resource):
         query = conn.execute("delete from Tasks where task=\'%s\' " % str(task_name))
         #result = 'Deleted'#{'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
         return {'status':'success'}
+    def patch(self, task_name):
+        conn = db_connect.connect()
+        print(request.json)                                                     # Working! :D
+        task = request.json['task']
+        utgid = request.json['utgid']
+        command = request.json['command']
+        task_parameters = request.json['task_parameters']
+        command_parameters = request.json['command_parameters']
+        description = request.json['description']
+        query = conn.execute("update Tasks set task=\'{1}\', utgid=\'{2}\', command=\'{3}\', task_parameters=\'{4}\', command_parameters=\'{5}\'description=\'{6}\' where task_set = '{0}'".format(task_name,task,utgid,command,task_parameters,command_parameters,description))
+        return {'status':'success'}
 
 # Task sets
 class TaskSets(Resource):
@@ -80,6 +91,13 @@ class Specific_TaskSet(Resource):
         query = conn.execute("select * from Task_Sets where task_set=\'%s\' " % str(set_name))
         result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
         return jsonify(result)
+    def patch(self, set_name):
+        conn = db_connect.connect()
+        print(request.json)                                                     # Working! :D
+        task_set = request.json['task_set']
+        description = request.json['description']
+        query = conn.execute("update Task_Sets set task_set=\'{1}\', description=\'{2}\' where task_set = '{0}'".format(set_name,task_set,description))
+        return {'status':'success'}
 
 # Node classes
 class Classes(Resource):
@@ -102,6 +120,13 @@ class Specific_Class(Resource):
         query = conn.execute("select * from Classes where class=\'%s\' " % str(class_name))
         result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
         return jsonify(result)
+    def patch(self, class_name):
+        conn = db_connect.connect()
+        print(request.json)                                                     # Working! :D
+        class_mod = request.json['class']
+        description = request.json['description']
+        query = conn.execute("update Classes set class=\'{1}\', description=\'{2}\' where class = '{0}'".format(class_name,class_mod,description))
+        return {'status':'success'}
 
 # Nodes
 class Nodes(Resource):
@@ -124,6 +149,13 @@ class Specific_Node(Resource):
         query = conn.execute("select * from Nodes where regex=\'%s\' " % str(node_name))
         result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
         return jsonify(result)
+    def patch(self, node_name):
+        conn = db_connect.connect()
+        print(request.json)                                                     # Working! :D
+        node = request.json['regex']
+        description = request.json['description']
+        query = conn.execute("update Nodes set regex=\'{1}\', description=\'{2}\' where regex = '{0}'".format(node_name,node,description))
+        return {'status':'success'}
 
 # =====================================================================================================================
 #                                       Serve the API on localhost
@@ -131,19 +163,19 @@ class Specific_Node(Resource):
 
 # Tasks
 api.add_resource(Tasks, '/tasks')                               # Get, Post 
-api.add_resource(Specific_Task, '/tasks/<task_name>')           # Delete, Update - update not yet implemented
+api.add_resource(Specific_Task, '/tasks/<task_name>')           # Get, Delete, Patch
 
 # Task Sets
 api.add_resource(TaskSets, '/task_sets')                        # Get, Post 
-api.add_resource(Specific_TaskSet, '/task_sets/<set_name>')     # Delete, Update - update not yet implemented
+api.add_resource(Specific_TaskSet, '/task_sets/<set_name>')     # Get, Delete, Patch
 
 # Node Classes
 api.add_resource(Classes, '/node_classes')                      # Get, Post 
-api.add_resource(Specific_Class, '/node_classes/<class_name>')  # Delete, Update - update not yet implemented
+api.add_resource(Specific_Class, '/node_classes/<class_name>')  # Get, Delete, Patch
 
 # Nodes
 api.add_resource(Nodes, '/nodes')                               # Get, Post 
-api.add_resource(Specific_Node, '/nodes/<node_name>')           # Delete, Update - update not yet implemented
+api.add_resource(Specific_Node, '/nodes/<node_name>')           # Get, Delete, Patch
 
 if __name__ == '__main__':
     app.run(port='80')
