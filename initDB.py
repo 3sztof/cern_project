@@ -20,6 +20,36 @@ TASKS = (
     ('Task1', 'task_1', 'sleep1.sh', '4', '-c test1', 'Sleep for 4 seconds'),
     ('Task2', 'task_2', 'sleep1.sh', '3', '-c test2', 'Sleep for 3 seconds'),
     ('Task3', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task4', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task5', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task6', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task7', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task8', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task9', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task10', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task11', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task12', 'task_3', 'sleep1.sh', '7', '', 'Sleep for 7 seconds'),
+    ('Task13', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task14', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task15', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task16', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task17', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task18', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task19', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task20', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task21', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task22', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task23', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task24', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task25', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task26', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task27', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task28', 'task_3', 'sleep1.sh', '7', '', 'Sleep for 7 seconds'),
+    ('Task29', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task30', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task31', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task32', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
+    ('Task33', 'task_3', 'sleep1.sh', '7', '-c test3', 'Sleep for 7 seconds'),
 )
 
 TASKS_SETS = (
@@ -63,22 +93,22 @@ c.execute('''create table Tasks (
         task_parameters text,
         command_parameters text,
         description text,
-        
+
         PRIMARY KEY (task),
         CONSTRAINT unique_tasks UNIQUE (task, utgid, command, task_parameters, command_parameters)
-        
+
         )''')
 
 # Tasks_to_Task_Sets
 c.execute('''create table Tasks_to_Task_Sets (
-        
+
         task text NOT NULL,
         task_set text NOT NULL,
-        
+
         CONSTRAINT unique_task_to_task_set UNIQUE (task, task_set),
         FOREIGN KEY(task) REFERENCES Tasks(task) ON UPDATE CASCADE ON DELETE CASCADE,
         FOREIGN KEY(task_set) REFERENCES Task_Sets(task_set) ON UPDATE CASCADE ON DELETE CASCADE
-                
+
         )''')
 
 # Task_Sets
@@ -86,21 +116,21 @@ c.execute('''create table Task_Sets(
 
         task_set text NOT NULL,
         description text,
-        
+
         PRIMARY KEY (task_set)
 
         )''')
 
 # Task_Sets_to_Classes
 c.execute('''create table Task_Sets_to_Classes(
-        
+
         task_set text NOT NULL,
         class text NOT NULL,
-        
+
         CONSTRAINT unique_task_set_to_class UNIQUE (task_set, class),
         FOREIGN KEY(task_set) REFERENCES Task_Sets(task_set) ON UPDATE CASCADE ON DELETE CASCADE,
         FOREIGN KEY(class) REFERENCES Classes(class) ON UPDATE CASCADE ON DELETE CASCADE
-        
+
         )''')
 
 # Classes
@@ -108,7 +138,7 @@ c.execute('''create table Classes(
 
         class text NOT NULL,
         description text,
-        
+
         PRIMARY KEY (class)
 
         )''')
@@ -118,7 +148,7 @@ c.execute('''create table Nodes(
 
         regex text NOT NULL,
         class text NOT NULL,
-        
+
         CONSTRAINT unique_regex_to_node_class UNIQUE (regex, class),
         FOREIGN KEY(class) REFERENCES Classes(class) ON UPDATE CASCADE ON DELETE CASCADE
 

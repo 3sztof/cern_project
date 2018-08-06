@@ -19,22 +19,17 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
         {
             layout: {
                 type: 'vbox',
+                pack: 'start',
                 align: 'stretch'
             },
+            
             items: [
+                // {
+                //     xtype: 'panel',
+                //     title: '<center>Tasks</center>'
+                // },
                 {
-                    layout: {
-                        type: 'fit',
-                    },
-                    items: [
-                        {
-                            xtype: 'taskstable',
-                            flex: 1
-                        }
-                    ]
-                },
-                {
-                    bbar: [
+                    tbar: [
                         {
                             flex: 1,
                             text: 'Add task',
@@ -52,8 +47,11 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
                             }
                         }
                     ],
-                    align: 'bottom'
+                },
+                {
+                    xtype: 'taskstable'
                 }
+                
             ]
         }, 
         // View 1 - clicked (navigation) task details? - TODO

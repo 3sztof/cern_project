@@ -5,6 +5,7 @@ Ext.define('LHCb.view.tabpanel.taskexplorer.TaskExplorer', {
     controller: 'main',
 
     requires: ['LHCb.model.TasksTableModel', 'LHCb.store.SelectedItemData'],
+
     viewModel: {
         stores: {
             tasks: {
@@ -12,8 +13,7 @@ Ext.define('LHCb.view.tabpanel.taskexplorer.TaskExplorer', {
                 autoLoad: true
             }
         }
-    },
-    
+    },   
 
     layout: {
         type: 'vbox',
@@ -55,7 +55,11 @@ Ext.define('LHCb.view.tabpanel.taskexplorer.TaskExplorer', {
                             Ext.ComponentQuery.query('panel[itemId=descriptionwindow]')[0].body.update('<br><center>' + LHCb.store.SelectedItemData.description + '</center>');
                             // Update the default fields in the task overview window
                             Ext.ComponentQuery.query('panel[itemId=singletaskwindow]')[0].items.items[0].setValue(LHCb.store.SelectedItemData.task);
-                            Ext.ComponentQuery.query('panel[itemId=singletaskwindow]')[0].items.items[1].setValue(LHCb.store.SelectedItemData.description);
+                            Ext.ComponentQuery.query('panel[itemId=singletaskwindow]')[0].items.items[1].setValue(LHCb.store.SelectedItemData.command);
+                            Ext.ComponentQuery.query('panel[itemId=singletaskwindow]')[0].items.items[2].setValue(LHCb.store.SelectedItemData.task_parameters);
+                            Ext.ComponentQuery.query('panel[itemId=singletaskwindow]')[0].items.items[3].setValue(LHCb.store.SelectedItemData.utgid);
+                            Ext.ComponentQuery.query('panel[itemId=singletaskwindow]')[0].items.items[4].setValue(LHCb.store.SelectedItemData.command_parameters);
+                            Ext.ComponentQuery.query('panel[itemId=singletaskwindow]')[0].items.items[5].setValue(LHCb.store.SelectedItemData.description);
                         }
                     }
                 }       

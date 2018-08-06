@@ -48,7 +48,7 @@ Ext.define('LHCb.view.main.Main', {
                                     {
                                         glyph: 'f129@FontAwesome',
                                         handler: function(){
-                                            Ext.MessageBox.alert('About', '<center><b>LHCb Online Farm Process Explorer</b><br><br>Author: Krzysztof Wilczynski<br>Contact me:<uk><li><a href="mailto:krzysztofwilczynski@mail.com">krzysztofwilczynski@mail.com</a></li><li><a href="https://www.linkedin.com/in/3sztof">www.linkedin.com/in/3sztof/</a></li><li><a href="tel:+48668876202">+48 669 876 202</a></li></ul><br>Supervisor: Markus Frank</center>', this.showResult, this);
+                                            Ext.MessageBox.alert('About', '<center><b>LHCb Online Farm Process Explorer</b><br><br>Author: Krzysztof Wilczynski<ul list-style-position: inside; margin-top: 0;><li><a href="mailto:krzysztofwilczynski@mail.com">krzysztofwilczynski@mail.com</a></li><li><a href="https://www.linkedin.com/in/3sztof">www.linkedin.com/in/3sztof/</a></li><li><a href="tel:+48668876202">+48 669 876 202</a></li></ul>Supervisor: Markus Frank<ul list-style-position: inside; margin-top: 0;><li><a href="mailto:markus.frank@cern.ch">markus.frank@cern.ch</a></li></ul></center>', this.showResult, this);
                                         }
                                     }
                                 ]
@@ -68,40 +68,59 @@ Ext.define('LHCb.view.main.Main', {
                         pack: 'start',
                         align: 'stretch'
                     },
+                    // defaults: {
+                    //     scrollable: true
+                    // },
                     flex: 1,
                     items:[
-                    {
-                        layout: {
-                            type: 'vbox',
-                            pack: 'start',
-                            align: 'stretch'
-                        },
-                        items: [
-                            {
-                                xtype: 'tabpanel',
-                                flex: 1,
-                                width: 350,
-                                title: '<center>Navigation</center>',
-                                margin: '0 0 5 0'
+                        {
+                            layout: {
+                                type: 'vbox',
+                                pack: 'start',
+                                align: 'stretch'
                             },
-                            {
-                                xtype: 'panel',
-                                title: '<center>Selected item\'s description</center>',
-                                itemId: 'descriptionwindow',
-                                frame: true,
-                                collapsible: true,
-                                height: 150
-                            }
-                        ]
-                    },
-                    {
-                        flex: 1,
-                        items: [{
-                            xtype: 'mainoperationwindow',
-                            itemId: 'mainoperationwindow'
-                        }]
-                    }]
-                    
+                            items: [
+                                {
+                                    xtype: 'tabpanel',
+                                    flex: 1,
+                                    width: 350,
+                                    title: '<center>Navigation</center>',
+                                    margin: '0 0 5 0'
+                                },
+                                {
+                                    xtype: 'panel',
+                                    title: '<center>Selected item\'s description</center>',
+                                    itemId: 'descriptionwindow',
+                                    frame: true,
+                                    scrollable: true,
+                                    collapsible: true,
+                                    height: 150
+                                }
+                            ]
+                        },
+                        {
+                            flex: 1,
+                            layout: {
+                                type: 'vbox',
+                                pack: 'start',
+                                align: 'stretch'
+                            },
+                            items: [
+                                {
+                                    title: '<center>Operation</center>'
+                                },
+                                {
+                                    autoScroll: true,
+                                    flex: 1,
+                                    items: [{
+                                        xtype: 'mainoperationwindow',
+                                        itemId: 'mainoperationwindow'
+                                    }]  
+                                }
+                            ]
+                                                        
+                        }
+                    ]
                 }]
         }
     ]
