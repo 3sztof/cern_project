@@ -34,12 +34,30 @@ class Tasks(Resource):
         result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
         #return {'Tasks': [i[0] for i in query.cursor.fetchall()]}  # Fetches first column that is Employee ID
         return jsonify(result)
+    def post(self):
+        conn = db_connect.connect()
+        print(request.json)                                                     # Working! :D
+        task = request.json['task']
+        utgid = request.json['utgid']
+        command = request.json['command']
+        task_parameters = request.json['task_parameters']
+        command_parameters = request.json['command_parameters']
+        description = request.json['description']
+        query = conn.execute("insert into Tasks values('{0}','{1}','{2}','{3}', \
+                             '{4}','{5}')".format(task,utgid,command,
+                             task_parameters, command_parameters, description))
+        return {'status':'success'}
 class Specific_Task(Resource):
     def get(self, task_name):
         conn = db_connect.connect()
         query = conn.execute("select * from Tasks where task=\'%s\' " % str(task_name))
         result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
         return jsonify(result)
+    def delete(self, task_name):
+        conn = db_connect.connect()
+        query = conn.execute("delete from Tasks where task=\'%s\' " % str(task_name))
+        #result = 'Deleted'#{'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
+        return {'status':'success'}
 
 # Task sets
 class TaskSets(Resource):
@@ -49,6 +67,13 @@ class TaskSets(Resource):
         result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
         #return {'Tasks': [i[0] for i in query.cursor.fetchall()]}  # Fetches first column that is Employee ID
         return jsonify(result)
+    def post(self):
+        conn = db_connect.connect()
+        print(request.json)                                                     # Working! :D
+        task_set = request.json['task_set']
+        description = request.json['description']
+        query = conn.execute("insert into Task_Sets values('{0}','{1}')".format(task_set,description))
+        return {'status':'success'}
 class Specific_TaskSet(Resource):
     def get(self, set_name):
         conn = db_connect.connect()
@@ -64,6 +89,13 @@ class Classes(Resource):
         result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
         #return {'Tasks': [i[0] for i in query.cursor.fetchall()]}  # Fetches first column that is Employee ID
         return jsonify(result)
+    def post(self):
+        conn = db_connect.connect()
+        print(request.json)                                                     # Working! :D
+        node_class = request.json['node_class']
+        description = request.json['description']
+        query = conn.execute("insert into Classes values('{0}','{1}')".format(node_class,description))
+        return {'status':'success'}
 class Specific_Class(Resource):
     def get(self, class_name):
         conn = db_connect.connect()
@@ -79,6 +111,13 @@ class Nodes(Resource):
         result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
         #return {'Tasks': [i[0] for i in query.cursor.fetchall()]}  # Fetches first column that is Employee ID
         return jsonify(result)
+    def post(self):
+        conn = db_connect.connect()
+        print(request.json)                                                     # Working! :D
+        node = request.json['regex']
+        description = request.json['description']
+        query = conn.execute("insert into Nodes values('{0}','{1}')".format(node,description))
+        return {'status':'success'}
 class Specific_Node(Resource):
     def get(self, node_name):
         conn = db_connect.connect()
@@ -91,20 +130,20 @@ class Specific_Node(Resource):
 # =====================================================================================================================
 
 # Tasks
-api.add_resource(Tasks, '/tasks')                       # Get
-api.add_resource(Specific_Task, '/tasks/<task_name>')
+api.add_resource(Tasks, '/tasks')                               # Get, Post 
+api.add_resource(Specific_Task, '/tasks/<task_name>')           # Delete, Update - update not yet implemented
 
 # Task Sets
-api.add_resource(TaskSets, '/task_sets')                # Get
-api.add_resource(Specific_TaskSet, '/task_sets/<set_name>')
+api.add_resource(TaskSets, '/task_sets')                        # Get, Post 
+api.add_resource(Specific_TaskSet, '/task_sets/<set_name>')     # Delete, Update - update not yet implemented
 
 # Node Classes
-api.add_resource(Classes, '/node_classes')              # Get
-api.add_resource(Specific_Class, '/node_classes/<class_name>')
+api.add_resource(Classes, '/node_classes')                      # Get, Post 
+api.add_resource(Specific_Class, '/node_classes/<class_name>')  # Delete, Update - update not yet implemented
 
 # Nodes
-api.add_resource(Nodes, '/nodes')                       # Get
-api.add_resource(Specific_Node, '/nodes/<node_name>')
+api.add_resource(Nodes, '/nodes')                               # Get, Post 
+api.add_resource(Specific_Node, '/nodes/<node_name>')           # Delete, Update - update not yet implemented
 
 if __name__ == '__main__':
     app.run(port='80')
