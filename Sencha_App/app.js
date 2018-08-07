@@ -10,7 +10,7 @@ Ext.application({
 
     requires: [
         'LHCb.view.main.Main',
-        'LHCb.store.TaskTreeStore',
+        //'LHCb.store.TaskTreeStore',
         'LHCb.view.operationwindow.TasksTable',
         'LHCb.model.TasksTableModel',
         'LHCb.view.operationwindow.SingleTask'

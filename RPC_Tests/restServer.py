@@ -14,13 +14,14 @@
 
 from flask import Flask, request
 from flask_restful import Resource, Api
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine                                            # Google sqlite vs slalchemy
 from json import dumps
 from flask_jsonpify import jsonify
 
-db_connect = create_engine('sqlite:///../LHCb.db')
 app = Flask(__name__)
 api = Api(app)
+db_connect = create_engine('sqlite:///../LHCb.db')
+conn = db_connect.connect()
 
 # =====================================================================================================================
 #                           Define server's actions triggered by requests
