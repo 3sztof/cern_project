@@ -91,104 +91,123 @@ class mainAPI():
     #                            Task Sets
     # =====================================================================================================================
 
-    def addSet(self, ):
-        return
+    def addSet(self, task_set, description):
+
+        self.conn.execute("insert into Task_Sets values ('{0}','{1}')".format(task_set, description))
+        return 'Success'
 
     # ---------------------------------------------------------------------------------------------------------------------
 
-    def deleteSet():
-        return
+    def deleteSet(self, task_set):
+
+        self.conn.execute("delete from Task_Sets where task_set='{0}'".format(task_set,))
+        return 'Success'
+
 
     # ---------------------------------------------------------------------------------------------------------------------
 
-    def modifySet():
-        return
+    def modifySet(self, task_set, mod_task_set, mod_description):
+
+        self.conn.execute("modify Task_Sets set task_set='{0}', description='{1}' where task_set='{2}'".format(mod_task_set,
+                        mod_description, task_set))
+        return 'Success'
 
     # ---------------------------------------------------------------------------------------------------------------------
 
-    def getSet():
-        return
+    def getSet(self, task_set):
+        
+        query = self.conn.execute("select * from Task_Sets where task_set='{0}'".format(task_set,))
+        result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
+        return self.json.dumps(result)
+    
+    # ---------------------------------------------------------------------------------------------------------------------
+
+    def assignSet(self, task_set, node_class):
+
+        self.conn.execute("insert into Task_Sets_to_Classes values ('{0}','{1}')".format(task_set, node_class))
+        return 'Success'
 
     # ---------------------------------------------------------------------------------------------------------------------
 
-    def assignSet():
-        return
+    def unassignSet(self, task_set, node_class):
 
-    # ---------------------------------------------------------------------------------------------------------------------
-
-    def unassignSet():
-        return
+        self.conn.execute("delete from Task_Sets_to_Classes where task_set='{0}' and class='{1}'".format(task_set, 
+                        node_class))
+        return 'Success'
 
     # =====================================================================================================================
     #                           Node Classes
     # =====================================================================================================================
 
-    def addClass():
-        return
+    def addClass(self, node_class, description):
+
+        self.conn.execute("insert into Classes values ('{0}','{1}')".format(node_class, description))
+        return 'Success'
 
     # ---------------------------------------------------------------------------------------------------------------------
 
-    def deleteClass():
-        return
+    def deleteClass(self, node_class):
+
+        self.conn.execute("delete from Classes where class='{0}'".format(node_class,))
+        return 'Success'
 
     # ---------------------------------------------------------------------------------------------------------------------
   
-    def modifyClass():
-        return
+    def modifyClass(self, node_class, mod_node_class, mod_description):
+
+        self.conn.execute("update Classes set class='{0}', description='{1}' where class='{2}'".format(mod_node_class,
+                        mod_description, node_class))
+        return 'Success'
 
     # ---------------------------------------------------------------------------------------------------------------------
     
-    def getClass():
-        return
+    def getClass(self, node_class):
+
+        query = self.conn.execute("select * from Classes where class='{0}'".format(node_class,))
+        result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
+        return self.json.dumps(result)
 
     # ---------------------------------------------------------------------------------------------------------------------
     
-    def assignClass():
-        return
+    def assignClass(self, node_class, node_regex):
+
+        self.conn.execute("insert into Nodes values ('{0}', '{1}')".format(node_class, node_regex))
+        return 'Success'
 
     # ---------------------------------------------------------------------------------------------------------------------
 
-    def unassignClass():
-        return
+    def unassignClass(self, node_class, node_regex):
+
+        self.conn.execute("delete from Nodes where class='{0}' and regex='{1}'".format(node_class, node_regex))
+        return 'Success'
 
     # =====================================================================================================================
     #                              Nodes
     # =====================================================================================================================
 
     def addNode():
-        return
 
+        self.conn.execute("".format())
+        return 'Success'
+    
     # ---------------------------------------------------------------------------------------------------------------------
     
     def deleteNode():
-        return
-
+        self.conn.execute("".format())
+        return 'Success'
     # ---------------------------------------------------------------------------------------------------------------------
     
     def modifyNode():
-        return
-
+        self.conn.execute("".format())
+        return 'Success'
     # ---------------------------------------------------------------------------------------------------------------------
     
     def getNode():
-        return
-
+        self.conn.execute("".format())
+        return 'Success'
     # =====================================================================================================================
     #                          Helper Methods
     # =====================================================================================================================
 
-    def handleDbError(e):
-        try:
-            print "Database Error [%d]: %s" % (e.args[0], e.args[1]) + os.linesep
-            return None
-        except IndexError:
-            print "Database Error: %s" % str(e) + os.linesep
-            return None
-        except TypeError, e:
-            print(e)
-            return None
-        except ValueError, e:
-            print(e)
-            return None
 
 

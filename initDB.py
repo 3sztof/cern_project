@@ -75,8 +75,12 @@ CLASSES = (
     ('Sleeping_node', 'Nodes that are very sleepy'),
 )
 
+CLASSES_NODES = (
+    ('Sleeping_node', 'slp[a-z][0-9][0-9]'),
+)
+
 NODES = (
-    ('slp[a-z][0-9][0-9]', 'Sleeping_node'),
+    ('slp[a-z][0-9][0-9]', 'Set of nodes blablabla'),
 )
 
 # ===================================================================
@@ -142,17 +146,27 @@ c.execute('''create table Classes(
 
         )''')
 
+# Classes_to_Nodes
+c.execute('''create table Classes_to_Nodes(
+
+        class text NOT NULL,
+        regex text NOT NULL,
+
+        CONSTRAINT unique_regex_to_node_class UNIQUE (regex, class),
+        FOREIGN KEY(class) REFERENCES Classes(class) ON UPDATE CASCADE ON DELETE CASCADE
+        FOREIGN KEY(regex) REFERENCES Nodes(regex) ON UPDATE CASCADE ON DELETE CASCADE
+
+        )''')
+
 # Nodes
 c.execute('''create table Nodes(
 
         regex text NOT NULL,
-        class text NOT NULL,
+        description text,
 
-        CONSTRAINT unique_regex_to_node_class UNIQUE (regex, class),
-        FOREIGN KEY(class) REFERENCES Classes(class) ON UPDATE CASCADE ON DELETE CASCADE
+        PRIMARY KEY (regex)
 
         )''')
-
 
 # ===================================================================
 #                        TEST DATA INJECTION
