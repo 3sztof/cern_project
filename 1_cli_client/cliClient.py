@@ -58,9 +58,8 @@ class cliClient():
                 print 'Success.' + self.os.linesep
 
         try:
-            result = self.api.addTask(task, utgid, script, script_parameters, pcAdd_parameters, description)
+            result = self.api.addTask(task, utgid=utgid, script=script, script_parameters, pcAdd_parameters, description)
             print result
-            #print 'The task has been added to the database.' + self.os.linesep
 
         except Exception as e: return e
 
@@ -71,7 +70,6 @@ class cliClient():
         try:
             result = self.api.deleteTask(task)
             print result
-            #print 'The task has been deleted from the database.' + self.os.linesep
 
         except Exception as e: return e
 
@@ -84,115 +82,50 @@ class cliClient():
     #         return
 
     #     try:
-    #         task_json = self.api.getTask(task)
-    #         print "The task you want to modift:" + self.os.linesep
+    #         task_string = self.api.getTask(task)
+    #         task_object = self.json.loads(task_string)
+
+    #         # Modify to properly display using task_object
+    #         print "The task you want to modify:" + self.os.linesep
     #         print self.json.dumps(task_json)
-    #         # i = 0
-    #         # for row in c:
-    #         #     if i == 0:
-    #         #         print "The task you want to modify:" + self.os.linesep
-    #         #         FORMAT = '%-16s%-16s%-16s%-16s%-20s%-40s'
-    #         #         print FORMAT % ('task', 'utgid', 'command', 'parameters', 'pcAdd parameters', 'description')
-    #         #         print '-' * 100
-    #         #     print FORMAT % row
-    #         #     i += 1
     #         print self.os.linesep
+    #     except Exception as e: return e
 
-    #     except sqlite3.Error as e:
-    #         handleDbError(e)
+    #     if self.yes_or_no('Do you want to modify the name of the task?', 'no'):
+    #         mod_task = raw_input("Please specify a new name (must be unique!): ") # Modify task as user requested
+    #     else:
+    #         mod_task = task_object['data'][0]['task']                             # Or leave it as is
 
+    #     if self.yes_or_no('Do you want to modify the utgid of the task?', 'no'):
+    #         mod_utgid = raw_input("Please specify a new utgid: ")
+    #     else:
+    #         mod_utgid = task_object['data'][0]['utgid']
+
+    #     if self.yes_or_no('Do you want to modify the script name of the task?', 'no'):
+    #         mod_command = raw_input("Please specify a new script name: ")
+    #     else:
+    #         mod_command = task_object['data'][0]['command']
+
+    #     if self.yes_or_no('Do you want to modify the parameters string of the task?', 'no'):
+    #         mod_task_parameters = raw_input("Please specify a new parameters string: ")
+    #     else:
+    #         mod_task = task_object['data'][0]['task']
+
+    #     if self.yes_or_no('Do you want to modify the additional pcAdd parameters associated with the task?', 'no'):
+    #         mod_command_parameters = raw_input("Please specify a new pcAdd parameters string: ")
+
+    #     if self.yes_or_no('Do you want to modify the description of the task?', 'no'):
+    #         mod_description = raw_input("Please specify a new description: ")
 
     #     try:
-    #         # See the properties of Tasks table, then iterate trough the column names and modify the records
-    #         c.execute(''.join([
+    #         result = self.api.modifyTask(task, mod)
+    #         print result
 
-    #             'SELECT * ',
-    #             'FROM Tasks ',
+    #     except Exception as e: return e
 
-    #         ]))
 
-    #         # Dummy variable, needed for adressing the database row in SQL statements in the for loop
-    #         mod_task = ''
-    #         colnames = c.description
-    #         for row in colnames:
-    #             if row[0] == 'task':
-    #                 if self.yes_or_no('Do you want to modify the name of the task?', 'no'):
-    #                     mod_task = raw_input("Please specify a new name (must be unique!): ")
-    #                     # First we need to modify the Tasks_to_Task_Sets table and drop the foreign key constraint between the tables
-    #                     c.execute("PRAGMA foreign_keys = OFF")
-    #                     c.execute(''.join([
 
-    #                         'UPDATE Tasks_to_Task_Sets ',
-    #                         'SET ',
-    #                         'task = "', mod_task, '\" ',
-    #                         'WHERE Tasks_to_Task_Sets.task = "', name, '\"',
 
-    #                     ]))
-    #                     # Now we can modify the Tasks table and bring back the constraint to prevent deleting tasks assigned to task sets
-    #                     c.execute(''.join([
-
-    #                         'UPDATE Tasks ',
-    #                         'SET ',
-    #                         'task = "', mod_task, '\" ',
-    #                         'WHERE Tasks.task = "', name, '\"',
-
-    #                     ]))
-    #                     c.execute("PRAGMA foreign_keys = ON")
-    #             elif row[0] == 'utgid':
-    #                 if self.yes_or_no('Do you want to modify the utgid of the task?', 'no'):
-    #                     mod_utgid = raw_input("Please specify a new utgid: ")
-    #                     c.execute(''.join([
-
-    #                         'UPDATE Tasks ',
-    #                         'SET ',
-    #                         'utgid = "', mod_utgid, '\" ',
-    #                         'WHERE Tasks.task = "', name, '\"', 'OR Tasks.task = "', mod_task, '\"',
-
-    #                     ]))
-    #             elif row[0] == 'command':
-    #                 if self.yes_or_no('Do you want to modify the script name of the task?', 'no'):
-    #                     mod_command = raw_input("Please specify a new script name: ")
-    #                     c.execute(''.join([
-
-    #                         'UPDATE Tasks ',
-    #                         'SET ',
-    #                         'command = "', mod_command, '\" ',
-    #                         'WHERE Tasks.task = "', name, '\"', 'OR Tasks.task = "', mod_task, '\"',
-
-    #                     ]))
-    #             elif row[0] == 'task_parameters':
-    #                 if self.yes_or_no('Do you want to modify the parameters string of the task?', 'no'):
-    #                     mod_task_parameters = raw_input("Please specify a new parameters string: ")
-    #                     c.execute(''.join([
-
-    #                         'UPDATE Tasks ',
-    #                         'SET ',
-    #                         'task_parameters = "', mod_task_parameters, '\" ',
-    #                         'WHERE Tasks.task = "', name, '\"', 'OR Tasks.task = "', mod_task, '\"',
-
-    #                     ]))
-    #             elif row[0] == 'command_parameters':
-    #                 if self.yes_or_no('Do you want to modify the additional pcAdd parameters associated with the task?', 'no'):
-    #                     mod_command_parameters = raw_input("Please specify a new pcAdd parameters string: ")
-    #                     c.execute(''.join([
-
-    #                         'UPDATE Tasks ',
-    #                         'SET ',
-    #                         'command_parameters = "', mod_command_parameters, '\" ',
-    #                         'WHERE Tasks.task = "', name, '\"', 'OR Tasks.task = "', mod_task, '\"',
-
-    #                     ]))
-    #             elif row[0] == 'description':
-    #                 if self.yes_or_no('Do you want to modify the description of the task?', 'no'):
-    #                     mod_description = raw_input("Please specify a new description: ")
-    #                     c.execute(''.join([
-
-    #                         'UPDATE Tasks ',
-    #                         'SET ',
-    #                         'description = "', mod_description, '\" ',
-    #                         'WHERE Tasks.task = "', name, '\"', 'OR Tasks.task = "', mod_task, '\"',
-
-    #                     ]))
 
     #         print self.os.linesep + 'The task has modified.' + self.os.linesep
 

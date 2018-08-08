@@ -4,7 +4,7 @@
 
 
 # =========================================================================================================================
-#             LHCb Online Farm Task Manager Database API (main class)
+#                LHCb Online Farm Process Explorer (main class)
 #                            K.Wilczynski 08.2018
 # =========================================================================================================================
 
@@ -37,17 +37,6 @@ class mainAPI():
         self.conn.execute("PRAGMA foreign_keys = ON")
 
     # =====================================================================================================================
-    #                            Destructor
-    # =====================================================================================================================
-
-    def __del__(self):
-
-        # Commit the changes and close the connection - no longer needed as I switched from sqlite3 to sqlalchemy
-        #self.conn.commit()
-        #self.conn.close()
-        return
-
-    # =====================================================================================================================
     #                              Tasks
     # =====================================================================================================================
 
@@ -63,46 +52,43 @@ class mainAPI():
     # ---------------------------------------------------------------------------------------------------------------------
 
     def deleteTask(self, task):
-
-        if(not self.inDb('Tasks', 'task', task)):
-            return 'Error: the specified entry does not exist in the database'
         
-        try:
-            self.conn.execute("delete from Tasks where task='{0}'".format(task))
+        query = self.conn.execute("delete from Tasks where task='{0}'".format(task))
+        if(query.rowcount >= 1):
             return 'Success'
 
-        except Exception as e: return e
+        raise Exception('deleteTask: Unknown task with name %s'%(task,))
 
     # ---------------------------------------------------------------------------------------------------------------------
 
-    def modifyTask(self, task, mod_task, mod_utgid, mod_command, mod_task_parameters, mod_command_parameters, 
-                mod_description):
+    def modifyTask(self, task, **args):
 
-        if(not self.inDb('Tasks', 'task', task)):
-            return 'Error: the specified entry does not exist in the database'
+        statement = "update Tasks set task='" + task + "'"
+        cnt=0
+        for key in args:
+            statement += ", "
+            pair = key + "='" + args[key] + "'"
+            statement += pair
+            cnt += 1
+
+        statement += (" where task='" + task + "'")
         
-        try:
-            self.conn.execute("update Tasks set task='{0}', utgid='{1}', command='{2}', task_parameters='{3}', \
-                            command_parameters='{4}', description='{5}' where task='{6}'".format(mod_task, 
-                            mod_utgid, mod_command, mod_task_parameters, mod_command_parameters, mod_description, 
-                            task))
+        query = self.conn.execute(statement)
+        if(query.rowcount >= 1):
             return 'Success'
 
-        except Exception as e: return e
+        raise Exception('modifyTask: Unknown task with name %s'%(task,))
 
     # ---------------------------------------------------------------------------------------------------------------------
 
     def getTask(self, task):
 
-        if(not self.inDb('Tasks', 'task', task)):
-            return 'Error: the specified entry does not exist in the database'
-
-        try:
-            query = self.conn.execute("select * from Tasks where task='{0}'".format(task))
+        query = self.conn.execute("select * from Tasks where task='{0}'".format(task))
+        if(query.rowcount >= 1):
             result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
             return self.json.dumps(result)
 
-        except Exception as e: return e
+        raise Exception('getTask: Unknown task with name %s'%(task,))
 
     # ---------------------------------------------------------------------------------------------------------------------
 
