@@ -2,6 +2,7 @@
 
 
 
+
 # =========================================================================================================================
 #             LHCb Online Farm Task Manager Database API (main class)
 #                            K.Wilczynski 08.2018
@@ -31,8 +32,6 @@ class mainAPI():
         self.db_connect = create_engine('sqlite:///' + self._database)
         self.conn = self.db_connect.connect()
         self.conn.execute("PRAGMA foreign_keys = ON")
-
-
 
     # =====================================================================================================================
     #                            Destructor
