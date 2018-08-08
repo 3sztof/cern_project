@@ -1,10 +1,15 @@
 #!/usr/bin/env python
 
 
+
 # =========================================================================================================================
 #             LHCb Online Farm Task Manager Database API (main class)
 #                            K.Wilczynski 08.2018
 # =========================================================================================================================
+
+
+
+
 
 class mainAPI():
 
@@ -28,13 +33,14 @@ class mainAPI():
         self.conn.execute("PRAGMA foreign_keys = ON")
 
 
+
     # =====================================================================================================================
     #                            Destructor
     # =====================================================================================================================
 
     def __del__(self):
 
-        # Commit the changes and close the connection
+        # Commit the changes and close the connection - no longer needed as I switched from sqlite3 to sqlalchemy
         #self.conn.commit()
         #self.conn.close()
         return
@@ -45,24 +51,25 @@ class mainAPI():
 
     def addTask(self, task, utgid, command, task_parameters, command_parameters, description):
 
-        self.conn.execute("insert into Tasks values ('{0}','{1}','{2}','{3}','{4}','{5}')".format(task, utgid, command, 
-                        task_parameters, command_parameters, description))
-        return 'Success'
+        try:
+            self.conn.execute("insert into Tasks values ('{0}','{1}','{2}','{3}','{4}','{5}')".format(task, utgid, 
+                            command, task_parameters, command_parameters, description))
+            return 'Success'
+        except Exception as e: return e
 
     # ---------------------------------------------------------------------------------------------------------------------
 
     def deleteTask(self, task):
-
-        self.conn.execute("delete from Tasks where task='{0}'".format(task))
-        return 'Success'
+        try:
+            self.conn.execute("delete from Tasks where task='{0}'".format(task))
+            return 'Success'
+        except Exception as e: return e
 
     # ---------------------------------------------------------------------------------------------------------------------
 
     def modifyTask(self, task, mod_task, mod_utgid, mod_command, mod_task_parameters, mod_command_parameters, mod_description):
         
-        self.conn.execute("update Tasks set task='{0}', utgid='{1}', command='{2}', task_parameters='{3}', \
-                        command_parameters='{4}', description='{5}' where task='{6}'".format(mod_task, mod_utgid, 
-                        mod_command, mod_task_parameters, mod_command_parameters, mod_description, task))
+        self.conn.execute("update Tasks set task='{0}', utgid='{1}', command='{2}', task_parameters='{3}', command_parameters='{4}', description='{5}' where task='{6}'".format(mod_task, mod_utgid, mod_command, mod_task_parameters, mod_command_parameters, mod_description, task))
         return 'Success'
 
     # ---------------------------------------------------------------------------------------------------------------------
@@ -171,40 +178,49 @@ class mainAPI():
     
     def assignClass(self, node_class, node_regex):
 
-        self.conn.execute("insert into Nodes values ('{0}', '{1}')".format(node_class, node_regex))
+        self.conn.execute("insert into Classes_to_Nodes values ('{0}', '{1}')".format(node_class, node_regex))
         return 'Success'
 
     # ---------------------------------------------------------------------------------------------------------------------
 
     def unassignClass(self, node_class, node_regex):
 
-        self.conn.execute("delete from Nodes where class='{0}' and regex='{1}'".format(node_class, node_regex))
+        self.conn.execute("delete from Classes_to_Nodes where class='{0}' and regex='{1}'".format(node_class,
+                        node_regex))
         return 'Success'
 
     # =====================================================================================================================
     #                              Nodes
     # =====================================================================================================================
 
-    def addNode():
+    def addNode(self, regex, description):
 
-        self.conn.execute("".format())
+        self.conn.execute("insert into Nodes values ('{0}','{1}')".format(regex, description))
         return 'Success'
     
     # ---------------------------------------------------------------------------------------------------------------------
     
-    def deleteNode():
-        self.conn.execute("".format())
+    def deleteNode(self, regex):
+
+        self.conn.execute("delete from Nodes where regex='{0}'".format(regex,))
         return 'Success'
+    
     # ---------------------------------------------------------------------------------------------------------------------
     
-    def modifyNode():
-        self.conn.execute("".format())
+    def modifyNode(self, regex, mod_regex, mod_description):
+
+        self.conn.execute("update Nodes set regex='{0}', description='{1}' where regex='{2}'".format(mod_regex,
+                        mod_description, regex))
         return 'Success'
+    
     # ---------------------------------------------------------------------------------------------------------------------
     
-    def getNode():
-        self.conn.execute("".format())
-        return 'Success'
+    def getNode(self, regex):
+
+        query = self.conn.execute("select * from Nodes where regex='{0}'".format(regex,))
+        result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
+        return self.json.dumps(result)
+
     # =====================================================================================================================
     #                          Helper Methods
     # =====================================================================================================================
