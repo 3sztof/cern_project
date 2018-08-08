@@ -23,10 +23,13 @@ class mainAPI():
         # Imports
         from sqlalchemy import create_engine
         import json
+        import os
 
         # Configs
-        self._database = './LHCb.db'
         self.json = json
+        self.os = os
+        self.my_path = self.os.path.dirname(os.path.realpath(__file__))
+        self._database = self.my_path + self.os.sep + 'LHCb.db'
 
         # Initiate a connection, cursor object and turn on the constraints to protect the schema (created in initDB.py)
         self.db_connect = create_engine('sqlite:///' + self._database)

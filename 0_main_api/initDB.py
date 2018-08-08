@@ -7,8 +7,13 @@ import os
 #                           DEFINITIONS
 # ===================================================================
 
-os.remove('./LHCb.db')
-conn = sqlite3.connect('./LHCb.db')
+# Get current directory
+dir_path = os.path.dirname(os.path.realpath(__file__))
+try:
+    os.remove(dir_path + '/LHCb.db')
+except Exception as e: 
+    print e
+conn = sqlite3.connect(dir_path + os.sep + 'LHCb.db')
 c = conn.cursor()
 c.execute("PRAGMA foreign_keys = ON")
 
