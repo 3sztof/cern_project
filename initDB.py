@@ -184,6 +184,9 @@ for row in SETS_CLASSES:
     c.execute('insert into Task_Sets_to_Classes values (?,?)', row)
 for row in NODES:
     c.execute('insert into Nodes values (?,?)', row)
+for row in CLASSES_NODES:
+    c.execute('insert into Classes_to_Nodes values (?,?)', row)
+
 
 
 # ===================================================================
