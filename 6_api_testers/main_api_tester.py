@@ -29,18 +29,12 @@ class apiTester():
         self.os = os
         self.sys = sys
         self.create_engine = create_engine
-        self.api = mainAPI.mainAPI()
+        self.api = None
         self.my_path = self.os.path.dirname(self.os.path.realpath(__file__))
         self._database = self.my_path + self.os.sep + '..' + self.os.sep + '0_main_api' + self.os.sep + 'LHCb.db'
         self._database_root_path = self.my_path + self.os.sep + '..' + self.os.sep + '0_main_api'
         self._initDB_path = self.my_path + self.os.sep + '..' + self.os.sep + '0_main_api' + self.os.sep + 'initDB.py'
-
-    # =====================================================================================================================
-    #                          Tester method
-    # =====================================================================================================================
-
-    def runTest(self):
-
+        
         # Reinitialize the database using initDB.py script (initDB.pt must be executable: chmod +x)
         if(self.yes_or_no('Do you want to rebuild the main database using settings and data from initDB script? (reccomended)')):      
             try:
@@ -50,36 +44,85 @@ class apiTester():
                 print self.os.linesep + 'WARNING: Database rebuilding failed. Are you running Linux? Please make sure that 664 permissions\
                     are set on database root folder and initDB script.'
 
-        # Initiate a connection, cursor object and turn on the constraints to protect the schema (created in initDB.py)
-        self.db_connect = self.create_engine('sqlite:///' + self._database)
-        self.conn = self.db_connect.connect()
-        self.conn.execute("PRAGMA foreign_keys = ON")
-        print 'Connected to the database at: ' + self._database
-
-        # =================================================================================================================
-        #               Correct method calls tests
-        # =================================================================================================================
-
-        print self.os.linesep + 'Running tests of correctly called commands...' + self.os.linesep
-
-        # Add task providing all parameters
-        result = self.api.addTask('apiTester', utgid='test_utgid', command='test.sh', command_parameters='script params', 
-                                task_parameters='pcadd params', description='testtest')
-        if(result == 'Success' and self.inDb('Tasks', 'task', 'apiTester')):
-            print 'addTask: success'
-        else:
-            print 'addTask: failure:' + self.os.linesep
-            print result
+        # Initiate a connection (and a separate test query connection in api object, cursor object and turn on the constraints to protect the schema (created in initDB.py)
+        try:
+            self.api = mainAPI.mainAPI()
+            self.db_connect = self.create_engine('sqlite:///' + self._database)
+            self.conn = self.db_connect.connect()
+            self.conn.execute("PRAGMA foreign_keys = ON")
+            print 'Connected to the database at: ' + self._database
+        except:
+            print 'Couldn\'t connect to the database at ' + self._database
             return
 
     # =====================================================================================================================
-    #                          Helper Methods
+    #                         Tester methods
     # =====================================================================================================================
 
-    def inDb(self, table, column, value):
+    # Run all of the tests
+    def testAll(self):
+        
+        self.errCount = 0
 
+        self.testAdd()
+        # self.testDelete()
+        # self.testModify()
+        # self.testGet()
+        # self.testAssign()
+        # self.testUnassign()
+        if(self.errCount == 0):
+            print 'Finished API testing without any error' + self.os.linesep
+        else:
+            print 'Finished API testing with ' + self.errCount + ' errors' + self.os.linesep
+
+        return self.errCount
+        
+    # Run only add methods (specify which table will be optional: Tasks, Task_Sets, Clsses, Nodes)
+    def testAdd(self, table='all'):
+
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Tasks'):
+
+            # Correct method calls tests
+            print self.os.linesep + 'Running tests of correctly called add commands for Tasks table:' + self.os.linesep
+
+            # Add task providing all parameters
+            result = self.api.addTask('apiTester', utgid='test_utgid', command='test.sh', command_parameters='script params', 
+                                    task_parameters='pcadd params', description='testtest')
+            if(result == 'Success' and self.inDb('Tasks', 'task', 'apiTester')):
+                print 'addTask: success'
+            else:
+                print 'addTask: failure:' + self.os.linesep
+                print result
+                self.errCount += 1
+            
+            # Incorret method calls tests (error handling)
+            print self.os.linesep + 'Running tests of error handling for Tasks table' + self.os.linesep
+        
+
+    # =====================================================================================================================
+    #                         Helper Methods
+    # =====================================================================================================================
+
+    def inDb(self, table, **args):
+
+        if (len(args) == 0):
+            print 'Error in api tester inDb method: provided no column: value pairs as search parameters' + self.os.linesep
+            return
+
+        # Construct the SQL statement looking for the entry specified with keys in args in table
+        statement = "select * from " + table + " where "
+        cnt = 0
+        for key in args:
+            if(cnt != 0):
+                statement += ' and '
+            statement += (key + "='" + args[key] + "'")
+            cnt += 1
+
+        # Execute the statement
+        result = self.conn.execute(statement)
+
+        # Check if the query returned the same object, return true if it did (result array will have size of > 1 - at least 1 result with specified params should be found - in case of PK)
         arr = []
-        result = self.conn.execute('SELECT ' + column + ' FROM ' + table + ' WHERE ' + column + '="' + value + '\"')
         for row in result:
             arr.append(row)
         if len(arr) == 0:
