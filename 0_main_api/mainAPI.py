@@ -4,8 +4,10 @@
 
 
 # =========================================================================================================================
-#                LHCb Online Farm Process Explorer (main class)
-#                            K.Wilczynski 08.2018
+#                     LHCb Online Farm Process Explorer
+#                                 Main API 
+#                           
+#                           K.Wilczynski 08.2018
 # =========================================================================================================================
 
 
@@ -40,7 +42,7 @@ class mainAPI():
     #                              Tasks
     # =====================================================================================================================
 
-    def addTask(self, task, utgid, command, task_parameters, command_parameters, description):
+    def addTask(self, task, utgid='', command='', task_parameters='', command_parameters='', description=''):
 
         try:
             self.conn.execute("insert into Tasks values ('{0}','{1}','{2}','{3}','{4}','{5}')".format(task, utgid, 
@@ -61,17 +63,20 @@ class mainAPI():
 
     # ---------------------------------------------------------------------------------------------------------------------
 
-    def modifyTask(self, task, **args):
+    def modifyTask(self, original_task, **args):
 
-        statement = "update Tasks set task='" + task + "'"
+        if len(args) == 0:
+            return 'No arguments provided, modification impossible'
+
+        statement = "update Tasks set "
         cnt=0
         for key in args:
-            statement += ", "
-            pair = key + "='" + args[key] + "'"
-            statement += pair
+            if(cnt != 0):
+                statement += ", "
+            statement += (key + "='" + args[key] + "'")
             cnt += 1
 
-        statement += (" where task='" + task + "'")
+        statement += (" where task='" + original_task + "'")
         
         query = self.conn.execute(statement)
         if(query.rowcount >= 1):
@@ -118,7 +123,7 @@ class mainAPI():
     #                            Task Sets
     # =====================================================================================================================
 
-    def addSet(self, task_set, description):
+    def addSet(self, task_set, description=''):
 
         try:
             self.conn.execute("insert into Task_Sets values ('{0}','{1}')".format(task_set, description))
@@ -130,49 +135,49 @@ class mainAPI():
 
     def deleteSet(self, task_set):
 
-        if(not self.inDb('Task_Sets', 'task_set', task_set)):
-            return 'Error: the specified entry does not exist in the database'
-
-        try:
-            self.conn.execute("delete from Task_Sets where task_set='{0}'".format(task_set,))
+        query = self.conn.execute("delete from Task_Sets where task_set='{0}'".format(task_set,))
+        if(query.rowcount >= 1):
             return 'Success'
 
-        except Exception as e: return e
+        raise Exception('getTask: Unknown task_set with name %s'%(task_set,))
 
     # ---------------------------------------------------------------------------------------------------------------------
 
-    def modifySet(self, task_set, mod_task_set, mod_description):
+    def modifySet(self, original_task_set, **args):
 
-        if(not self.inDb('Task_Sets', 'task_set', task_set)):
-            return 'Error: the specified entry does not exist in the database'
+        if len(args) == 0:
+            return 'No arguments provided, modification impossible'
+
+        statement = "update Task_Sets set "
+        cnt=0
+        for key in args:
+            if(cnt != 0):
+                statement += ", "
+            statement += (key + "='" + args[key] + "'")
+            cnt += 1
+
+        statement += (" where task_set='" + original_task_set + "'")
         
-        try:
-            self.conn.execute("modify Task_Sets set task_set='{0}', description='{1}' where task_set=\
-                            '{2}'".format(mod_task_set, mod_description, task_set))
+        query = self.conn.execute(statement)
+        if(query.rowcount >= 1):
             return 'Success'
 
-        except Exception as e: return e
+        raise Exception('modifyTask: Unknown task set with name %s'%(original_task_set,))
 
     # ---------------------------------------------------------------------------------------------------------------------
 
     def getSet(self, task_set):
-        
-        if(not self.inDb('Task_Sets', 'task_set', task_set)):
-            return 'Error: the specified entry does not exist in the database'
 
-        try:
-            query = self.conn.execute("select * from Task_Sets where task_set='{0}'".format(task_set,))
+        query = self.conn.execute("select * from Task_Sets where task_set='{0}'".format(task_set,))
+        if(query.rowcount >= 1):
             result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
             return self.json.dumps(result)
 
-        except Exception as e: return e
+        raise Exception('getSet: Unknown task set with name %s'%(task_set,))
     
     # ---------------------------------------------------------------------------------------------------------------------
 
     def assignSet(self, task_set, node_class):
-
-        # if(not self.inDb('Task_Sets', 'task_set', task_set)):
-        #     return 'Error: the specified entry does not exist in the database'
 
         try:
             self.conn.execute("insert into Task_Sets_to_Classes values ('{0}','{1}')".format(task_set, node_class))
@@ -195,7 +200,7 @@ class mainAPI():
     #                           Node Classes
     # =====================================================================================================================
 
-    def addClass(self, node_class, description):
+    def addClass(self, node_class, description=''):
 
         try:
             self.conn.execute("insert into Classes values ('{0}','{1}')".format(node_class, description))
@@ -207,42 +212,45 @@ class mainAPI():
 
     def deleteClass(self, node_class):
 
-        if(not self.inDb('Classes', 'class', node_class)):
-            return 'Error: the specified entry does not exist in the database'
-
-        try:
-            self.conn.execute("delete from Classes where class='{0}'".format(node_class,))
+        query = self.conn.execute("delete from Classes where class='{0}'".format(node_class,))
+        if(query.rowcount >= 1):
             return 'Success'
-        
-        except Exception as e: return e
+
+        raise Exception('deleteTask: Unknown task with name %s'%(task,))
 
     # ---------------------------------------------------------------------------------------------------------------------
   
-    def modifyClass(self, node_class, mod_node_class, mod_description):
+    def modifyClass(self, original_node_class, **args):
 
-        if(not self.inDb('Classes', 'class', node_class)):
-            return 'Error: the specified entry does not exist in the database'
+        if len(args) == 0:
+            return 'No arguments provided, modification impossible'
 
-        try:
-            self.conn.execute("update Classes set class='{0}', description='{1}' where class=\
-                            '{2}'".format(mod_node_class, mod_description, node_class))
+        statement = "update Classes set "
+        cnt=0
+        for key in args:
+            if(cnt != 0):
+                statement += ", "
+            statement += (key + "='" + args[key] + "'")
+            cnt += 1
+
+        statement += (" where class='" + original_node_class + "'")
+        
+        query = self.conn.execute(statement)
+        if(query.rowcount >= 1):
             return 'Success'
 
-        except Exception as e: return e
+        raise Exception('modifyTask: Unknown node class with name %s'%(original_node_class,))
 
     # ---------------------------------------------------------------------------------------------------------------------
     
     def getClass(self, node_class):
 
-        if(not self.inDb('Classes', 'class', node_class)):
-            return 'Error: the specified entry does not exist in the database'
-
-        try:
-            query = self.conn.execute("select * from Classes where class='{0}'".format(node_class,))
+        query = self.conn.execute("select * from Classes where class='{0}'".format(node_class,))
+        if(query.rowcount >= 1):
             result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
             return self.json.dumps(result)
 
-        except Exception as e: return e
+        raise Exception('getClass: Unknown node class with name %s'%(node_class,))
 
     # ---------------------------------------------------------------------------------------------------------------------
     
@@ -272,7 +280,7 @@ class mainAPI():
     #                              Nodes
     # =====================================================================================================================
 
-    def addNode(self, regex, description):
+    def addNode(self, regex, description=''):
 
         try:
             self.conn.execute("insert into Nodes values ('{0}','{1}')".format(regex, description))
@@ -284,46 +292,58 @@ class mainAPI():
     
     def deleteNode(self, regex):
 
-        try:
-            self.conn.execute("delete from Nodes where regex='{0}'".format(regex,))
+        query = self.conn.execute("delete from Nodes where regex='{0}'".format(regex,))
+        if(query.rowcount >= 1):
             return 'Success'
 
-        except Exception as e: return e
+        raise Exception('deleteTask: Unknown task with name %s'%(task,))
     
     # ---------------------------------------------------------------------------------------------------------------------
     
-    def modifyNode(self, regex, mod_regex, mod_description):
+    def modifyNode(self, original_regex, **args):
 
-        try:
-            self.conn.execute("update Nodes set regex='{0}', description='{1}' where regex='{2}'".format(mod_regex,
-                            mod_description, regex))
+        if len(args) == 0:
+            return 'No arguments provided, modification impossible'
+
+        statement = "update Nodes set "
+        cnt=0
+        for key in args:
+            if(cnt != 0):
+                statement += ", "
+            statement += (key + "='" + args[key] + "'")
+            cnt += 1
+
+        statement += (" where regex='" + original_regex + "'")
+        
+        query = self.conn.execute(statement)
+        if(query.rowcount >= 1):
             return 'Success'
 
-        except Exception as e: return e
+        raise Exception('modifyTask: Unknown nodes with regex %s'%(original_regex,))
     
     # ---------------------------------------------------------------------------------------------------------------------
     
     def getNode(self, regex):
 
-        try:
-            query = self.conn.execute("select * from Nodes where regex='{0}'".format(regex,))
+        query = self.conn.execute("select * from Nodes where regex='{0}'".format(regex,))
+        if(query.rowcount >= 1):
             result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
             return self.json.dumps(result)
 
-        except Exception as e: return e
+        raise Exception('getNode: Unknown nodes with regex %s'%(regex,))
 
     # =====================================================================================================================
     #                          Helper Methods
     # =====================================================================================================================
 
-    def inDb(self, table, column, value):
+    # def inDb(self, table, column, value):
 
-        arr = []
-        result = self.conn.execute('SELECT ' + column + ' FROM ' + table + ' WHERE ' + column + '="' + value + '\"')
-        for row in result:
-            arr.append(row)
-        if len(arr) == 0:
-            return False
-        else:
-            return True
+    #     arr = []
+    #     result = self.conn.execute('SELECT ' + column + ' FROM ' + table + ' WHERE ' + column + '="' + value + '\"')
+    #     for row in result:
+    #         arr.append(row)
+    #     if len(arr) == 0:
+    #         return False
+    #     else:
+    #         return True
 

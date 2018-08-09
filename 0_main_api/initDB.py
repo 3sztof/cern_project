@@ -1,25 +1,42 @@
 #!/usr/bin/env python
 
-import sqlite3
-import os
+
+
+
+# =========================================================================================================================
+#                     LHCb Online Farm Process Explorer 
+#                       Database builder - rebuilder
+#
+#                            K.Wilczynski 07.2018
+# =========================================================================================================================
+
+
+
+
+
 
 # ===================================================================
 #                           DEFINITIONS
 # ===================================================================
 
+import sqlite3
+import os
+
 # Get current directory
 dir_path = os.path.dirname(os.path.realpath(__file__))
 try:
-    os.remove(dir_path + '/LHCb.db')
+    os.remove(dir_path + os.sep + 'LHCb.db')
 except Exception as e: 
     print e
 conn = sqlite3.connect(dir_path + os.sep + 'LHCb.db')
+os.system('chmod 777 ' + dir_path + os.sep + 'LHCb.db')
 c = conn.cursor()
 c.execute("PRAGMA foreign_keys = ON")
 
 # ===================================================================
 #                            TEST DATA
-# =====================================================
+# ===================================================================
+
 TASKS = (
     ('Task1', 'task_1', 'sleep1.sh', '4', '-c test1', 'Sleep for 4 seconds'),
     ('Task2', 'task_2', 'sleep1.sh', '3', '-c test2', 'Sleep for 3 seconds'),
