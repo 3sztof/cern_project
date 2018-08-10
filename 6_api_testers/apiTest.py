@@ -111,20 +111,20 @@ class apiTest():
             if(result == 'Success' and self.inDb('Tasks', task='testTask', utgid='testUtgid', command='testCommand', command_parameters='testScriptParams', 
                                     task_parameters='testPcaddParams', description='testDescription')):
                 self.log(self.testCount, 'addTask', 'Add a task providing all parameters', True)                    
-                print 'addTask providing all parameters: success'
             else:
-                print bcolors.FAIL + 'addTask providing all parameters: failure' + bcolors.ENDC
+                self.log(self.testCount, 'addTask', 'Add a task providing all parameters', False)                    
                 self.errCount += 1
 
             # -----------------------------------------
 
             # Add task providing only required parameter (rest should be empty strings: '')
+            self.testCount += 1
             result = self.api.addTask('testTask1')
             if(result == 'Success' and self.inDb('Tasks', task='testTask1', utgid='', command='', command_parameters='', 
                                     task_parameters='', description='')):
-                print 'addTask providing only required parameter: success'
+                self.log(self.testCount, 'addTask', 'Add a task providing only the primary key', True)                    
             else:
-                print bcolors.FAIL + 'addTask providing only required parameter: failure' + bcolors.ENDC
+                self.log(self.testCount, 'addTask', 'Add a task providing only the primary key', False)                    
                 self.errCount += 1
             
             # -------------------------------------------------------------------------------------------------------------
@@ -133,15 +133,16 @@ class apiTest():
             print self.os.linesep + bcolors.UNDERLINE + 'Running tests of error handling for Tasks table' + bcolors.ENDC + self.os.linesep
 
             # Unique constraint violation test
+            self.testCount += 1
             self.conn.execute("insert into Tasks values ('{0}','','','','','')".format('testTask2',))
             result = self.api.addTask('testTask2', utgid='', command='', command_parameters='', 
                                     task_parameters='', description='')
             expected_error = "(sqlite3.IntegrityError) UNIQUE constraint failed: Tasks.task [SQL: \"insert into Tasks values ('testTask2','','','','','')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
             if(str(result) == expected_error and self.inDb('Tasks', task='testTask2', utgid='', command='', command_parameters='', 
                                     task_parameters='', description='')):
-                print 'addTask unique constraint violation test: success'
+                self.log(self.testCount, 'addTask', 'Add a task violating unique constraint', True)                    
             else:
-                print bcolors.FAIL + 'addTask unique constraint violation test: failure' + bcolors.ENDC
+                self.log(self.testCount, 'addTask', 'Add a task violating unique constraint', False)                    
                 self.errCount += 1
         
         # =================================================================================================================
@@ -153,21 +154,23 @@ class apiTest():
             print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called add commands for Task_Sets table:' + bcolors.ENDC + self.os.linesep
 
             # Add task set providing all parameters
+            self.testCount += 1
             result = self.api.addSet('testSet', description='testDescription')
             if(result == 'Success' and self.inDb('Task_Sets', task_set='testSet', description='testDescription')):
-                print 'addSet providing all parameters: success'
+                self.log(self.testCount, 'addSet', 'Add a task set providing all parameters', True)                    
             else:
-                print bcolors.FAIL + 'addSet providing all parameters: failure' + bcolors.ENDC
+                self.log(self.testCount, 'addSet', 'Add a task set providing all parameters', False)                    
                 self.errCount += 1
 
             # -----------------------------------------
 
             # Add task set providing only required parameter (rest should be empty strings: '')
+            self.testCount += 1
             result = self.api.addSet('testSet1')
             if(result == 'Success' and self.inDb('Task_Sets', task_set='testSet1', description='')):
-                print 'addSet providing only required parameter: success'
+                self.log(self.testCount, 'addSet', 'Add a task set providing only the primary key', True)                    
             else:
-                print bcolors.FAIL + 'addSet providing only required parameter: failure' + bcolors.ENDC
+                self.log(self.testCount, 'addSet', 'Add a task set providing only the primary key', False)                    
                 self.errCount += 1
 
             # -------------------------------------------------------------------------------------------------------------
@@ -176,13 +179,14 @@ class apiTest():
             print self.os.linesep + bcolors.UNDERLINE + 'Running tests of error handling for Task_Sets table' + bcolors.ENDC + self.os.linesep
 
             # Unique constraint violation test
+            self.testCount += 1
             self.conn.execute("insert into Task_Sets values ('{0}','')".format('testSet2',))
             result = self.api.addSet('testSet2', description='')
             expected_error = "(sqlite3.IntegrityError) UNIQUE constraint failed: Task_Sets.task_set [SQL: \"insert into Task_Sets values ('testSet2','')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
             if(str(result) == expected_error and self.inDb('Task_Sets', task_set='testSet2', description='')):
-                print 'addSet unique constraint violation test: success'
+                self.log(self.testCount, 'addSet', 'Add a task set violating unique constraint', True)                    
             else:
-                print bcolors.FAIL + 'addSet unique constraint violation test: failure' + bcolors.ENDC
+                self.log(self.testCount, 'addSet', 'Add a task set violating unique constraint', False)                    
                 self.errCount += 1
 
         # =================================================================================================================
@@ -194,21 +198,23 @@ class apiTest():
             print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called add commands for Classes table:' + bcolors.ENDC + self.os.linesep
 
             # Add node class providing all parameters
+            self.testCount += 1
             result = self.api.addClass('testClass', description='testDescription')
             if(result == 'Success' and self.inDb('Classes', node_class='testClass', description='testDescription')):
-                print 'addClass providing all parameters: success'                 
+                self.log(self.testCount, 'addClass', 'Add a node class providing all the parameters', True)                    
             else:
-                print bcolors.FAIL + 'addClass providing all parameters: failure:'  + bcolors.ENDC
+                self.log(self.testCount, 'addClass', 'Add a node class providing all the parameters', False)                    
                 self.errCount += 1
 
             # -----------------------------------------
 
             # Add node class providing only required parameter (rest should be empty strings: '')
+            self.testCount += 1
             result = self.api.addClass('testClass1')
             if(result == 'Success' and self.inDb('Classes', node_class='testClass1', description='')):
-                print 'addClass providing only required parameter: success'
+                self.log(self.testCount, 'addClass', 'Add a node class providing only the primary key', True)                    
             else:
-                print bcolors.FAIL + 'addClass providing only required parameter: failure:' + bcolors.ENDC
+                self.log(self.testCount, 'addClass', 'Add a node class providing only the primary key', False)                    
                 self.errCount += 1
 
             # -------------------------------------------------------------------------------------------------------------
@@ -217,13 +223,14 @@ class apiTest():
             print self.os.linesep + bcolors.UNDERLINE + 'Running tests of error handling for Classes table' + bcolors.ENDC + self.os.linesep
 
             # Unique constraint violation test
+            self.testCount += 1
             self.conn.execute("insert into Classes values ('{0}','')".format('testClass2',))
             result = self.api.addClass('testClass2', description='')
             expected_error = "(sqlite3.IntegrityError) UNIQUE constraint failed: Classes.node_class [SQL: \"insert into Classes values ('testClass2','')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
             if(str(result) == expected_error and self.inDb('Classes', node_class='testClass2', description='')):
-                print 'addClass unique constraint violation test: success'
+                self.log(self.testCount, 'addClass', 'Add a node class violating unique constraint', True)                    
             else:
-                print bcolors.FAIL + 'addClass unique constraint violation test: failure' + bcolors.ENDC
+                self.log(self.testCount, 'addClass', 'Add a node class violating unique constraint', False)                    
                 self.errCount += 1
 
         # =================================================================================================================
@@ -235,21 +242,23 @@ class apiTest():
             print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called add commands for Nodes table:' + bcolors.ENDC + self.os.linesep
 
             # Add node providing all parameters
+            self.testCount += 1
             result = self.api.addNode('testNode', description='testDescription')
             if(result == 'Success' and self.inDb('Nodes', regex='testNode', description='testDescription')):
-                print 'addNode providing all parameters: success'
+                self.log(self.testCount, 'addNode', 'Add a node providing all the parameters', True)                    
             else:
-                print bcolors.FAIL + 'addNode providing all parameters: failure:' + bcolors.ENDC
+                self.log(self.testCount, 'addNode', 'Add a node providing all the parameters', False)                    
                 self.errCount += 1
 
             # -----------------------------------------
 
             # Add task set providing only required parameter (rest should be empty strings: '')
+            self.testCount += 1
             result = self.api.addNode('testNode1')
             if(result == 'Success' and self.inDb('Nodes', regex='testNode1', description='')):
-                print 'addNode providing only required parameter: success'
+                self.log(self.testCount, 'addNode', 'Add a node providing only the primary key', True)                    
             else:
-                print bcolors.FAIL + 'addNode providing only required parameter: failure:' + bcolors.ENDC
+                self.log(self.testCount, 'addNode', 'Add a node providing only the primary key', False)                    
                 self.errCount += 1
 
             # -------------------------------------------------------------------------------------------------------------
@@ -258,13 +267,14 @@ class apiTest():
             print self.os.linesep + bcolors.UNDERLINE + 'Running tests of error handling for Nodes table' + bcolors.ENDC + self.os.linesep
                      
             # Unique constraint violation test
+            self.testCount += 1
             self.conn.execute("insert into Nodes values ('{0}','')".format('testNode2',))
             result = self.api.addNode('testNode2', description='')
             expected_error = "(sqlite3.IntegrityError) UNIQUE constraint failed: Nodes.regex [SQL: \"insert into Nodes values ('testNode2','')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
             if(str(result) == expected_error and self.inDb('Nodes', regex='testNode2', description='')):
-                print 'addNode unique constraint violation test: success'
+                self.log(self.testCount, 'addNode', 'Add a node violating the unique constraint', True)                    
             else:
-                print bcolors.FAIL + 'addNode unique constraint violation test: failure' + bcolors.ENDC
+                self.log(self.testCount, 'addNode', 'Add a node violating the unique constraint', False)                    
                 self.errCount += 1
         
     # =====================================================================================================================
@@ -375,14 +385,16 @@ class apiTest():
 
     def log(self, test_number, function_name, function_description, result):
         tests_total_number = 222
-        description_field_width = 50
+        description_field_width = 80
         if(result):
             result = 'passed'
         else:
             result = 'FAILED'
+            print bcolors.FAIL
+
         FORMAT = '%03d%-s%03d  %-13s  %-' + str(description_field_width) + 's  %-6s' # %-10s' # Possibly add timer
         print FORMAT % (test_number, '/', tests_total_number, function_name + (13 - len(function_name))*'.', 
-            function_description + (50 - len(function_description))*'.', result)
+            function_description + (description_field_width - len(function_description))*'.', result) + bcolors.ENDC
 
 # =========================================================================================================================
 
