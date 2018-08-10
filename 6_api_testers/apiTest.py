@@ -14,7 +14,7 @@
 
 
 
-class apiTester():
+class apiTest():
 
     def __init__(self):
 
@@ -34,6 +34,8 @@ class apiTester():
         self._database = self.my_path + self.os.sep + '..' + self.os.sep + '0_main_api' + self.os.sep + 'LHCb.db'
         self._database_root_path = self.my_path + self.os.sep + '..' + self.os.sep + '0_main_api'
         self._initDB_path = self.my_path + self.os.sep + '..' + self.os.sep + '0_main_api' + self.os.sep + 'initDB.py'
+        self.testCount = 0
+        self.errCount = 0
         
         # Reinitialize the database using initDB.py script (initDB.pt must be executable: chmod +x)
         if(self.yes_or_no('Do you want to rebuild the main database using settings and data from initDB script? (reccomended)')):      
@@ -63,17 +65,18 @@ class apiTester():
     def testAll(self):
         
         self.errCount = 0
+        self.testCount = 0
 
         self.testAdd()
-        # self.testDelete()
-        # self.testModify()
-        # self.testGet()
-        # self.testAssign()
-        # self.testUnassign()
+        self.testDelete()
+        self.testModify()
+        self.testGet()
+        self.testAssign()
+        self.testUnassign()
         if(self.errCount == 0):
-            print bcolors.OKBLUE + 'Finished API testing without any error' + bcolors.ENDC + self.os.linesep
+            print self.os.linesep + bcolors.OKBLUE + 'Finished API testing without any error' + bcolors.ENDC + self.os.linesep
         else:
-            print bcolors.FAIL + 'Finished API testing with ' + str(self.errCount) + ' errors' + bcolors.ENDC + self.os.linesep
+            print self.os.linesep + bcolors.FAIL + 'Finished API testing with ' + str(self.errCount) + ' errors' + bcolors.ENDC + self.os.linesep
 
         if(self.yes_or_no('The main database has been modified during the tests, do you want to rebuild it using settings and data from initDB script? (reccomended)')):      
             try:
@@ -89,8 +92,11 @@ class apiTester():
 
     # Run only add methods (specify which table will be optional: Tasks, Task_Sets, Clsses, Nodes)
     def testAdd(self, table='all'):
-
-        # =================================================================================================================
+        
+        print self.os.linesep
+        print '==================================================================='
+        print '                       ADD                                         '
+        print '==================================================================='
 
         # Tasks
         if(table == 'all' or table == '*' or table == 'All' or table == 'Tasks'):
@@ -99,14 +105,18 @@ class apiTester():
             print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called add commands for Tasks table:' + bcolors.ENDC + self.os.linesep
 
             # Add task providing all parameters
+            self.testCount += 1
             result = self.api.addTask('testTask', utgid='testUtgid', command='testCommand', command_parameters='testScriptParams', 
                                     task_parameters='testPcaddParams', description='testDescription')
             if(result == 'Success' and self.inDb('Tasks', task='testTask', utgid='testUtgid', command='testCommand', command_parameters='testScriptParams', 
                                     task_parameters='testPcaddParams', description='testDescription')):
+                self.log(self.testCount, 'addTask', 'Add a task providing all parameters', True)                    
                 print 'addTask providing all parameters: success'
             else:
-                print bcolors.FAIL + 'addTask providing all parameters: failure:' + bcolors.ENDC
+                print bcolors.FAIL + 'addTask providing all parameters: failure' + bcolors.ENDC
                 self.errCount += 1
+
+            # -----------------------------------------
 
             # Add task providing only required parameter (rest should be empty strings: '')
             result = self.api.addTask('testTask1')
@@ -114,9 +124,11 @@ class apiTester():
                                     task_parameters='', description='')):
                 print 'addTask providing only required parameter: success'
             else:
-                print bcolors.FAIL + 'addTask providing only required parameter: failure:' + bcolors.ENDC
+                print bcolors.FAIL + 'addTask providing only required parameter: failure' + bcolors.ENDC
                 self.errCount += 1
             
+            # -------------------------------------------------------------------------------------------------------------
+
             # Incorret method calls tests (error handling)
             print self.os.linesep + bcolors.UNDERLINE + 'Running tests of error handling for Tasks table' + bcolors.ENDC + self.os.linesep
 
@@ -124,12 +136,12 @@ class apiTester():
             self.conn.execute("insert into Tasks values ('{0}','','','','','')".format('testTask2',))
             result = self.api.addTask('testTask2', utgid='', command='', command_parameters='', 
                                     task_parameters='', description='')
-            expected_error = "(sqlite3.IntegrityError) UNIQUE constraint failed: Tasks.task, Tasks.utgid, Tasks.command, Tasks.task_parameters, Tasks.command_parameters [SQL: \"insert into Tasks values ('testTask2','','','','','')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
+            expected_error = "(sqlite3.IntegrityError) UNIQUE constraint failed: Tasks.task [SQL: \"insert into Tasks values ('testTask2','','','','','')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
             if(str(result) == expected_error and self.inDb('Tasks', task='testTask2', utgid='', command='', command_parameters='', 
                                     task_parameters='', description='')):
                 print 'addTask unique constraint violation test: success'
             else:
-                print bcolors.FAIL + 'addTask unique constraint violation test: failure:' + bcolors.ENDC
+                print bcolors.FAIL + 'addTask unique constraint violation test: failure' + bcolors.ENDC
                 self.errCount += 1
         
         # =================================================================================================================
@@ -145,21 +157,33 @@ class apiTester():
             if(result == 'Success' and self.inDb('Task_Sets', task_set='testSet', description='testDescription')):
                 print 'addSet providing all parameters: success'
             else:
-                print bcolors.FAIL + 'addSet providing all parameters: failure:' + bcolors.ENDC
+                print bcolors.FAIL + 'addSet providing all parameters: failure' + bcolors.ENDC
                 self.errCount += 1
 
-            # -------------------------------------------------------------------------------------------------------------
+            # -----------------------------------------
 
             # Add task set providing only required parameter (rest should be empty strings: '')
             result = self.api.addSet('testSet1')
             if(result == 'Success' and self.inDb('Task_Sets', task_set='testSet1', description='')):
                 print 'addSet providing only required parameter: success'
             else:
-                print bcolors.FAIL + 'addSet providing only required parameter: failure:' + bcolors.ENDC
+                print bcolors.FAIL + 'addSet providing only required parameter: failure' + bcolors.ENDC
                 self.errCount += 1
+
+            # -------------------------------------------------------------------------------------------------------------
 
             # Incorret method calls tests (error handling)
             print self.os.linesep + bcolors.UNDERLINE + 'Running tests of error handling for Task_Sets table' + bcolors.ENDC + self.os.linesep
+
+            # Unique constraint violation test
+            self.conn.execute("insert into Task_Sets values ('{0}','')".format('testSet2',))
+            result = self.api.addSet('testSet2', description='')
+            expected_error = "(sqlite3.IntegrityError) UNIQUE constraint failed: Task_Sets.task_set [SQL: \"insert into Task_Sets values ('testSet2','')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
+            if(str(result) == expected_error and self.inDb('Task_Sets', task_set='testSet2', description='')):
+                print 'addSet unique constraint violation test: success'
+            else:
+                print bcolors.FAIL + 'addSet unique constraint violation test: failure' + bcolors.ENDC
+                self.errCount += 1
 
         # =================================================================================================================
 
@@ -177,6 +201,8 @@ class apiTester():
                 print bcolors.FAIL + 'addClass providing all parameters: failure:'  + bcolors.ENDC
                 self.errCount += 1
 
+            # -----------------------------------------
+
             # Add node class providing only required parameter (rest should be empty strings: '')
             result = self.api.addClass('testClass1')
             if(result == 'Success' and self.inDb('Classes', node_class='testClass1', description='')):
@@ -189,6 +215,16 @@ class apiTester():
 
             # Incorret method calls tests (error handling)
             print self.os.linesep + bcolors.UNDERLINE + 'Running tests of error handling for Classes table' + bcolors.ENDC + self.os.linesep
+
+            # Unique constraint violation test
+            self.conn.execute("insert into Classes values ('{0}','')".format('testClass2',))
+            result = self.api.addClass('testClass2', description='')
+            expected_error = "(sqlite3.IntegrityError) UNIQUE constraint failed: Classes.node_class [SQL: \"insert into Classes values ('testClass2','')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
+            if(str(result) == expected_error and self.inDb('Classes', node_class='testClass2', description='')):
+                print 'addClass unique constraint violation test: success'
+            else:
+                print bcolors.FAIL + 'addClass unique constraint violation test: failure' + bcolors.ENDC
+                self.errCount += 1
 
         # =================================================================================================================
 
@@ -206,6 +242,8 @@ class apiTester():
                 print bcolors.FAIL + 'addNode providing all parameters: failure:' + bcolors.ENDC
                 self.errCount += 1
 
+            # -----------------------------------------
+
             # Add task set providing only required parameter (rest should be empty strings: '')
             result = self.api.addNode('testNode1')
             if(result == 'Success' and self.inDb('Nodes', regex='testNode1', description='')):
@@ -219,6 +257,62 @@ class apiTester():
             # Incorret method calls tests (error handling)
             print self.os.linesep + bcolors.UNDERLINE + 'Running tests of error handling for Nodes table' + bcolors.ENDC + self.os.linesep
                      
+            # Unique constraint violation test
+            self.conn.execute("insert into Nodes values ('{0}','')".format('testNode2',))
+            result = self.api.addNode('testNode2', description='')
+            expected_error = "(sqlite3.IntegrityError) UNIQUE constraint failed: Nodes.regex [SQL: \"insert into Nodes values ('testNode2','')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
+            if(str(result) == expected_error and self.inDb('Nodes', regex='testNode2', description='')):
+                print 'addNode unique constraint violation test: success'
+            else:
+                print bcolors.FAIL + 'addNode unique constraint violation test: failure' + bcolors.ENDC
+                self.errCount += 1
+        
+    # =====================================================================================================================
+
+    def testDelete(self):
+
+        print self.os.linesep
+        print '==================================================================='
+        print '                      DELETE                                       '
+        print '==================================================================='
+
+
+    # =====================================================================================================================
+
+    def testModify(self):
+
+        print self.os.linesep
+        print '==================================================================='
+        print '                      MODIFY                                       '
+        print '==================================================================='
+
+    # =====================================================================================================================
+
+    def testGet(self):
+
+        print self.os.linesep
+        print '==================================================================='
+        print '                       GET                                         '
+        print '==================================================================='
+
+    # =====================================================================================================================
+    
+    def testAssign(self):
+
+        print self.os.linesep
+        print '==================================================================='
+        print '                      ASSIGN                                       '
+        print '==================================================================='
+
+    # =====================================================================================================================
+    
+    def testUnassign(self):
+
+        print self.os.linesep
+        print '==================================================================='
+        print '                     UNASSIGN                                      '
+        print '==================================================================='
+
     # =====================================================================================================================
     #                         Helper Methods
     # =====================================================================================================================
@@ -279,6 +373,19 @@ class apiTester():
 
 # =========================================================================================================================
 
+    def log(self, test_number, function_name, function_description, result):
+        tests_total_number = 222
+        description_field_width = 50
+        if(result):
+            result = 'passed'
+        else:
+            result = 'FAILED'
+        FORMAT = '%03d%-s%03d  %-13s  %-' + str(description_field_width) + 's  %-6s' # %-10s' # Possibly add timer
+        print FORMAT % (test_number, '/', tests_total_number, function_name + (13 - len(function_name))*'.', 
+            function_description + (50 - len(function_description))*'.', result)
+
+# =========================================================================================================================
+
 # Print statements colouring - when script is finished, those guys should make it fancy (last development step)
 class bcolors:
 
@@ -309,5 +416,5 @@ if __name__ == "__main__":
     # print bcolors.UNDERLINE + 'Underline' + bcolors.ENDC
 
     # Run the main api tester with all tests
-    a = apiTester()
-    a.testAll()
+    tester = apiTest()
+    tester.testAll()

@@ -120,7 +120,7 @@ c.execute('''create table Tasks (
         description text,
 
         PRIMARY KEY (task),
-        CONSTRAINT unique_tasks UNIQUE (task, utgid, command, task_parameters, command_parameters)
+        CONSTRAINT unique_task UNIQUE (task)
 
         )''')
 
@@ -142,7 +142,8 @@ c.execute('''create table Task_Sets(
         task_set text NOT NULL,
         description text,
 
-        PRIMARY KEY (task_set)
+        PRIMARY KEY (task_set),
+        CONSTRAINT unique_task_set UNIQUE (task_set)
 
         )''')
 
@@ -164,7 +165,8 @@ c.execute('''create table Classes(
         node_class text NOT NULL,
         description text,
 
-        PRIMARY KEY (node_class)
+        PRIMARY KEY (node_class),
+        CONSTRAINT unique_node_class UNIQUE (node_class)
 
         )''')
 
@@ -186,7 +188,8 @@ c.execute('''create table Nodes(
         regex text NOT NULL,
         description text,
 
-        PRIMARY KEY (regex)
+        PRIMARY KEY (regex),
+        CONSTRAINT unique_regex UNIQUE (regex)
 
         )''')
 
