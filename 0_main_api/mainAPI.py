@@ -139,7 +139,7 @@ class mainAPI():
         if(query.rowcount >= 1):
             return 'Success'
 
-        raise Exception('getTask: Unknown task_set with name %s'%(task_set,))
+        raise Exception('getSet: Unknown task set with name %s'%(task_set,))
 
     # ---------------------------------------------------------------------------------------------------------------------
 
@@ -162,7 +162,7 @@ class mainAPI():
         if(query.rowcount >= 1):
             return 'Success'
 
-        raise Exception('modifyTask: Unknown task set with name %s'%(original_task_set,))
+        raise Exception('modifySet: Unknown task set with name %s'%(original_task_set,))
 
     # ---------------------------------------------------------------------------------------------------------------------
 
@@ -212,11 +212,11 @@ class mainAPI():
 
     def deleteClass(self, node_class):
 
-        query = self.conn.execute("delete from Classes where class='{0}'".format(node_class,))
+        query = self.conn.execute("delete from Classes where node_class='{0}'".format(node_class,))
         if(query.rowcount >= 1):
             return 'Success'
 
-        raise Exception('deleteTask: Unknown task with name %s'%(task,))
+        raise Exception('deleteClass: Unknown node class with name %s'%(task,))
 
     # ---------------------------------------------------------------------------------------------------------------------
   
@@ -233,19 +233,19 @@ class mainAPI():
             statement += (key + "='" + args[key] + "'")
             cnt += 1
 
-        statement += (" where class='" + original_node_class + "'")
+        statement += (" where node_class='" + original_node_class + "'")
         
         query = self.conn.execute(statement)
         if(query.rowcount >= 1):
             return 'Success'
 
-        raise Exception('modifyTask: Unknown node class with name %s'%(original_node_class,))
+        raise Exception('modifyClass: Unknown node class with name %s'%(original_node_class,))
 
     # ---------------------------------------------------------------------------------------------------------------------
     
     def getClass(self, node_class):
 
-        query = self.conn.execute("select * from Classes where class='{0}'".format(node_class,))
+        query = self.conn.execute("select * from Classes where node_class='{0}'".format(node_class,))
         if(query.rowcount >= 1):
             result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
             return self.json.dumps(result)
@@ -255,9 +255,6 @@ class mainAPI():
     # ---------------------------------------------------------------------------------------------------------------------
     
     def assignClass(self, node_class, node_regex):
-
-        # if(not self.inDb('Classes', 'class', node_class)):
-        #     return 'Error: the specified entry does not exist in the database'
 
         try:
             self.conn.execute("insert into Classes_to_Nodes values ('{0}', '{1}')".format(node_class, node_regex))
@@ -270,7 +267,7 @@ class mainAPI():
     def unassignClass(self, node_class, node_regex):
 
         try:
-            self.conn.execute("delete from Classes_to_Nodes where class='{0}' and regex='{1}'".format(node_class,
+            self.conn.execute("delete from Classes_to_Nodes where node_class='{0}' and regex='{1}'".format(node_class,
                             node_regex))
             return 'Success'
         
@@ -296,7 +293,7 @@ class mainAPI():
         if(query.rowcount >= 1):
             return 'Success'
 
-        raise Exception('deleteTask: Unknown task with name %s'%(task,))
+        raise Exception('deleteNode: Unknown nodes with regex %s'%(task,))
     
     # ---------------------------------------------------------------------------------------------------------------------
     
@@ -319,7 +316,7 @@ class mainAPI():
         if(query.rowcount >= 1):
             return 'Success'
 
-        raise Exception('modifyTask: Unknown nodes with regex %s'%(original_regex,))
+        raise Exception('modifyNode: Unknown nodes with regex %s'%(original_regex,))
     
     # ---------------------------------------------------------------------------------------------------------------------
     
@@ -347,3 +344,4 @@ class mainAPI():
     #     else:
     #         return True
 
+    # More advanced version avaliable in main api tester script, under /6_api_testers/

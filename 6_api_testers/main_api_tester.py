@@ -80,25 +80,90 @@ class apiTester():
     # Run only add methods (specify which table will be optional: Tasks, Task_Sets, Clsses, Nodes)
     def testAdd(self, table='all'):
 
+        # Tasks
         if(table == 'all' or table == '*' or table == 'All' or table == 'Tasks'):
 
             # Correct method calls tests
             print self.os.linesep + 'Running tests of correctly called add commands for Tasks table:' + self.os.linesep
 
             # Add task providing all parameters
-            result = self.api.addTask('apiTester', utgid='test_utgid', command='test.sh', command_parameters='script params', 
-                                    task_parameters='pcadd params', description='testtest')
-            if(result == 'Success' and self.inDb('Tasks', 'task', 'apiTester')):
+            result = self.api.addTask('testTask', utgid='testUtgid', command='testCommand', command_parameters='testScriptParams', 
+                                    task_parameters='testPcaddParams', description='testDescription')
+            if(result == 'Success' and self.inDb('Tasks', task='testTask', utgid='testUtgid', command='testCommand', command_parameters='testScriptParams', 
+                                    task_parameters='testPcaddParams', description='testDescription')):
                 print 'addTask: success'
             else:
-                print 'addTask: failure:' + self.os.linesep
-                print result
+                print 'addTask: failure:'
+                print result + self.os.linesep
+                self.errCount += 1
+
+            # Add task providing only required parameter (rest should be empty strings: '')
+            result = self.api.addTask('testTask1')
+            if(result == 'Success' and self.inDb('Tasks', task='testTask', utgid='', command='', command_parameters='', 
+                                    task_parameters='', description='')):
+                print 'addTask: success'
+            else:
+                print 'addTask: failure:'
+                print result + self.os.linesep
                 self.errCount += 1
             
             # Incorret method calls tests (error handling)
             print self.os.linesep + 'Running tests of error handling for Tasks table' + self.os.linesep
         
+        # Task sets
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Task_Sets'):
 
+            # Correct method calls tests
+            print self.os.linesep + 'Running tests of correctly called add commands for Task_Sets table:' + self.os.linesep
+
+            # Add task set providing all parameters
+            result = self.api.addSet('testSet', description='testDescription')
+            if(result == 'Success' and self.inDb('Task_Sets', task_set='testSet', description='testDescription')):
+                print 'addSet: success'
+            else:
+                print 'addSet: failure:'
+                print result + self.os.linesep
+                self.errCount += 1
+
+            # Incorret method calls tests (error handling)
+            print self.os.linesep + 'Running tests of error handling for Task_Sets table' + self.os.linesep
+
+        # Node Classes
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Classes'):
+
+            # Correct method calls tests
+            print self.os.linesep + 'Running tests of correctly called add commands for Classes table:' + self.os.linesep
+
+            # Add node class providing all parameters
+            result = self.api.addSet('testClass', description='testDescription')
+            if(result == 'Success' and self.inDb('Classes', node_class='testClass', description='testDescription')):
+                print 'addClass: success'                 
+            else:
+                print 'addClass: failure:'
+                print result + self.os.linesep
+                self.errCount += 1
+
+            # Incorret method calls tests (error handling)
+            print self.os.linesep + 'Running tests of error handling for Classes table' + self.os.linesep
+
+        # Nodes
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Nodes'):
+
+            # Correct method calls tests
+            print self.os.linesep + 'Running tests of correctly called add commands for Nodes table:' + self.os.linesep
+
+            # Add node providing all parameters
+            result = self.api.addSet('testNode', description='testDescription')
+            if(result == 'Success' and self.inDb('Nodes', regex='testNode', description='testDescription')):
+                print 'addClass: success'
+            else:
+                print 'addClass: failure:'
+                print result + self.os.linesep
+                self.errCount += 1
+
+            # Incorret method calls tests (error handling)
+            print self.os.linesep + 'Running tests of error handling for Nodes table' + self.os.linesep
+                     
     # =====================================================================================================================
     #                         Helper Methods
     # =====================================================================================================================
@@ -160,4 +225,4 @@ class apiTester():
 # Run as executable cli script
 if __name__ == "__main__":
     a = apiTester()
-    a.runTest()
+    a.testAll()

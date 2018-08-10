@@ -154,17 +154,17 @@ c.execute('''create table Task_Sets_to_Classes(
 
         CONSTRAINT unique_task_set_to_class UNIQUE (task_set, class),
         FOREIGN KEY(task_set) REFERENCES Task_Sets(task_set) ON UPDATE CASCADE ON DELETE CASCADE,
-        FOREIGN KEY(class) REFERENCES Classes(class) ON UPDATE CASCADE ON DELETE CASCADE
+        FOREIGN KEY(class) REFERENCES Classes(node_class) ON UPDATE CASCADE ON DELETE CASCADE
 
         )''')
 
 # Classes
 c.execute('''create table Classes(
 
-        class text NOT NULL,
+        node_class text NOT NULL,
         description text,
 
-        PRIMARY KEY (class)
+        PRIMARY KEY (node_class)
 
         )''')
 
@@ -175,7 +175,7 @@ c.execute('''create table Classes_to_Nodes(
         regex text NOT NULL,
 
         CONSTRAINT unique_regex_to_node_class UNIQUE (regex, class),
-        FOREIGN KEY(class) REFERENCES Classes(class) ON UPDATE CASCADE ON DELETE CASCADE
+        FOREIGN KEY(class) REFERENCES Classes(node_class) ON UPDATE CASCADE ON DELETE CASCADE
         FOREIGN KEY(regex) REFERENCES Nodes(regex) ON UPDATE CASCADE ON DELETE CASCADE
 
         )''')
