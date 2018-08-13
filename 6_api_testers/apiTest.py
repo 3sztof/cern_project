@@ -106,9 +106,10 @@ class apiTest():
 
             # Add task providing all parameters
             self.testCount += 1
-            result = self.api.addTask('testTask', utgid='testUtgid', command='testCommand', command_parameters='testScriptParams', 
+            itemName = 'testTask' + str(self.testCount)
+            result = self.api.addTask(itemName, utgid='testUtgid', command='testCommand', command_parameters='testScriptParams', 
                                     task_parameters='testPcaddParams', description='testDescription')
-            if(result == 'Success' and self.inDb('Tasks', task='testTask', utgid='testUtgid', command='testCommand', command_parameters='testScriptParams', 
+            if(result == 'Success' and self.inDb('Tasks', task=itemName, utgid='testUtgid', command='testCommand', command_parameters='testScriptParams', 
                                     task_parameters='testPcaddParams', description='testDescription')):
                 self.log(self.testCount, 'addTask', 'Add a task providing all parameters', True)                    
             else:
@@ -119,8 +120,9 @@ class apiTest():
 
             # Add task providing only required parameter (rest should be empty strings: '')
             self.testCount += 1
-            result = self.api.addTask('testTask1')
-            if(result == 'Success' and self.inDb('Tasks', task='testTask1', utgid='', command='', command_parameters='', 
+            itemName = 'testTask' + str(self.testCount)
+            result = self.api.addTask(itemName)
+            if(result == 'Success' and self.inDb('Tasks', task=itemName, utgid='', command='', command_parameters='', 
                                     task_parameters='', description='')):
                 self.log(self.testCount, 'addTask', 'Add a task providing only the primary key', True)                    
             else:
@@ -134,11 +136,12 @@ class apiTest():
 
             # Unique constraint violation test
             self.testCount += 1
-            self.conn.execute("insert into Tasks values ('{0}','','','','','')".format('testTask2',))
-            result = self.api.addTask('testTask2', utgid='', command='', command_parameters='', 
+            itemName = 'testTask' + str(self.testCount)
+            self.conn.execute("insert into Tasks values ('{0}','','','','','')".format(itemName,))
+            result = self.api.addTask(itemName, utgid='', command='', command_parameters='', 
                                     task_parameters='', description='')
-            expected_error = "(sqlite3.IntegrityError) UNIQUE constraint failed: Tasks.task [SQL: \"insert into Tasks values ('testTask2','','','','','')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
-            if(str(result) == expected_error and self.inDb('Tasks', task='testTask2', utgid='', command='', command_parameters='', 
+            expected_error = "(sqlite3.IntegrityError) UNIQUE constraint failed: Tasks.task [SQL: \"insert into Tasks values ('" + itemName + "','','','','','')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
+            if(str(result) == expected_error and self.inDb('Tasks', task=itemName, utgid='', command='', command_parameters='', 
                                     task_parameters='', description='')):
                 self.log(self.testCount, 'addTask', 'Add a task violating unique constraint', True)                    
             else:
@@ -155,8 +158,9 @@ class apiTest():
 
             # Add task set providing all parameters
             self.testCount += 1
-            result = self.api.addSet('testSet', description='testDescription')
-            if(result == 'Success' and self.inDb('Task_Sets', task_set='testSet', description='testDescription')):
+            itemName = 'testSet' + str(self.testCount)
+            result = self.api.addSet(itemName, description='testDescription')
+            if(result == 'Success' and self.inDb('Task_Sets', task_set=itemName, description='testDescription')):
                 self.log(self.testCount, 'addSet', 'Add a task set providing all parameters', True)                    
             else:
                 self.log(self.testCount, 'addSet', 'Add a task set providing all parameters', False)                    
@@ -166,8 +170,9 @@ class apiTest():
 
             # Add task set providing only required parameter (rest should be empty strings: '')
             self.testCount += 1
-            result = self.api.addSet('testSet1')
-            if(result == 'Success' and self.inDb('Task_Sets', task_set='testSet1', description='')):
+            itemName = 'testSet' + str(self.testCount)
+            result = self.api.addSet(itemName)
+            if(result == 'Success' and self.inDb('Task_Sets', task_set=itemName, description='')):
                 self.log(self.testCount, 'addSet', 'Add a task set providing only the primary key', True)                    
             else:
                 self.log(self.testCount, 'addSet', 'Add a task set providing only the primary key', False)                    
@@ -180,10 +185,11 @@ class apiTest():
 
             # Unique constraint violation test
             self.testCount += 1
-            self.conn.execute("insert into Task_Sets values ('{0}','')".format('testSet2',))
-            result = self.api.addSet('testSet2', description='')
-            expected_error = "(sqlite3.IntegrityError) UNIQUE constraint failed: Task_Sets.task_set [SQL: \"insert into Task_Sets values ('testSet2','')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
-            if(str(result) == expected_error and self.inDb('Task_Sets', task_set='testSet2', description='')):
+            itemName = 'testSet' + str(self.testCount)
+            self.conn.execute("insert into Task_Sets values ('{0}','')".format(itemName,))
+            result = self.api.addSet(itemName, description='')
+            expected_error = "(sqlite3.IntegrityError) UNIQUE constraint failed: Task_Sets.task_set [SQL: \"insert into Task_Sets values ('" + itemName + "','')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
+            if(str(result) == expected_error and self.inDb('Task_Sets', task_set=itemName, description='')):
                 self.log(self.testCount, 'addSet', 'Add a task set violating unique constraint', True)                    
             else:
                 self.log(self.testCount, 'addSet', 'Add a task set violating unique constraint', False)                    
@@ -199,8 +205,9 @@ class apiTest():
 
             # Add node class providing all parameters
             self.testCount += 1
-            result = self.api.addClass('testClass', description='testDescription')
-            if(result == 'Success' and self.inDb('Classes', node_class='testClass', description='testDescription')):
+            itemName = 'testClass' + str(self.testCount)
+            result = self.api.addClass(itemName, description='testDescription')
+            if(result == 'Success' and self.inDb('Classes', node_class=itemName, description='testDescription')):
                 self.log(self.testCount, 'addClass', 'Add a node class providing all the parameters', True)                    
             else:
                 self.log(self.testCount, 'addClass', 'Add a node class providing all the parameters', False)                    
@@ -210,8 +217,9 @@ class apiTest():
 
             # Add node class providing only required parameter (rest should be empty strings: '')
             self.testCount += 1
-            result = self.api.addClass('testClass1')
-            if(result == 'Success' and self.inDb('Classes', node_class='testClass1', description='')):
+            itemName = 'testClass' + str(self.testCount)
+            result = self.api.addClass(itemName)
+            if(result == 'Success' and self.inDb('Classes', node_class=itemName, description='')):
                 self.log(self.testCount, 'addClass', 'Add a node class providing only the primary key', True)                    
             else:
                 self.log(self.testCount, 'addClass', 'Add a node class providing only the primary key', False)                    
@@ -224,10 +232,11 @@ class apiTest():
 
             # Unique constraint violation test
             self.testCount += 1
-            self.conn.execute("insert into Classes values ('{0}','')".format('testClass2',))
-            result = self.api.addClass('testClass2', description='')
-            expected_error = "(sqlite3.IntegrityError) UNIQUE constraint failed: Classes.node_class [SQL: \"insert into Classes values ('testClass2','')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
-            if(str(result) == expected_error and self.inDb('Classes', node_class='testClass2', description='')):
+            itemName = 'testClass' + str(self.testCount)
+            self.conn.execute("insert into Classes values ('{0}','')".format(itemName,))
+            result = self.api.addClass(itemName, description='')
+            expected_error = "(sqlite3.IntegrityError) UNIQUE constraint failed: Classes.node_class [SQL: \"insert into Classes values ('" + itemName + "','')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
+            if(str(result) == expected_error and self.inDb('Classes', node_class=itemName, description='')):
                 self.log(self.testCount, 'addClass', 'Add a node class violating unique constraint', True)                    
             else:
                 self.log(self.testCount, 'addClass', 'Add a node class violating unique constraint', False)                    
@@ -243,8 +252,9 @@ class apiTest():
 
             # Add node providing all parameters
             self.testCount += 1
-            result = self.api.addNode('testNode', description='testDescription')
-            if(result == 'Success' and self.inDb('Nodes', regex='testNode', description='testDescription')):
+            itemName = 'testNode' + str(self.testCount)
+            result = self.api.addNode(itemName, description='testDescription')
+            if(result == 'Success' and self.inDb('Nodes', regex=itemName, description='testDescription')):
                 self.log(self.testCount, 'addNode', 'Add a node providing all the parameters', True)                    
             else:
                 self.log(self.testCount, 'addNode', 'Add a node providing all the parameters', False)                    
@@ -254,8 +264,9 @@ class apiTest():
 
             # Add task set providing only required parameter (rest should be empty strings: '')
             self.testCount += 1
-            result = self.api.addNode('testNode1')
-            if(result == 'Success' and self.inDb('Nodes', regex='testNode1', description='')):
+            itemName = 'testNode' + str(self.testCount)
+            result = self.api.addNode(itemName)
+            if(result == 'Success' and self.inDb('Nodes', regex=itemName, description='')):
                 self.log(self.testCount, 'addNode', 'Add a node providing only the primary key', True)                    
             else:
                 self.log(self.testCount, 'addNode', 'Add a node providing only the primary key', False)                    
@@ -268,10 +279,11 @@ class apiTest():
                      
             # Unique constraint violation test
             self.testCount += 1
-            self.conn.execute("insert into Nodes values ('{0}','')".format('testNode2',))
-            result = self.api.addNode('testNode2', description='')
-            expected_error = "(sqlite3.IntegrityError) UNIQUE constraint failed: Nodes.regex [SQL: \"insert into Nodes values ('testNode2','')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
-            if(str(result) == expected_error and self.inDb('Nodes', regex='testNode2', description='')):
+            itemName = 'testNode' + str(self.testCount)
+            self.conn.execute("insert into Nodes values ('{0}','')".format(itemName,))
+            result = self.api.addNode(itemName, description='')
+            expected_error = "(sqlite3.IntegrityError) UNIQUE constraint failed: Nodes.regex [SQL: \"insert into Nodes values ('" + itemName + "','')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
+            if(str(result) == expected_error and self.inDb('Nodes', regex=itemName, description='')):
                 self.log(self.testCount, 'addNode', 'Add a node violating the unique constraint', True)                    
             else:
                 self.log(self.testCount, 'addNode', 'Add a node violating the unique constraint', False)                    
@@ -279,13 +291,132 @@ class apiTest():
         
     # =====================================================================================================================
 
-    def testDelete(self):
+    def testDelete(self, table = 'all'):
 
         print self.os.linesep
         print '==================================================================='
         print '                      DELETE                                       '
         print '==================================================================='
 
+        # Tasks
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Tasks'):
+
+            # Correct method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called delete commands for Tasks table:' + bcolors.ENDC + self.os.linesep
+
+            # Delete a task providing the primary key
+            self.testCount += 1
+            itemName = 'testTask' + str(self.testCount)
+            self.conn.execute("insert into Tasks values ('{0}','','','','','')".format(itemName,))
+            result = self.api.deleteTask(itemName)
+            if(result == 'Success' and not self.inDb('Tasks', task=itemName)):
+                self.log(self.testCount, 'deleteTask', 'Delete a task providing primary key', True)                    
+            else:
+                self.log(self.testCount, 'deleteTask', 'Delete a task providing primary key', False)                    
+                self.errCount += 1
+
+            # -----------------------------------------
+
+            # Delete a task and check if dependency in Tasks_to_Task_Sets was deleted
+            self.testCount += 1
+            itemName = 'testTask' + str(self.testCount)
+            self.conn.execute("insert into Tasks values ('{0}','','','','','')".format(itemName,))
+            self.conn.execute("insert into Task_Sets values ('{0}','')".format(itemName + 'Set',))
+            self.conn.execute("insert into Tasks_to_Task_Sets values ('{0}','{1}')".format(itemName, itemName + 'Set'))
+            result = self.api.deleteTask(itemName)
+            if(result == 'Success' and not self.inDb('Tasks', task=itemName) and not self.inDb('Tasks_To_Task_Sets', task=itemName, task_set=(itemName+'Set'))):
+                self.log(self.testCount, 'deleteTask', 'Delete a task and check if dependency in Tasks_to_Task_Sets was deleted', True)                    
+            else:
+                self.log(self.testCount, 'deleteTask', 'Delete a task and check if dependency in Tasks_to_Task_Sets was deleted', False)                    
+                self.errCount += 1
+
+
+    # =================================================================================================================
+
+        # Task Sets
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Task_Sets'):
+
+            # Correct method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called delete commands for Task_Sets table:' + bcolors.ENDC + self.os.linesep
+
+            # Delete a task set providing the primary key
+            self.testCount += 1
+            itemName = 'testSet' + str(self.testCount)
+            self.conn.execute("insert into Task_Sets values ('{0}','')".format(itemName,))
+            result = self.api.deleteSet(itemName)
+            if(result == 'Success' and not self.inDb('Task_Sets', task_set = itemName)):
+                self.log(self.testCount, 'deleteSet', 'Delete a task set providing primary key', True)                    
+            else:
+                self.log(self.testCount, 'deleteTask', 'Delete a task set providing primary key', False)                    
+                self.errCount += 1
+
+            # -----------------------------------------
+
+            # Delete a task set and check if dependency in Task_Sets_to_Classes was deleted
+            self.testCount += 1
+            itemName = 'testSet' + str(self.testCount)
+            self.conn.execute("insert into Task_Sets values ('{0}','')".format(itemName,))
+            self.conn.execute("insert into Classes values ('{0}','')".format(itemName + 'Set',))
+            self.conn.execute("insert into Task_Sets_to_Classes values ('{0}','{1}')".format(itemName, itemName + 'Set'))
+            result = self.api.deleteSet(itemName)
+            if(result == 'Success' and not self.inDb('Task_Sets', task_set=itemName) and not self.inDb('Task_Sets_to_Classes', task_set=itemName, node_class=(itemName+'Set'))):
+                self.log(self.testCount, 'deleteSet', 'Delete a task set and check if dependency in Task_Sets_to_Classes was deleted', True)                    
+            else:
+                self.log(self.testCount, 'deleteSet', 'Delete a task set and check if dependency in Task_Sets_to_Classes was deleted', False)                    
+                self.errCount += 1
+
+    # =================================================================================================================
+
+        # Node Classes
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Classes'):
+
+            # Correct method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called delete commands for Classes table:' + bcolors.ENDC + self.os.linesep
+
+            # Delete a node class providing the primary key
+            self.testCount += 1
+            itemName = 'testClass' + str(self.testCount)
+            self.conn.execute("insert into Classes values ('{0}','')".format(itemName,))
+            result = self.api.deleteClass(itemName)
+            if(result == 'Success' and not self.inDb('Classes', node_class = itemName)):
+                self.log(self.testCount, 'deleteClass', 'Delete a node class providing primary key', True)                    
+            else:
+                self.log(self.testCount, 'deleteClass', 'Delete a node class providing primary key', False)                    
+                self.errCount += 1
+
+            # -----------------------------------------
+
+            # Delete a node class and check if dependency in Classes_to_Nodes was deleted
+            self.testCount += 1
+            itemName = 'testClass' + str(self.testCount)
+            self.conn.execute("insert into Classes values ('{0}','')".format(itemName,))
+            self.conn.execute("insert into Nodes values ('{0}','')".format(itemName + 'Set',))
+            self.conn.execute("insert into Classes_to_Nodes values ('{0}','{1}')".format(itemName, itemName + 'Set'))
+            result = self.api.deleteClass(itemName)
+            if(result == 'Success' and not self.inDb('Classes', node_class=itemName) and not self.inDb('Classes_to_Nodes', node_class=itemName, regex=(itemName+'Set'))):
+                self.log(self.testCount, 'deleteClass', 'Delete a node class and check if dependency in Classes_to_Nodes was deleted', True)                    
+            else:
+                self.log(self.testCount, 'deleteClass', 'Delete a node class and check if dependency in Classes_to_Nodes was deleted', False)                    
+                self.errCount += 1
+
+    # =================================================================================================================
+
+        # Nodes
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Nodes'):
+
+            # Correct method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called delete commands for Classes table:' + bcolors.ENDC + self.os.linesep
+
+            # Delete a node class providing the primary key
+            self.testCount += 1
+            itemName = 'testNode' + str(self.testCount)
+            self.conn.execute("insert into Nodes values ('{0}','')".format(itemName,))
+            result = self.api.deleteNode(itemName)
+            if(result == 'Success' and not self.inDb('Nodes', regex = itemName)):
+                self.log(self.testCount, 'deleteNode', 'Delete a node providing the primary key', True)                    
+            else:
+                self.log(self.testCount, 'deleteNode', 'Delete a node providing the primary key', False)                    
+                self.errCount += 1
 
     # =====================================================================================================================
 

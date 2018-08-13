@@ -293,7 +293,7 @@ class mainAPI():
         if(query.rowcount >= 1):
             return 'Success'
 
-        raise Exception('deleteNode: Unknown nodes with regex %s'%(task,))
+        raise Exception('deleteNode: Unknown nodes with regex %s'%(regex,))
     
     # ---------------------------------------------------------------------------------------------------------------------
     
