@@ -88,8 +88,8 @@ class mainAPI():
 
     def getTask(self, task):
 
-        query = self.conn.execute("select * from Tasks where task='{0}'".format(task))
-        if(query.rowcount >= 1):
+        query = self.conn.execute("select * from Tasks where task='{0}'".format(task,))
+        if(query.rowcount != 0):
             result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
             return self.json.dumps(result)
 
@@ -169,7 +169,7 @@ class mainAPI():
     def getSet(self, task_set):
 
         query = self.conn.execute("select * from Task_Sets where task_set='{0}'".format(task_set,))
-        if(query.rowcount >= 1):
+        if(query.rowcount != 0):
             result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
             return self.json.dumps(result)
 
@@ -190,7 +190,7 @@ class mainAPI():
     def unassignSet(self, task_set, node_class):
 
         try:
-            self.conn.execute("delete from Task_Sets_to_Classes where task_set='{0}' and class=\
+            self.conn.execute("delete from Task_Sets_to_Classes where task_set='{0}' and node_class=\
                             '{1}'".format(task_set, node_class))
             return 'Success'
 
@@ -246,7 +246,7 @@ class mainAPI():
     def getClass(self, node_class):
 
         query = self.conn.execute("select * from Classes where node_class='{0}'".format(node_class,))
-        if(query.rowcount >= 1):
+        if(query.rowcount != 0):
             result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
             return self.json.dumps(result)
 
@@ -323,7 +323,7 @@ class mainAPI():
     def getNode(self, regex):
 
         query = self.conn.execute("select * from Nodes where regex='{0}'".format(regex,))
-        if(query.rowcount >= 1):
+        if(query.rowcount != 0):
             result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
             return self.json.dumps(result)
 

@@ -420,39 +420,316 @@ class apiTest():
 
     # =====================================================================================================================
 
-    def testModify(self):
+    def testModify(self, table = 'all'):
 
         print self.os.linesep
         print '==================================================================='
         print '                      MODIFY                                       '
         print '==================================================================='
 
+        # Tasks
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Tasks'):
+
+            # Correct method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called modify commands for Tasks table:' + bcolors.ENDC + self.os.linesep
+
+            # Modify an existing task
+            self.testCount += 1
+            itemName = 'testTask' + str(self.testCount)
+            itemNameMod = itemName + 'Mod'
+            self.conn.execute("insert into Tasks values ('{0}','','','','','')".format(itemName,))
+            result = self.api.modifyTask(itemName, task=itemNameMod, description='Modified succesfully by unit test script')
+            if(result == 'Success' and not self.inDb('Tasks', task=itemName) and self.inDb('Tasks', task=itemNameMod, description='Modified succesfully by unit test script')):
+                self.log(self.testCount, 'modifyTask', 'Modify an existing task', True)                    
+            else:
+                self.log(self.testCount, 'modifyTask', 'Modify an existing task', False)                    
+                self.errCount += 1
+
+        # =================================================================================================================
+
+        # Task Sets
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Task_Sets'):
+
+            # Correct method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called modify commands for Task Sets table:' + bcolors.ENDC + self.os.linesep
+
+            # Modify an existing task set
+            self.testCount += 1
+            itemName = 'testSet' + str(self.testCount)
+            itemNameMod = itemName + 'Mod'
+            self.conn.execute("insert into Task_Sets values ('{0}','')".format(itemName,))
+            result = self.api.modifySet(itemName, task_set=itemNameMod, description='Modified succesfully by unit test script')
+            if(result == 'Success' and not self.inDb('Task_Sets', task_set=itemName) and self.inDb('Task_Sets', task_set=itemNameMod, description='Modified succesfully by unit test script')):
+                self.log(self.testCount, 'modifySet', 'Modify an existing task set', True)                    
+            else:
+                self.log(self.testCount, 'modifySet', 'Modify an existing task set', False)                    
+                self.errCount += 1
+
+        # =================================================================================================================
+
+        # Node Classes
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Classes'):
+
+            # Correct method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called modify commands for Classes table:' + bcolors.ENDC + self.os.linesep
+
+            # Modify an existing node class
+            self.testCount += 1
+            itemName = 'testSet' + str(self.testCount)
+            itemNameMod = itemName + 'Mod'
+            self.conn.execute("insert into Classes values ('{0}','')".format(itemName,))
+            result = self.api.modifyClass(itemName, node_class=itemNameMod, description='Modified succesfully by unit test script')
+            if(result == 'Success' and not self.inDb('Classes', node_class=itemName) and self.inDb('Classes', node_class=itemNameMod, description='Modified succesfully by unit test script')):
+                self.log(self.testCount, 'modifyClass', 'Modify an existing node class', True)                    
+            else:
+                self.log(self.testCount, 'modifyClass', 'Modify an existing node class', False)                    
+                self.errCount += 1
+
+        # =================================================================================================================
+
+        # Nodes
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Nodes'):
+
+            # Correct method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called modify commands for Nodes table:' + bcolors.ENDC + self.os.linesep
+
+            # Modify an existing node(s) entry
+            self.testCount += 1
+            itemName = 'testNode' + str(self.testCount)
+            itemNameMod = itemName + 'Mod'
+            self.conn.execute("insert into Nodes values ('{0}','')".format(itemName,))
+            result = self.api.modifyNode(itemName, regex=itemNameMod, description='Modified succesfully by unit test script')
+            if(result == 'Success' and not self.inDb('Nodes', regex=itemName) and self.inDb('Nodes', regex=itemNameMod, description='Modified succesfully by unit test script')):
+                self.log(self.testCount, 'modifyNode', 'Modify an existing node(s) entry', True)                    
+            else:
+                self.log(self.testCount, 'modifyNode', 'Modify an existing node(s) entry', False)                    
+                self.errCount += 1
+
     # =====================================================================================================================
 
-    def testGet(self):
+    def testGet(self, table = 'all'):
 
         print self.os.linesep
         print '==================================================================='
         print '                       GET                                         '
         print '==================================================================='
 
+        # Tasks
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Tasks'):
+
+            # Correct method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called get commands for Tasks table:' + bcolors.ENDC + self.os.linesep
+
+            # Get an existing task
+            self.testCount += 1
+            itemName = 'testTask' + str(self.testCount)
+            self.conn.execute("insert into Tasks values ('{0}','bla','bla','bla','bla','bla')".format(itemName,))
+            result = self.api.getTask(itemName)
+            if(result == '{"data": [{"task": "' + itemName + '", "description": "bla", "utgid": "bla", "command_parameters": "bla", "task_parameters": "bla", "command": "bla"}]}' and self.inDb('Tasks', task=itemName)):
+                self.log(self.testCount, 'getTask', 'Get an existing task', True)                    
+            else:
+                self.log(self.testCount, 'getTask', 'Get an existing task', False)                    
+                self.errCount += 1
+
+        # =================================================================================================================
+
+        # Task Sets
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Task_Sets'):
+
+            # Correct method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called get commands for Task_Sets table:' + bcolors.ENDC + self.os.linesep
+
+            # Get an existing task set
+            self.testCount += 1
+            itemName = 'testSet' + str(self.testCount)
+            self.conn.execute("insert into Task_Sets values ('{0}','bla')".format(itemName,))
+            result = self.api.getSet(itemName)
+            if(result == '{"data": [{"task_set": "' + itemName + '", "description": "bla"}]}' and self.inDb('Task_Sets', task_set=itemName)):
+                self.log(self.testCount, 'getSet', 'Get an existing task set', True)                    
+            else:
+                self.log(self.testCount, 'getSet', 'Get an existing task set', False)                    
+                self.errCount += 1
+
+        # =================================================================================================================
+
+        # Node Classes
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Classes'):
+
+            # Correct method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called get commands for Classes table:' + bcolors.ENDC + self.os.linesep
+
+            # Get an existing node class
+            self.testCount += 1
+            itemName = 'testClass' + str(self.testCount)
+            self.conn.execute("insert into Classes values ('{0}','bla')".format(itemName,))
+            result = self.api.getClass(itemName)
+            if(result == '{"data": [{"node_class": "' + itemName + '", "description": "bla"}]}' and self.inDb('Classes', node_class=itemName)):
+                self.log(self.testCount, 'getClass', 'Get an existing node class', True)                    
+            else:
+                self.log(self.testCount, 'getClass', 'Get an existing node class', False)                    
+                self.errCount += 1
+
+        # =================================================================================================================
+
+        # Nodes
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Nodes'):
+
+            # Correct method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called get commands for Nodes table:' + bcolors.ENDC + self.os.linesep
+
+            # Get an existing node(s) entry
+            self.testCount += 1
+            itemName = 'testNode' + str(self.testCount)
+            self.conn.execute("insert into Nodes values ('{0}','bla')".format(itemName,))
+            result = self.api.getNode(itemName)
+            if(result == '{"data": [{"regex": "' + itemName + '", "description": "bla"}]}' and self.inDb('Nodes', regex=itemName)):
+                self.log(self.testCount, 'getNode', 'Get an existing node(s) entry', True)                    
+            else:
+                self.log(self.testCount, 'getNode', 'Get an existing node(s) entry', False)                    
+                self.errCount += 1
+
     # =====================================================================================================================
     
-    def testAssign(self):
+    def testAssign(self, table = 'all'):
 
         print self.os.linesep
         print '==================================================================='
         print '                      ASSIGN                                       '
         print '==================================================================='
 
+        # Tasks
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Tasks'):
+
+            # Correct method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called assign commands for Tasks table:' + bcolors.ENDC + self.os.linesep
+
+            # Assign an existing task to an existing task set
+            self.testCount += 1
+            itemName = 'testTask' + str(self.testCount)
+            setName = itemName + 'Set'
+            self.conn.execute("insert into Tasks values ('{0}','','','','','')".format(itemName,))
+            self.conn.execute("insert into Task_Sets values ('{0}','')".format(setName,))
+            result = self.api.assignTask(itemName, setName)
+            if(result == 'Success' and self.inDb('Tasks_to_Task_Sets', task=itemName, task_set=setName)):
+                self.log(self.testCount, 'assignTask', 'Assign an existing task to an existing task set', True)                    
+            else:
+                self.log(self.testCount, 'assignTask', 'Assign an existing task to an existing task set', False)                    
+                self.errCount += 1
+
+        # =================================================================================================================
+
+        # Task Sets
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Task_Sets'):
+
+            # Correct method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called assign commands for Task_Sets table:' + bcolors.ENDC + self.os.linesep
+
+            # Assign an existing task set to an existing node class
+            self.testCount += 1
+            itemName = 'testSet' + str(self.testCount)
+            setName = itemName + 'Set'
+            self.conn.execute("insert into Task_Sets values ('{0}','')".format(itemName,))
+            self.conn.execute("insert into Classes values ('{0}','')".format(setName,))
+            result = self.api.assignSet(itemName, setName)
+            if(result == 'Success' and self.inDb('Task_Sets_to_Classes', task_set=itemName, node_class=setName)):
+                self.log(self.testCount, 'assignSet', 'Assign an existing task set to an existing node class', True)                    
+            else:
+                self.log(self.testCount, 'assignSet', 'Assign an existing task set to an existing node class', False)                    
+                self.errCount += 1
+
+        # =================================================================================================================
+
+        # Node classes
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Classes'):
+
+            # Correct method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called assign commands for Classes table:' + bcolors.ENDC + self.os.linesep
+
+            # Assign an existing node class to an existing node(s) entry
+            self.testCount += 1
+            itemName = 'testClass' + str(self.testCount)
+            setName = itemName + 'Set'
+            self.conn.execute("insert into Classes values ('{0}','')".format(itemName,))
+            self.conn.execute("insert into Nodes values ('{0}','')".format(setName,))
+            result = self.api.assignClass(itemName, setName)
+            if(result == 'Success' and self.inDb('Classes_to_Nodes', node_class=itemName, regex=setName)):
+                self.log(self.testCount, 'assignClass', 'Assign an existing node class to an existing node(s) entry', True)                    
+            else:
+                self.log(self.testCount, 'assignClass', 'Assign an existing node class to an existing node(s) entry', False)                    
+                self.errCount += 1
+
     # =====================================================================================================================
     
-    def testUnassign(self):
+    def testUnassign(self, table = 'all'):
 
         print self.os.linesep
         print '==================================================================='
         print '                     UNASSIGN                                      '
         print '==================================================================='
+
+        # Tasks
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Tasks'):
+
+            # Correct method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called unassign commands for Tasks table:' + bcolors.ENDC + self.os.linesep
+
+            # Unassign an existing task from an existing task set
+            self.testCount += 1
+            itemName = 'testTask' + str(self.testCount)
+            setName = itemName + 'Set'
+            self.conn.execute("insert into Tasks values ('{0}','','','','','')".format(itemName,))
+            self.conn.execute("insert into Task_Sets values ('{0}','')".format(setName,))
+            self.conn.execute("insert into Tasks_to_Task_Sets values ('{0}','{1}')".format(itemName, setName))
+            result = self.api.unassignTask(itemName, setName)
+            if(result == 'Success' and not self.inDb('Tasks_to_Task_Sets', task=itemName, task_set=setName)):
+                self.log(self.testCount, 'unassignTask', 'Unassign an existing task from an existing task set', True)                    
+            else:
+                self.log(self.testCount, 'unassignTask', 'Unassign an existing task from an existing task set', False)                    
+                self.errCount += 1
+
+        # =================================================================================================================
+
+        # Task Sets
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Task_Sets'):
+
+            # Correct method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called unassign commands for Task_Sets table:' + bcolors.ENDC + self.os.linesep
+
+            # Unassign an existing task set from an existing node class
+            self.testCount += 1
+            itemName = 'testSet' + str(self.testCount)
+            setName = itemName + 'Set'
+            self.conn.execute("insert into Task_Sets values ('{0}','')".format(itemName,))
+            self.conn.execute("insert into Classes values ('{0}','')".format(setName,))
+            self.conn.execute("insert into Task_Sets_to_Classes values ('{0}','{1}')".format(itemName, setName))
+            result = self.api.unassignSet(itemName, setName)
+            if(result == 'Success' and not self.inDb('Task_Sets_to_Classes', task_set=itemName, node_class=setName)):
+                self.log(self.testCount, 'unassignSet', 'Unassign an existing task set from an existing node class', True)                    
+            else:
+                self.log(self.testCount, 'unassignSet', 'Unassign an existing task set from an existing node class', False)                    
+                self.errCount += 1
+
+        # =================================================================================================================
+
+        # Node Classes
+        if(table == 'all' or table == '*' or table == 'All' or table == 'Classes'):
+
+            # Correct method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of correctly called unassign commands for Classes table:' + bcolors.ENDC + self.os.linesep
+
+            # Unassign an existing node class from an existing node(s) entry
+            self.testCount += 1
+            itemName = 'testClass' + str(self.testCount)
+            setName = itemName + 'Set'
+            self.conn.execute("insert into Classes values ('{0}','')".format(itemName,))
+            self.conn.execute("insert into Nodes values ('{0}','')".format(setName,))
+            self.conn.execute("insert into Classes_to_Nodes values ('{0}','{1}')".format(itemName, setName))
+            result = self.api.unassignClass(itemName, setName)
+            if(result == 'Success' and not self.inDb('Classes_to_Nodes', node_class=itemName, regex=setName)):
+                self.log(self.testCount, 'unassignClass', 'Unassign an existing node class from an existing node(s) entry', True)                    
+            else:
+                self.log(self.testCount, 'unassignClass', 'Unassign an existing node class from an existing node(s) entry', False)                    
+                self.errCount += 1
 
     # =====================================================================================================================
     #                         Helper Methods
