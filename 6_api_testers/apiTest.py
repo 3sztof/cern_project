@@ -74,17 +74,17 @@ class apiTest():
         self.testAssign()
         self.testUnassign()
         if(self.errCount == 0):
-            print self.os.linesep + bcolors.OKBLUE + 'Finished API testing without any error' + bcolors.ENDC + self.os.linesep
+            print 4*self.os.linesep + bcolors.OKBLUE + 'Finished API testing without any error' + bcolors.ENDC + 4*self.os.linesep
         else:
-            print self.os.linesep + bcolors.FAIL + 'Finished API testing with ' + str(self.errCount) + ' errors' + bcolors.ENDC + self.os.linesep
+            print 4*self.os.linesep + bcolors.FAIL + 'Finished API testing with ' + str(self.errCount) + ' errors' + bcolors.ENDC + 4*self.os.linesep
 
         if(self.yes_or_no('The main database has been modified during the tests, do you want to rebuild it using settings and data from initDB script? (reccomended)')):      
             try:
                 self.os.system(self._initDB_path)
-                print self.os.linesep + 'The database has been rebuilt, returning test result - error count'
+                print self.os.linesep + 'The database has been rebuilt, returning test result - error count' + self.os.linesep
             except: 
                 print self.os.linesep + 'WARNING: Database rebuilding failed. Are you running Linux? Please make sure that 664 permissions\
-                    are set on database root folder and initDB script.'
+                    are set on database root folder and initDB script.' + self.os.linesep
 
         return self.errCount
         
@@ -93,7 +93,7 @@ class apiTest():
     # Run only add methods (specify which table will be optional: Tasks, Task_Sets, Clsses, Nodes)
     def testAdd(self, table='all'):
         
-        print self.os.linesep
+        print 4*self.os.linesep
         print '==================================================================='
         print '                       ADD                                         '
         print '==================================================================='
@@ -293,7 +293,7 @@ class apiTest():
 
     def testDelete(self, table = 'all'):
 
-        print self.os.linesep
+        print 4*self.os.linesep
         print '==================================================================='
         print '                      DELETE                                       '
         print '==================================================================='
@@ -330,6 +330,20 @@ class apiTest():
                 self.log(self.testCount, 'deleteTask', 'Delete a task and check if dependency in Tasks_to_Task_Sets was deleted', False)                    
                 self.errCount += 1
 
+            # ---------------------------------------------------------------------------------------------------------
+
+            # Incorrect method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of incorrectly called delete commands for Tasks table:' + bcolors.ENDC + self.os.linesep
+
+            # Delete a non-existing task
+            self.testCount += 1
+            itemName = 'testTask' + str(self.testCount)
+            result = self.api.deleteTask(itemName)
+            if(result == ('deleteTask: Unknown task with name: ' + itemName) and not self.inDb('Tasks', task=itemName)):
+                self.log(self.testCount, 'deleteTask', 'Delete a task providing primary key', True)                    
+            else:
+                self.log(self.testCount, 'deleteTask', 'Delete a task providing primary key', False)                    
+                self.errCount += 1
 
     # =================================================================================================================
 
@@ -363,6 +377,21 @@ class apiTest():
                 self.log(self.testCount, 'deleteSet', 'Delete a task set and check if dependency in Task_Sets_to_Classes was deleted', True)                    
             else:
                 self.log(self.testCount, 'deleteSet', 'Delete a task set and check if dependency in Task_Sets_to_Classes was deleted', False)                    
+                self.errCount += 1
+
+            # ---------------------------------------------------------------------------------------------------------
+
+            # Incorrect method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of incorrectly called delete commands for Task_Sets table:' + bcolors.ENDC + self.os.linesep
+
+            # Delete a non-existing task set
+            self.testCount += 1
+            itemName = 'testSet' + str(self.testCount)
+            result = self.api.deleteSet(itemName)
+            if(result == ('deleteSet: Unknown task set with name: ' + itemName) and not self.inDb('Task_Sets', task_set=itemName)):
+                self.log(self.testCount, 'deleteSet', 'Delete a non-existing task set', True)                    
+            else:
+                self.log(self.testCount, 'deleteSet', 'Delete a non-existing task set', False)                    
                 self.errCount += 1
 
     # =================================================================================================================
@@ -399,6 +428,21 @@ class apiTest():
                 self.log(self.testCount, 'deleteClass', 'Delete a node class and check if dependency in Classes_to_Nodes was deleted', False)                    
                 self.errCount += 1
 
+            # ---------------------------------------------------------------------------------------------------------
+
+            # Incorrect method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of incorrectly called delete commands for Classes table:' + bcolors.ENDC + self.os.linesep
+
+            # Delete a non-existing node class
+            self.testCount += 1
+            itemName = 'testClass' + str(self.testCount)
+            result = self.api.deleteClass(itemName)
+            if(result == ('deleteClass: Unknown node class with name: ' + itemName) and not self.inDb('Classes', node_class=itemName)):
+                self.log(self.testCount, 'deleteClass', 'Delete a non-existing node class', True)                    
+            else:
+                self.log(self.testCount, 'deleteClass', 'Delete a non-existing node class', False)                    
+                self.errCount += 1
+
     # =================================================================================================================
 
         # Nodes
@@ -418,11 +462,26 @@ class apiTest():
                 self.log(self.testCount, 'deleteNode', 'Delete a node providing the primary key', False)                    
                 self.errCount += 1
 
+            # ---------------------------------------------------------------------------------------------------------
+
+            # Incorrect method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of incorrectly called delete commands for Nodes table:' + bcolors.ENDC + self.os.linesep
+
+            # Delete a non-existing node(s) entry
+            self.testCount += 1
+            itemName = 'testNode' + str(self.testCount)
+            result = self.api.deleteNode(itemName)
+            if(result == ('deleteNode: Unknown nodes with regex: ' + itemName) and not self.inDb('Nodes', regex=itemName)):
+                self.log(self.testCount, 'deleteNode', 'Delete a non-existing node(s) entry', True)                    
+            else:
+                self.log(self.testCount, 'deleteNode', 'Delete a non-existing node(s) entry', False)                    
+                self.errCount += 1
+
     # =====================================================================================================================
 
     def testModify(self, table = 'all'):
 
-        print self.os.linesep
+        print 4*self.os.linesep
         print '==================================================================='
         print '                      MODIFY                                       '
         print '==================================================================='
@@ -445,6 +504,22 @@ class apiTest():
                 self.log(self.testCount, 'modifyTask', 'Modify an existing task', False)                    
                 self.errCount += 1
 
+            # -------------------------------------------------------------------------------------------------------------
+
+            # Incorrect method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of incorrectly called modify commands for Tasks table:' + bcolors.ENDC + self.os.linesep
+
+            # Modify a non-existing task
+            self.testCount += 1
+            itemName = 'testTask' + str(self.testCount)
+            itemNameMod = itemName + 'Mod'
+            result = self.api.modifyTask(itemName, task=itemNameMod, description='Modified succesfully by unit test script')
+            if(result == ('modifyTask: Unknown task with name: ' + itemName) and not self.inDb('Tasks', task=itemName)):
+                self.log(self.testCount, 'modifyTask', 'Modify a non-existing task', True)                    
+            else:
+                self.log(self.testCount, 'modifyTask', 'Modify a non-existing task', False)                    
+                self.errCount += 1
+
         # =================================================================================================================
 
         # Task Sets
@@ -463,6 +538,22 @@ class apiTest():
                 self.log(self.testCount, 'modifySet', 'Modify an existing task set', True)                    
             else:
                 self.log(self.testCount, 'modifySet', 'Modify an existing task set', False)                    
+                self.errCount += 1
+
+            # -------------------------------------------------------------------------------------------------------------
+
+            # Incorrect method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of incorrectly called modify commands for Task_Sets table:' + bcolors.ENDC + self.os.linesep
+
+            # Modify a non-existing task set
+            self.testCount += 1
+            itemName = 'testSet' + str(self.testCount)
+            itemNameMod = itemName + 'Mod'
+            result = self.api.modifySet(itemName, task_set=itemNameMod, description='Modified succesfully by unit test script')
+            if(result == ('modifySet: Unknown task set with name: ' + itemName) and not self.inDb('Task_Sets', task_set=itemName)):
+                self.log(self.testCount, 'modifySet', 'Modify a non-existing task set', True)                    
+            else:
+                self.log(self.testCount, 'modifySet', 'Modify a non-existing task set', False)                    
                 self.errCount += 1
 
         # =================================================================================================================
@@ -485,6 +576,22 @@ class apiTest():
                 self.log(self.testCount, 'modifyClass', 'Modify an existing node class', False)                    
                 self.errCount += 1
 
+            # -------------------------------------------------------------------------------------------------------------
+
+            # Incorrect method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of incorrectly called modify commands for Classes table:' + bcolors.ENDC + self.os.linesep
+
+            # Modify a non-existing node class
+            self.testCount += 1
+            itemName = 'testClass' + str(self.testCount)
+            itemNameMod = itemName + 'Mod'
+            result = self.api.modifyClass(itemName, node_class=itemNameMod, description='Modified succesfully by unit test script')
+            if(result == ('modifyClass: Unknown node class with name: ' + itemName) and not self.inDb('Classes', node_class=itemName)):
+                self.log(self.testCount, 'modifyClass', 'Modify a non-existing node class', True)                    
+            else:
+                self.log(self.testCount, 'modifyClass', 'Modify a non-existing node class', False)                    
+                self.errCount += 1
+
         # =================================================================================================================
 
         # Nodes
@@ -505,11 +612,28 @@ class apiTest():
                 self.log(self.testCount, 'modifyNode', 'Modify an existing node(s) entry', False)                    
                 self.errCount += 1
 
+            # -------------------------------------------------------------------------------------------------------------
+
+            # Incorrect method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of incorrectly called modify commands for Nodes table:' + bcolors.ENDC + self.os.linesep
+
+            # Modify a non-existing node(s) entry
+            self.testCount += 1
+            itemName = 'testNode' + str(self.testCount)
+            itemNameMod = itemName + 'Mod'
+            result = self.api.modifyNode(itemName, regex=itemNameMod, description='Modified succesfully by unit test script')
+            if(result == ('modifyNode: Unknown nodes with regex: ' + itemName) and not self.inDb('Nodes', regex=itemName)):
+                self.log(self.testCount, 'modifyNode', 'Modify a non-existing node(s) entry', True)                    
+            else:
+                self.log(self.testCount, 'modifyNode', 'Modify a non-existing node(s) entry', False)                    
+                self.errCount += 1
+
+
     # =====================================================================================================================
 
     def testGet(self, table = 'all'):
 
-        print self.os.linesep
+        print 4*self.os.linesep
         print '==================================================================='
         print '                       GET                                         '
         print '==================================================================='
@@ -592,7 +716,7 @@ class apiTest():
     
     def testAssign(self, table = 'all'):
 
-        print self.os.linesep
+        print 4*self.os.linesep
         print '==================================================================='
         print '                      ASSIGN                                       '
         print '==================================================================='
@@ -662,7 +786,7 @@ class apiTest():
     
     def testUnassign(self, table = 'all'):
 
-        print self.os.linesep
+        print 4*self.os.linesep
         print '==================================================================='
         print '                     UNASSIGN                                      '
         print '==================================================================='

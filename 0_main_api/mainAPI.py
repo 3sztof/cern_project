@@ -59,7 +59,7 @@ class mainAPI():
         if(query.rowcount >= 1):
             return 'Success'
 
-        raise Exception('deleteTask: Unknown task with name %s'%(task,))
+        return 'deleteTask: Unknown task with name: ' + task
 
     # ---------------------------------------------------------------------------------------------------------------------
 
@@ -82,7 +82,7 @@ class mainAPI():
         if(query.rowcount >= 1):
             return 'Success'
 
-        raise Exception('modifyTask: Unknown task with name %s'%(task,))
+        return 'modifyTask: Unknown task with name: ' + original_task
 
     # ---------------------------------------------------------------------------------------------------------------------
 
@@ -93,7 +93,7 @@ class mainAPI():
             result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
             return self.json.dumps(result)
 
-        raise Exception('getTask: Unknown task with name %s'%(task,))
+        return 'getTask: Unknown task with name: ' + task
 
     # ---------------------------------------------------------------------------------------------------------------------
 
@@ -139,7 +139,7 @@ class mainAPI():
         if(query.rowcount >= 1):
             return 'Success'
 
-        raise Exception('getSet: Unknown task set with name %s'%(task_set,))
+        return 'deleteSet: Unknown task set with name: ' + task_set
 
     # ---------------------------------------------------------------------------------------------------------------------
 
@@ -162,7 +162,7 @@ class mainAPI():
         if(query.rowcount >= 1):
             return 'Success'
 
-        raise Exception('modifySet: Unknown task set with name %s'%(original_task_set,))
+        return 'modifySet: Unknown task set with name: ' + original_task_set
 
     # ---------------------------------------------------------------------------------------------------------------------
 
@@ -173,7 +173,7 @@ class mainAPI():
             result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
             return self.json.dumps(result)
 
-        raise Exception('getSet: Unknown task set with name %s'%(task_set,))
+        return 'getSet: Unknown task set with name: ' + task_set
     
     # ---------------------------------------------------------------------------------------------------------------------
 
@@ -216,7 +216,7 @@ class mainAPI():
         if(query.rowcount >= 1):
             return 'Success'
 
-        raise Exception('deleteClass: Unknown node class with name %s'%(task,))
+        return 'deleteClass: Unknown node class with name: ' + node_class
 
     # ---------------------------------------------------------------------------------------------------------------------
   
@@ -239,7 +239,7 @@ class mainAPI():
         if(query.rowcount >= 1):
             return 'Success'
 
-        raise Exception('modifyClass: Unknown node class with name %s'%(original_node_class,))
+        return 'modifyClass: Unknown node class with name: ' + original_node_class
 
     # ---------------------------------------------------------------------------------------------------------------------
     
@@ -250,8 +250,8 @@ class mainAPI():
             result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
             return self.json.dumps(result)
 
-        raise Exception('getClass: Unknown node class with name %s'%(node_class,))
-
+        return 'getClass: Unknown node class with name: ' + node_class
+    
     # ---------------------------------------------------------------------------------------------------------------------
     
     def assignClass(self, node_class, node_regex):
@@ -293,7 +293,7 @@ class mainAPI():
         if(query.rowcount >= 1):
             return 'Success'
 
-        raise Exception('deleteNode: Unknown nodes with regex %s'%(regex,))
+        return 'deleteNode: Unknown nodes with regex: ' + regex
     
     # ---------------------------------------------------------------------------------------------------------------------
     
@@ -316,7 +316,7 @@ class mainAPI():
         if(query.rowcount >= 1):
             return 'Success'
 
-        raise Exception('modifyNode: Unknown nodes with regex %s'%(original_regex,))
+        return 'modifyNode: Unknown nodes with regex: ' + original_regex
     
     # ---------------------------------------------------------------------------------------------------------------------
     
@@ -327,7 +327,7 @@ class mainAPI():
             result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
             return self.json.dumps(result)
 
-        raise Exception('getNode: Unknown nodes with regex %s'%(regex,))
+        return 'getNode: Unknown nodes with regex: ' + regex
 
     # =====================================================================================================================
     #                          Helper Methods
