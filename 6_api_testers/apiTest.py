@@ -894,6 +894,23 @@ class apiTest():
                 self.log(self.testCount, 'assignTask', 'Assign an existing task to an existing task set', False)                    
                 self.errCount += 1
 
+            # -------------------------------------------------------------------------------------------------------------
+
+            # Incorrect method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of incorrectly called assign commands for Tasks table:' + bcolors.ENDC + self.os.linesep
+
+            # Assign an non-existing task to an existing task set (or vice versa or both non-existing)
+            self.testCount += 1
+            itemName = 'testTask' + str(self.testCount)
+            setName = itemName + 'Set'
+            result = self.api.assignTask(itemName, setName)
+            expected_error = "(sqlite3.IntegrityError) FOREIGN KEY constraint failed [SQL: \"insert into Tasks_to_Task_Sets values ('" + itemName + "', '" + setName + "')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
+            if(str(result) == expected_error):
+                self.log(self.testCount, 'assignTask', 'Assign an non-existing task to an existing task set (or vice versa or both non-existing)', True)                    
+            else:
+                self.log(self.testCount, 'assignTask', 'Assign an non-existing task to an existing task set (or vice versa or both non-existing)', False)                    
+                self.errCount += 1
+
         # =================================================================================================================
 
         # Task Sets
@@ -915,6 +932,23 @@ class apiTest():
                 self.log(self.testCount, 'assignSet', 'Assign an existing task set to an existing node class', False)                    
                 self.errCount += 1
 
+            # -------------------------------------------------------------------------------------------------------------
+
+            # Incorrect method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of incorrectly called assign commands for Task_Sets table:' + bcolors.ENDC + self.os.linesep
+
+            # Assign an non-existing task set to an existing node class (or vice versa or both non-existing)
+            self.testCount += 1
+            itemName = 'testSet' + str(self.testCount)
+            setName = itemName + 'Set'
+            result = self.api.assignSet(itemName, setName)
+            expected_error = "(sqlite3.IntegrityError) FOREIGN KEY constraint failed [SQL: \"insert into Task_Sets_to_Classes values ('" + itemName + "','" + setName + "')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
+            if(str(result) == expected_error):
+                self.log(self.testCount, 'assignSet', 'Assign an non-existing task set to an existing node class (or vice versa or both non-existing)', True)                    
+            else:
+                self.log(self.testCount, 'assignSet', 'Assign an non-existing task set to an existing node class (or vice versa or both non-existing)', False)                    
+                self.errCount += 1
+
         # =================================================================================================================
 
         # Node classes
@@ -934,6 +968,23 @@ class apiTest():
                 self.log(self.testCount, 'assignClass', 'Assign an existing node class to an existing node(s) entry', True)                    
             else:
                 self.log(self.testCount, 'assignClass', 'Assign an existing node class to an existing node(s) entry', False)                    
+                self.errCount += 1
+
+            # -------------------------------------------------------------------------------------------------------------
+
+            # Incorrect method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of incorrectly called assign commands for Classes table:' + bcolors.ENDC + self.os.linesep
+
+            # Assign an non-existing node class to an existing node(s) (or vice versa or both non-existing)
+            self.testCount += 1
+            itemName = 'testClass' + str(self.testCount)
+            setName = itemName + 'Set'
+            result = self.api.assignClass(itemName, setName)
+            expected_error = "(sqlite3.IntegrityError) FOREIGN KEY constraint failed [SQL: \"insert into Classes_to_Nodes values ('" + itemName + "', '" + setName + "')\"] (Background on this error at: http://sqlalche.me/e/gkpj)"
+            if(str(result) == expected_error):
+                self.log(self.testCount, 'assignClass', 'Assign an non-existing node class to an existing node(s) (or vice versa or both non-existing)', True)                    
+            else:
+                self.log(self.testCount, 'assignClass', 'Assign an non-existing node class to an existing node(s) (or vice versa or both non-existing)', False)                    
                 self.errCount += 1
 
     # =====================================================================================================================
@@ -973,6 +1024,23 @@ class apiTest():
                 self.log(self.testCount, 'unassignTask', 'Unassign an existing task from an existing task set', False)                    
                 self.errCount += 1
 
+            # -------------------------------------------------------------------------------------------------------------
+
+            # Incorrect method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of incorrectly called unassign commands for Tasks table:' + bcolors.ENDC + self.os.linesep
+
+            # Unassign an non-existing task from an existing task set (or vice versa or both non-existing)
+            self.testCount += 1
+            itemName = 'testTask' + str(self.testCount)
+            setName = itemName + 'Set'
+            result = self.api.unassignTask(itemName, setName)
+            expected_error = 'unassignTask: The specified assignment pair does not exist in the database: ' + itemName + ' <-> ' + setName
+            if(str(result) == expected_error):
+                self.log(self.testCount, 'unassignTask', 'Unassign an non-existing task from an existing task set (or vice versa or both non-existing)', True)                    
+            else:
+                self.log(self.testCount, 'unassignTask', 'Unassign an non-existing task from an existing task set (or vice versa or both non-existing)', False)                    
+                self.errCount += 1
+
         # =================================================================================================================
 
         # Task Sets
@@ -993,6 +1061,23 @@ class apiTest():
                 self.log(self.testCount, 'unassignSet', 'Unassign an existing task set from an existing node class', True)                    
             else:
                 self.log(self.testCount, 'unassignSet', 'Unassign an existing task set from an existing node class', False)                    
+                self.errCount += 1
+
+            # -------------------------------------------------------------------------------------------------------------
+
+            # Incorrect method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of incorrectly called unassign commands for Task_Sets table:' + bcolors.ENDC + self.os.linesep
+
+            # Unassign an non-existing task set from an existing node class (or vice versa or both non-existing)
+            self.testCount += 1
+            itemName = 'testSet' + str(self.testCount)
+            setName = itemName + 'Set'
+            result = self.api.unassignSet(itemName, setName)
+            expected_error = 'unassignSet: The specified assignment pair does not exist in the database: ' + itemName + ' <-> ' + setName
+            if(str(result) == expected_error):
+                self.log(self.testCount, 'unassignSet', 'Unassign an non-existing task set from an existing node class (or vice versa or both non-existing)', True)                    
+            else:
+                self.log(self.testCount, 'unassignSet', 'Unassign an non-existing task set from an existing node class (or vice versa or both non-existing)', False)                    
                 self.errCount += 1
 
         # =================================================================================================================
@@ -1016,6 +1101,24 @@ class apiTest():
             else:
                 self.log(self.testCount, 'unassignClass', 'Unassign an existing node class from an existing node(s) entry', False)                    
                 self.errCount += 1
+
+            # -------------------------------------------------------------------------------------------------------------
+
+            # Incorrect method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of incorrectly called unassign commands for Classes table:' + bcolors.ENDC + self.os.linesep
+
+            # Unassign an non-existing node class from an existing node(s) (or vice versa or both non-existing)
+            self.testCount += 1
+            itemName = 'testClass' + str(self.testCount)
+            setName = itemName + 'Set'
+            result = self.api.unassignClass(itemName, setName)
+            expected_error = 'unassignClass: The specified assignment pair does not exist in the database: ' + itemName + ' <-> ' + setName
+            if(str(result) == expected_error):
+                self.log(self.testCount, 'unassignClass', 'Unassign an non-existing node class from an existing node(s) (or vice versa or both non-existing)', True)                    
+            else:
+                self.log(self.testCount, 'unassignClass', 'Unassign an non-existing node class from an existing node(s) (or vice versa or both non-existing)', False)                    
+                self.errCount += 1
+
 
     # =====================================================================================================================
     #                         Helper Methods
@@ -1078,7 +1181,7 @@ class apiTest():
 # =========================================================================================================================
 
     def log(self, test_number, function_name, function_description, result):
-        tests_total_number = 222
+        tests_total_number = 54
         description_field_width = 100
         if(result):
             result = 'passed'

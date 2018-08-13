@@ -112,12 +112,13 @@ class mainAPI():
     
     def unassignTask(self, task, task_set):
 
-        try:
-            self.conn.execute("delete from Tasks_to_Task_Sets where task='{0}' and task_set='{1}'".format(task, 
-                            task_set))
+        query = self.conn.execute("delete from Tasks_to_Task_Sets where task='{0}' and task_set='{1}'".format(task, 
+                        task_set))
+
+        if(query.rowcount >= 1):
             return 'Success'
 
-        except Exception as e: return e
+        return 'unassignTask: The specified assignment pair does not exist in the database: ' + task + ' <-> ' + task_set
 
     # =====================================================================================================================
     #                            Task Sets
@@ -189,12 +190,13 @@ class mainAPI():
 
     def unassignSet(self, task_set, node_class):
 
-        try:
-            self.conn.execute("delete from Task_Sets_to_Classes where task_set='{0}' and node_class=\
-                            '{1}'".format(task_set, node_class))
+        query = self.conn.execute("delete from Task_Sets_to_Classes where task_set='{0}' and node_class='{1}'".format(task_set, 
+                        node_class))
+
+        if(query.rowcount >= 1):
             return 'Success'
 
-        except Exception as e: return e
+        return 'unassignSet: The specified assignment pair does not exist in the database: ' + task_set + ' <-> ' + node_class
 
     # =====================================================================================================================
     #                           Node Classes
@@ -266,12 +268,13 @@ class mainAPI():
 
     def unassignClass(self, node_class, node_regex):
 
-        try:
-            self.conn.execute("delete from Classes_to_Nodes where node_class='{0}' and regex='{1}'".format(node_class,
-                            node_regex))
+        query = self.conn.execute("delete from Classes_to_Nodes where node_class='{0}' and regex='{1}'".format(node_class, 
+                        node_regex))
+
+        if(query.rowcount >= 1):
             return 'Success'
-        
-        except Exception as e: return e
+
+        return 'unassignClass: The specified assignment pair does not exist in the database: ' + node_class + ' <-> ' + node_regex
 
     # =====================================================================================================================
     #                              Nodes
