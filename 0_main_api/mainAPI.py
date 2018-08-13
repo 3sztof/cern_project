@@ -89,11 +89,11 @@ class mainAPI():
     def getTask(self, task):
 
         query = self.conn.execute("select * from Tasks where task='{0}'".format(task,))
-        if(query.rowcount != 0):
-            result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
-            return self.json.dumps(result)
-
-        return 'getTask: Unknown task with name: ' + task
+        result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
+        if(len(result['data']) == 0):
+            return 'getTask: Unknown task with name: ' + task
+        
+        return self.json.dumps(result)
 
     # ---------------------------------------------------------------------------------------------------------------------
 
@@ -169,11 +169,11 @@ class mainAPI():
     def getSet(self, task_set):
 
         query = self.conn.execute("select * from Task_Sets where task_set='{0}'".format(task_set,))
-        if(query.rowcount != 0):
-            result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
-            return self.json.dumps(result)
-
-        return 'getSet: Unknown task set with name: ' + task_set
+        result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
+        if(len(result['data']) == 0):
+            return 'getSet: Unknown task set with name: ' + task_set
+        
+        return self.json.dumps(result)
     
     # ---------------------------------------------------------------------------------------------------------------------
 
@@ -246,11 +246,11 @@ class mainAPI():
     def getClass(self, node_class):
 
         query = self.conn.execute("select * from Classes where node_class='{0}'".format(node_class,))
-        if(query.rowcount != 0):
-            result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
-            return self.json.dumps(result)
-
-        return 'getClass: Unknown node class with name: ' + node_class
+        result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
+        if(len(result['data']) == 0):
+            return 'getClass: Unknown node class with name: ' + node_class
+        
+        return self.json.dumps(result)
     
     # ---------------------------------------------------------------------------------------------------------------------
     
@@ -323,11 +323,11 @@ class mainAPI():
     def getNode(self, regex):
 
         query = self.conn.execute("select * from Nodes where regex='{0}'".format(regex,))
-        if(query.rowcount != 0):
-            result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
-            return self.json.dumps(result)
-
-        return 'getNode: Unknown nodes with regex: ' + regex
+        result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
+        if(len(result['data']) == 0):
+            return 'getNode: Unknown node with regex: ' + regex
+        
+        return self.json.dumps(result)
 
     # =====================================================================================================================
     #                          Helper Methods

@@ -93,6 +93,13 @@ class apiTest():
     # Run only add methods (specify which table will be optional: Tasks, Task_Sets, Clsses, Nodes)
     def testAdd(self, table='all'):
         
+        #                    .d8b.  d8888b. d8888b. 
+        #                   d8' `8b 88  `8D 88  `8D 
+        #                   88ooo88 88   88 88   88 
+        #                   88~~~88 88   88 88   88 
+        #                   88   88 88  .8D 88  .8D 
+        #                   YP   YP Y8888D' Y8888D' 
+
         print 4*self.os.linesep
         print '==================================================================='
         print '                       ADD                                         '
@@ -293,6 +300,15 @@ class apiTest():
 
     def testDelete(self, table = 'all'):
 
+
+        #           d8888b. d88888b db      d88888b d888888b d88888b 
+        #           88  `8D 88'     88      88'     `~~88~~' 88'     
+        #           88   88 88ooooo 88      88ooooo    88    88ooooo 
+        #           88   88 88~~~~~ 88      88~~~~~    88    88~~~~~ 
+        #           88  .8D 88.     88booo. 88.        88    88.     
+        #           Y8888D' Y88888P Y88888P Y88888P    YP    Y88888P 
+
+
         print 4*self.os.linesep
         print '==================================================================='
         print '                      DELETE                                       '
@@ -481,6 +497,14 @@ class apiTest():
 
     def testModify(self, table = 'all'):
 
+        #       .88b  d88.  .d88b.  d8888b. d888888b d88888b db    db 
+        #       88'YbdP`88 .8P  Y8. 88  `8D   `88'   88'     `8b  d8' 
+        #       88  88  88 88    88 88   88    88    88ooo    `8bd8'  
+        #       88  88  88 88    88 88   88    88    88~~~      88    
+        #       88  88  88 `8b  d8' 88  .8D   .88.   88         88    
+        #       YP  YP  YP  `Y88P'  Y8888D' Y888888P YP         YP    
+
+
         print 4*self.os.linesep
         print '==================================================================='
         print '                      MODIFY                                       '
@@ -502,6 +526,23 @@ class apiTest():
                 self.log(self.testCount, 'modifyTask', 'Modify an existing task', True)                    
             else:
                 self.log(self.testCount, 'modifyTask', 'Modify an existing task', False)                    
+                self.errCount += 1
+
+            # -----------------------------------------
+
+            # Modify an existing task and check if the dependencies were updated (foreign key)
+            self.testCount += 1
+            itemName = 'testTask' + str(self.testCount)
+            itemNameMod = itemName + 'Mod'
+            setName = itemName + 'Set'
+            self.conn.execute("insert into Tasks values ('{0}','','','','','')".format(itemName,))
+            self.conn.execute("insert into Task_Sets values ('{0}','')".format(setName,))
+            self.conn.execute("insert into Tasks_to_Task_Sets values ('{0}','{1}')".format(itemName, setName))
+            result = self.api.modifyTask(itemName, task=itemNameMod)
+            if(result == 'Success' and not self.inDb('Tasks', task=itemName) and self.inDb('Tasks', task=itemNameMod) and self.inDb('Tasks_to_Task_Sets', task=itemNameMod, task_set=setName)):
+                self.log(self.testCount, 'modifyTask', 'Modify an existing task and check if the dependencies were updated (foreign key)', True)                    
+            else:
+                self.log(self.testCount, 'modifyTask', 'Modify an existing task and check if the dependencies were updated (foreign key)', False)                    
                 self.errCount += 1
 
             # -------------------------------------------------------------------------------------------------------------
@@ -540,6 +581,25 @@ class apiTest():
                 self.log(self.testCount, 'modifySet', 'Modify an existing task set', False)                    
                 self.errCount += 1
 
+            # -----------------------------------------
+
+            # Modify an existing task set and check if the dependencies were updated (foreign key)
+            self.testCount += 1
+            itemName = 'testSet' + str(self.testCount)
+            itemNameMod = itemName + 'Mod'
+            setName = itemName + 'Set'
+            self.conn.execute("insert into Task_Sets values ('{0}','')".format(itemName,))
+            self.conn.execute("insert into Classes values ('{0}','')".format(setName,))
+            self.conn.execute("insert into Task_Sets_to_Classes values ('{0}','{1}')".format(itemName, setName))
+            self.conn.execute("insert into Tasks values ('{0}','','','','','')".format(setName,))
+            self.conn.execute("insert into Tasks_to_Task_Sets values ('{0}','{1}')".format(setName, itemName))
+            result = self.api.modifySet(itemName, task_set=itemNameMod)
+            if(result == 'Success' and not self.inDb('Task_Sets', task_set=itemName) and self.inDb('Task_Sets', task_set=itemNameMod) and self.inDb('Task_Sets_to_Classes', task_set=itemNameMod, node_class=setName) and self.inDb('Tasks_to_Task_Sets', task=setName, task_set=itemNameMod)):
+                self.log(self.testCount, 'modifySet', 'Modify an existing task set and check if the dependencies were updated (foreign key)', True)                    
+            else:
+                self.log(self.testCount, 'modifySet', 'Modify an existing task set and check if the dependencies were updated (foreign key)', False)                    
+                self.errCount += 1
+
             # -------------------------------------------------------------------------------------------------------------
 
             # Incorrect method calls tests
@@ -574,6 +634,25 @@ class apiTest():
                 self.log(self.testCount, 'modifyClass', 'Modify an existing node class', True)                    
             else:
                 self.log(self.testCount, 'modifyClass', 'Modify an existing node class', False)                    
+                self.errCount += 1
+
+            # -----------------------------------------
+
+            # Modify an existing node class and check if the dependencies were updated (foreign key)
+            self.testCount += 1
+            itemName = 'testClass' + str(self.testCount)
+            itemNameMod = itemName + 'Mod'
+            setName = itemName + 'Set'
+            self.conn.execute("insert into Classes values ('{0}','')".format(itemName,))
+            self.conn.execute("insert into Nodes values ('{0}','')".format(setName,))
+            self.conn.execute("insert into Classes_to_Nodes values ('{0}','{1}')".format(itemName, setName))
+            self.conn.execute("insert into Task_Sets values ('{0}','')".format(setName,))
+            self.conn.execute("insert into Task_Sets_to_Classes values ('{0}','{1}')".format(setName, itemName))
+            result = self.api.modifyClass(itemName, node_class=itemNameMod)
+            if(result == 'Success' and not self.inDb('Classes', node_class=itemName) and self.inDb('Classes', node_class=itemNameMod) and self.inDb('Classes_to_Nodes', node_class=itemNameMod, regex=setName) and self.inDb('Task_Sets_to_Classes', task_set=setName, node_class=itemNameMod)):
+                self.log(self.testCount, 'modifyClass', 'Modify an existing node class and check if the dependencies were updated (foreign key)', True)                    
+            else:
+                self.log(self.testCount, 'modifyClass', 'Modify an existing node class and check if the dependencies were updated (foreign key)', False)                    
                 self.errCount += 1
 
             # -------------------------------------------------------------------------------------------------------------
@@ -633,6 +712,13 @@ class apiTest():
 
     def testGet(self, table = 'all'):
 
+        #                    d888b  d88888b d888888b 
+        #                   88' Y8b 88'     `~~88~~' 
+        #                   88      88ooooo    88    
+        #                   88  ooo 88~~~~~    88    
+        #                   88. ~8~ 88.        88    
+        #                    Y888P  Y88888P    YP 
+
         print 4*self.os.linesep
         print '==================================================================='
         print '                       GET                                         '
@@ -655,6 +741,21 @@ class apiTest():
                 self.log(self.testCount, 'getTask', 'Get an existing task', False)                    
                 self.errCount += 1
 
+            # -------------------------------------------------------------------------------------------------------------
+
+            # Incorrect method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of incorrectly called get commands for Tasks table:' + bcolors.ENDC + self.os.linesep
+
+            # Get a non-existing task
+            self.testCount += 1
+            itemName = 'testTask' + str(self.testCount)
+            result = self.api.getTask(itemName)
+            if(result == ('getTask: Unknown task with name: ' + itemName) and not self.inDb('Tasks', task=itemName)):
+                self.log(self.testCount, 'getTask', 'Get a non-existing task', True)                    
+            else:
+                self.log(self.testCount, 'getTask', 'Get a non-existing task', False)                    
+                self.errCount += 1
+
         # =================================================================================================================
 
         # Task Sets
@@ -672,6 +773,21 @@ class apiTest():
                 self.log(self.testCount, 'getSet', 'Get an existing task set', True)                    
             else:
                 self.log(self.testCount, 'getSet', 'Get an existing task set', False)                    
+                self.errCount += 1
+
+            # -------------------------------------------------------------------------------------------------------------
+
+            # Incorrect method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of incorrectly called get commands for Task_Sets table:' + bcolors.ENDC + self.os.linesep
+
+            # Get a non-existing task set
+            self.testCount += 1
+            itemName = 'testSet' + str(self.testCount)
+            result = self.api.getSet(itemName)
+            if(result == ('getSet: Unknown task set with name: ' + itemName) and not self.inDb('Task_Sets', task_set=itemName)):
+                self.log(self.testCount, 'getSet', 'Get a non-existing task set', True)                    
+            else:
+                self.log(self.testCount, 'getSet', 'Get a non-existing task set', False)                    
                 self.errCount += 1
 
         # =================================================================================================================
@@ -693,6 +809,21 @@ class apiTest():
                 self.log(self.testCount, 'getClass', 'Get an existing node class', False)                    
                 self.errCount += 1
 
+            # -------------------------------------------------------------------------------------------------------------
+
+            # Incorrect method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of incorrectly called get commands for Classes table:' + bcolors.ENDC + self.os.linesep
+
+            # Get a non-existing node class
+            self.testCount += 1
+            itemName = 'testClass' + str(self.testCount)
+            result = self.api.getClass(itemName)
+            if(result == ('getClass: Unknown node class with name: ' + itemName) and not self.inDb('Classes', node_class=itemName)):
+                self.log(self.testCount, 'getClass', 'Get a non-existing node class', True)                    
+            else:
+                self.log(self.testCount, 'getClass', 'Get a non-existing node class', False)                    
+                self.errCount += 1
+
         # =================================================================================================================
 
         # Nodes
@@ -712,9 +843,32 @@ class apiTest():
                 self.log(self.testCount, 'getNode', 'Get an existing node(s) entry', False)                    
                 self.errCount += 1
 
+            # -------------------------------------------------------------------------------------------------------------
+
+            # Incorrect method calls tests
+            print self.os.linesep + bcolors.UNDERLINE + 'Running tests of incorrectly called get commands for Nodes table:' + bcolors.ENDC + self.os.linesep
+
+            # Get a non-existing node(s)
+            self.testCount += 1
+            itemName = 'testNode' + str(self.testCount)
+            result = self.api.getNode(itemName)
+            if(result == ('getNode: Unknown node with regex: ' + itemName) and not self.inDb('Nodes', regex=itemName)):
+                self.log(self.testCount, 'getNode', 'Get a non-existing node(s)', True)                    
+            else:
+                self.log(self.testCount, 'getNode', 'Get a non-existing node(s)', False)                    
+                self.errCount += 1
+
     # =====================================================================================================================
     
     def testAssign(self, table = 'all'):
+
+        #            .d8b.  .d8888. .d8888. d888888b  d888b  d8b   db 
+        #           d8' `8b 88'  YP 88'  YP   `88'   88' Y8b 888o  88 
+        #           88ooo88 `8bo.   `8bo.      88    88      88V8o 88 
+        #           88~~~88   `Y8b.   `Y8b.    88    88  ooo 88 V8o88 
+        #           88   88 db   8D db   8D   .88.   88. ~8~ 88  V888 
+        #           YP   YP `8888Y' `8888Y' Y888888P  Y888P  VP   V8P 
+
 
         print 4*self.os.linesep
         print '==================================================================='
@@ -785,6 +939,14 @@ class apiTest():
     # =====================================================================================================================
     
     def testUnassign(self, table = 'all'):
+
+        #   db    db d8b   db  .d8b.  .d8888. .d8888. d888888b  d888b  d8b   db 
+        #   88    88 888o  88 d8' `8b 88'  YP 88'  YP   `88'   88' Y8b 888o  88 
+        #   88    88 88V8o 88 88ooo88 `8bo.   `8bo.      88    88      88V8o 88 
+        #   88    88 88 V8o88 88~~~88   `Y8b.   `Y8b.    88    88  ooo 88 V8o88 
+        #   88b  d88 88  V888 88   88 db   8D db   8D   .88.   88. ~8~ 88  V888 
+        #   ~Y8888P' VP   V8P YP   YP `8888Y' `8888Y' Y888888P  Y888P  VP   V8P 
+
 
         print 4*self.os.linesep
         print '==================================================================='
@@ -917,7 +1079,7 @@ class apiTest():
 
     def log(self, test_number, function_name, function_description, result):
         tests_total_number = 222
-        description_field_width = 80
+        description_field_width = 100
         if(result):
             result = 'passed'
         else:
