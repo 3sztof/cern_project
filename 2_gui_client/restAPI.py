@@ -58,7 +58,6 @@ def get_sets(handler):
 
 def get_set(handler):
     key = urllib.unquote(handler.path[10:])
-    print key
     result = ApiSingleton.instance().api.getSet(key)
     result = json.loads(result)
     return result
@@ -91,29 +90,49 @@ def get_node(handler):
 
 def put_task(handler):
     payload = handler.get_payload()
+    task = payload['task'] if 'task' in payload else ''
+    description = payload['description'] if 'description' in payload else ''
+    utgid = payload['utgid'] if 'utgid' in payload else ''
+    command = payload['command'] if 'command' in payload else ''
+    task_parameters = payload['task_parameters'] if 'task_parameters' in payload else ''
+    command_parameters = payload['command_parameters'] if 'command_parameters' in payload else ''
     result = ApiSingleton.instance().api.addTask(
-        task = payload['task'], 
-        description = payload['description'],
-        utgid = payload['utgid'],
-        command = payload['command'],
-        task_parameters = payload['task_parameters'],
-        command_parameters = payload['command_parameters']
+            task = task,
+            description = description,
+            utgid = utgid,
+            command = command,
+            task_parameters = task_parameters,
+            command_parameters = command_parameters
         )
     return result
 
 def put_set(handler):
     payload = handler.get_payload()
+    task_set = payload['task_set'] if 'task_set' in payload else ''
+    description = payload['description'] if 'description' in payload else ''
     result = ApiSingleton.instance().api.addSet(
-        task_set = payload['task_set'], 
-        description = payload['description']
+            task_set = task_set, 
+            description = description
         )
     return result
 
 def put_class(handler):
     payload = handler.get_payload()
-    result = ApiSingleton.instance().api.addSet(
-        task_set = payload['task_set'], 
-        description = payload['description']
+    node_class = payload['node_class'] if 'node_class' in payload else ''
+    description = payload['description'] if 'description' in payload else ''
+    result = ApiSingleton.instance().api.addClass(
+            node_class = node_class, 
+            description = description
+        )
+    return result
+
+def put_node(handler):
+    payload = handler.get_payload()
+    regex = payload['regex'] if 'regex' in payload else ''
+    description = payload['description'] if 'description' in payload else ''
+    result = ApiSingleton.instance().api.addNode(
+        regex = regex, 
+        description = description
         )
     return result
 
@@ -121,10 +140,90 @@ def put_class(handler):
 #                                          DELETE
 # =====================================================================================================================
 
+def delete_task(handler):
+    key = urllib.unquote(handler.path[6:])
+    result = ApiSingleton.instance().api.deleteTask(key)
+    result = json.loads(result)
+    return result
+
+def delete_set(handler):
+    key = urllib.unquote(handler.path[10:])
+    result = ApiSingleton.instance().api.deleteSet(key)
+    result = json.loads(result)
+    return result
+
+def delete_class(handler):
+    key = urllib.unquote(handler.path[12:])
+    result = ApiSingleton.instance().api.deleteClass(key)
+    result = json.loads(result)
+    return result
+
+def delete_node(handler):
+    key = urllib.unquote(handler.path[6:])
+    result = ApiSingleton.instance().api.deleteNode(key)
+    result = json.loads(result)
+    return result
+
 # =====================================================================================================================
 #                                   POST (Patch - Update)
 # =====================================================================================================================
 
+def modify_task(handler):
+    key = urllib.unquote(handler.path[6:])
+    task = payload['task'] if 'task' in payload else ''
+    description = payload['description'] if 'description' in payload else ''
+    utgid = payload['utgid'] if 'utgid' in payload else ''
+    command = payload['command'] if 'command' in payload else ''
+    task_parameters = payload['task_parameters'] if 'task_parameters' in payload else ''
+    command_parameters = payload['command_parameters'] if 'command_parameters' in payload else ''
+    result = ApiSingleton.instance().api.modifyTask(
+            key,
+            task = task,
+            description = description,
+            utgid = utgid,
+            command = command,
+            task_parameters = task_parameters,
+            command_parameters = command_parameters
+        )
+    return result
+
+def modify_set(handler):
+    key = urllib.unquote(handler.path[10:])
+    payload = handler.get_payload()
+    task_set = payload['task_set'] if 'task_set' in payload else ''
+    description = payload['description'] if 'description' in payload else ''
+    result = ApiSingleton.instance().api.modifySet(
+            key,
+            task_set = task_set, 
+            description = description
+        )
+    return result
+
+def modify_class(handler):
+    key = urllib.unquote(handler.path[12:])
+    payload = handler.get_payload()
+    node_class = payload['node_class'] if 'node_class' in payload else ''
+    description = payload['description'] if 'description' in payload else ''
+    result = ApiSingleton.instance().api.modifyClass(
+            key,
+            node_class = node_class, 
+            description = description
+        )
+    return result
+
+def modify_node(handler):
+    key = urllib.unquote(handler.path[6:])
+    payload = handler.get_payload()
+    regex = payload['regex'] if 'regex' in payload else ''
+    description = payload['description'] if 'description' in payload else ''
+    result = ApiSingleton.instance().api.modifyNode(
+        key,
+        regex = regex, 
+        description = description
+        )
+    return result
+
+# =====================================================================================================================
 
 def rest_call_json(url, payload=None, with_payload_method='PUT'):
     'REST call with JSON decoding of the response and JSON payloads'
@@ -159,16 +258,16 @@ class RESTRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.routes = {
 
                 r'^/tasks$': {'GET': get_tasks, 'media_type': 'application/json'},
-                r'^/task/': {'GET': get_task, 'PUT': put_task, 'media_type': 'application/json'},
+                r'^/task/': {'GET': get_task, 'PUT': put_task, 'DELETE': delete_node, 'POST': modify_task, 'media_type': 'application/json'},
 
                 r'^/task_sets$': {'GET': get_sets, 'media_type': 'application/json'},
-                r'^/task_set/': {'GET': get_set, 'PUT': put_set, 'media_type': 'application/json'},
+                r'^/task_set/': {'GET': get_set, 'PUT': put_set, 'DELETE': delete_set, 'POST': modify_set, 'media_type': 'application/json'},
 
                 r'^/node_classes$': {'GET': get_classes, 'media_type': 'application/json'},
-                r'^/node_class/': {'GET': get_class, 'media_type': 'application/json'},
+                r'^/node_class/': {'GET': get_class, 'DELETE': delete_class, 'POST': modify_class, 'media_type': 'application/json'},
 
                 r'^/nodes$': {'GET': get_nodes, 'media_type': 'application/json'},
-                r'^/node/': {'GET': get_node, 'media_type': 'application/json'}
+                r'^/node/': {'GET': get_node, 'DELETE': delete_node, 'POST': modify_node, 'media_type': 'application/json'}
 
             }
 
