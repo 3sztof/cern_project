@@ -14,14 +14,18 @@
 
 from flask import Flask, request
 from flask_restful import Resource, Api
-from sqlalchemy import create_engine                                            # Google sqlite vs slalchemy
+from sqlalchemy import create_engine                                         
 from json import dumps
+import os
 from flask_jsonpify import jsonify
 
 app = Flask(__name__)
 api = Api(app)
-db_connect = create_engine('sqlite:///../LHCb.db')
+my_path = os.path.dirname(os.path.realpath(__file__))
+_database = my_path + os.sep + '../../../0_main_api/LHCb.db'
+db_connect = create_engine('sqlite:///' + _database)
 conn = db_connect.connect()
+conn.execute("PRAGMA foreign_keys = ON")
 
 # =====================================================================================================================
 #                           Define server's actions triggered by requests

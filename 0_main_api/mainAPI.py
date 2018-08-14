@@ -14,7 +14,7 @@
 
 
 
-class mainAPI():
+class MainAPI():
 
     # =====================================================================================================================
     #                           Constructor
@@ -88,13 +88,16 @@ class mainAPI():
 
     def getTask(self, task):
 
-        query = self.conn.execute("select * from Tasks where task='{0}'".format(task,))
+        if(task == '*'):
+            query = self.conn.execute("select * from Tasks")
+        else:
+            query = self.conn.execute("select * from Tasks where task='{0}'".format(task,))
         result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
         if(len(result['data']) == 0):
             return 'getTask: Unknown task with name: ' + task
         
         return self.json.dumps(result)
-
+        
     # ---------------------------------------------------------------------------------------------------------------------
 
     def assignTask(self, task, task_set):
