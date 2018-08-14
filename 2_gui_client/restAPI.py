@@ -143,25 +143,21 @@ def put_node(handler):
 def delete_task(handler):
     key = urllib.unquote(handler.path[6:])
     result = ApiSingleton.instance().api.deleteTask(key)
-    result = json.loads(result)
     return result
 
 def delete_set(handler):
     key = urllib.unquote(handler.path[10:])
     result = ApiSingleton.instance().api.deleteSet(key)
-    result = json.loads(result)
     return result
 
 def delete_class(handler):
     key = urllib.unquote(handler.path[12:])
     result = ApiSingleton.instance().api.deleteClass(key)
-    result = json.loads(result)
     return result
 
 def delete_node(handler):
     key = urllib.unquote(handler.path[6:])
     result = ApiSingleton.instance().api.deleteNode(key)
-    result = json.loads(result)
     return result
 
 # =====================================================================================================================
@@ -170,6 +166,7 @@ def delete_node(handler):
 
 def modify_task(handler):
     key = urllib.unquote(handler.path[6:])
+    payload = handler.get_payload()
     task = payload['task'] if 'task' in payload else ''
     description = payload['description'] if 'description' in payload else ''
     utgid = payload['utgid'] if 'utgid' in payload else ''
@@ -258,7 +255,7 @@ class RESTRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.routes = {
 
                 r'^/tasks$': {'GET': get_tasks, 'media_type': 'application/json'},
-                r'^/task/': {'GET': get_task, 'PUT': put_task, 'DELETE': delete_node, 'POST': modify_task, 'media_type': 'application/json'},
+                r'^/task/': {'GET': get_task, 'PUT': put_task, 'DELETE': delete_task, 'POST': modify_task, 'media_type': 'application/json'},
 
                 r'^/task_sets$': {'GET': get_sets, 'media_type': 'application/json'},
                 r'^/task_set/': {'GET': get_set, 'PUT': put_set, 'DELETE': delete_set, 'POST': modify_set, 'media_type': 'application/json'},
