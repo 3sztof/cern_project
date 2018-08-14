@@ -172,7 +172,10 @@ class MainAPI():
 
     def getSet(self, task_set):
 
-        query = self.conn.execute("select * from Task_Sets where task_set='{0}'".format(task_set,))
+        if(task_set == '*'):
+            query = self.conn.execute("select * from Task_Sets")
+        else:
+            query = self.conn.execute("select * from Task_Sets where task_set='{0}'".format(task_set,))
         result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
         if(len(result['data']) == 0):
             return 'getSet: Unknown task set with name: ' + task_set
@@ -250,7 +253,10 @@ class MainAPI():
     
     def getClass(self, node_class):
 
-        query = self.conn.execute("select * from Classes where node_class='{0}'".format(node_class,))
+        if(node_class == '*'):
+            query = self.conn.execute("select * from Classes")
+        else:
+            query = self.conn.execute("select * from Classes where node_class='{0}'".format(node_class,))
         result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
         if(len(result['data']) == 0):
             return 'getClass: Unknown node class with name: ' + node_class
@@ -328,7 +334,10 @@ class MainAPI():
     
     def getNode(self, regex):
 
-        query = self.conn.execute("select * from Nodes where regex='{0}'".format(regex,))
+        if(regex == '*'):
+            query = self.conn.execute("select * from Nodes")
+        else:
+            query = self.conn.execute("select * from Nodes where regex='{0}'".format(regex,))
         result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
         if(len(result['data']) == 0):
             return 'getNode: Unknown node with regex: ' + regex
