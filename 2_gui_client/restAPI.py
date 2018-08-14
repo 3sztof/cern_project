@@ -362,7 +362,7 @@ def rest_server(port):
     http_server.server_close()
 
 def main(argv):
-    rest_server(8080)
+    rest_server(1841)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
