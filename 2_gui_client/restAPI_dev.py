@@ -7,12 +7,31 @@ import sys, os, re, shutil, json, urllib, urllib2, BaseHTTPServer, mainAPI
 # =====================================================================================================================
 
 class Singleton:
+    """
+    A non-thread-safe helper class to ease implementing singletons.
+    This should be used as a decorator -- not a metaclass -- to the
+    class that should be a singleton.
+
+    The decorated class can define one `__init__` function that
+    takes only the `self` argument. Also, the decorated class cannot be
+    inherited from. Other than that, there are no restrictions that apply
+    to the decorated class.
+
+    To get the singleton instance, use the `instance` method. Trying
+    to use `__call__` will result in a `TypeError` being raised.
+
+    """
 
     def __init__(self, decorated):
         self._decorated = decorated
 
     def instance(self):
+        """
+        Returns the singleton instance. Upon its first call, it creates a
+        new instance of the decorated class and calls its `__init__` method.
+        On all subsequent calls, the already created instance is returned.
 
+        """
         try:
             return self._instance
         except AttributeError:
@@ -31,99 +50,124 @@ class ApiSingleton:
         self.api = mainAPI.MainAPI()
         print 'API Singleton created'
 
+
+# # Note that f and g are the same object!
+# f = ApiSingleton.instance()
+# g = ApiSingleton.instance()
+# print 'Instance check:'
+# print f is g # True - f and g are the same object! Only one singleton exists!
+
+
+
+
+
+# Simple and functional REST server for Python (2.7) using no dependencies beyond the Python standard library.
+
+# Features:
+
+# * Map URI patterns using regular expressions
+# * Map any/all the HTTP VERBS (GET, PUT, DELETE, POST)
+# * All responses and payloads are converted to/from JSON for you
+# * Easily serve static files: a URI can be mapped to a file, in which case just GET is supported
+# * You decide the media type (text/html, application/json, etc.)
+# * Correct HTTP response codes and basic error messages
+# * Simple REST client included! use the rest_call_json() method
+
+# As an example, let's support a simple key/value store. To test from the command line using curl:
+
+# curl "http://localhost:8080/records"
+# curl -X PUT -d '{"name": "Tal"}' "http://localhost:8080/record/1"
+# curl -X PUT -d '{"name": "Shiri"}' "http://localhost:8080/record/2"
+# curl "http://localhost:8080/records"
+# curl -X DELETE "http://localhost:8080/record/2"
+# curl "http://localhost:8080/records"
+
+# Create the file web/index.html if you'd like to test serving static files. It will be served from the root URI.
+
+# @author: Tal Liron (tliron @ github.com)
+
+
+
+# Fix issues with decoding HTTP responses
 reload(sys)
 sys.setdefaultencoding('utf8')
 
 here = os.path.dirname(os.path.realpath(__file__))
 
-# =====================================================================================================================
-#                                           GET
-# =====================================================================================================================
+records = {}
+tasks = {}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Modify this
+
+# def get_records(handler):
+#     return records
+
+# def get_record(handler):
+#     key = urllib.unquote(handler.path[8:])
+#     return records[key] if key in records else None
+
+# def set_record(handler):
+#     key = urllib.unquote(handler.path[8:])
+#     payload = handler.get_payload()
+#     records[key] = payload
+#     return records[key]
+
+# def delete_record(handler):
+#     key = urllib.unquote(handler.path[8:])
+#     del records[key]
+#     return True # anything except None shows success
+
+# GET
 def get_tasks(handler):
-    result = ApiSingleton.instance().api.getTask('*')
-    result = json.loads(result)
-    return result
-
-def get_task(handler):
-    key = urllib.unquote(handler.path[6:])
-    result = ApiSingleton.instance().api.getTask(key)
-    result = json.loads(result)
-    return result
+    tasks = ApiSingleton.instance().api.getTask('*')
+    tasks = json.loads(tasks)
+    return tasks
 
 def get_sets(handler):
-    result = ApiSingleton.instance().api.getSet('*')
-    result = json.loads(result)
-    return result
-
-def get_set(handler):
-    key = urllib.unquote(handler.path[10:])
-    print key
-    result = ApiSingleton.instance().api.getSet(key)
-    result = json.loads(result)
-    return result
+    sets = ApiSingleton.instance().api.getSet('*')
+    sets = json.loads(sets)
+    return sets
 
 def get_classes(handler):
-    result = ApiSingleton.instance().api.getClass('*')
-    result = json.loads(result)
-    return result
-
-def get_class(handler):
-    key = urllib.unquote(handler.path[12:])
-    result = ApiSingleton.instance().api.getClass(key)
-    result = json.loads(result)
-    return result
+    node_classes = ApiSingleton.instance().api.getClass('*')
+    node_classes = json.loads(node_classes)
+    return node_classes
 
 def get_nodes(handler):
-    result = ApiSingleton.instance().api.getNode('*')
-    result = json.loads(result)
-    return result
+    nodes = ApiSingleton.instance().api.getNode('*')
+    nodes = json.loads(nodes)
+    return nodes
 
-def get_node(handler):
-    key = urllib.unquote(handler.path[6:])
-    result = ApiSingleton.instance().api.getNode(key)
-    result = json.loads(result)
-    return result
 
-# =====================================================================================================================
-#                                           PUT
-# =====================================================================================================================
-
-def put_task(handler):
-    payload = handler.get_payload()
-    result = ApiSingleton.instance().api.addTask(
-        task = payload['task'], 
-        description = payload['description'],
-        utgid = payload['utgid'],
-        command = payload['command'],
-        task_parameters = payload['task_parameters'],
-        command_parameters = payload['command_parameters']
-        )
-    return result
-
-def put_set(handler):
-    payload = handler.get_payload()
-    result = ApiSingleton.instance().api.addSet(
-        task_set = payload['task_set'], 
-        description = payload['description']
-        )
-    return result
-
-def put_class(handler):
-    payload = handler.get_payload()
-    result = ApiSingleton.instance().api.addSet(
-        task_set = payload['task_set'], 
-        description = payload['description']
-        )
-    return result
-
-# =====================================================================================================================
-#                                          DELETE
-# =====================================================================================================================
-
-# =====================================================================================================================
-#                                   POST (Patch - Update)
-# =====================================================================================================================
 
 
 def rest_call_json(url, payload=None, with_payload_method='PUT'):
@@ -153,24 +197,52 @@ class MethodRequest(urllib2.Request):
         return self._method if self._method is not None else urllib2.Request.get_method(self, *args, **kwargs)
 
 class RESTRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
-
     def __init__(self, *args, **kwargs):
-
         self.routes = {
-
+                # r'^/$': {'file': 'web/index.html', 'media_type': 'text/html'},
+                # r'^/records$': {'GET': get_records, 'media_type': 'application/json'},
+                # r'^/record/': {'GET': get_record, 'PUT': set_record, 'DELETE': delete_record, 'media_type': 'application/json'},
                 r'^/tasks$': {'GET': get_tasks, 'media_type': 'application/json'},
-                r'^/task/': {'GET': get_task, 'PUT': put_task, 'media_type': 'application/json'},
-
                 r'^/task_sets$': {'GET': get_sets, 'media_type': 'application/json'},
-                r'^/task_set/': {'GET': get_set, 'PUT': put_set, 'media_type': 'application/json'},
-
                 r'^/node_classes$': {'GET': get_classes, 'media_type': 'application/json'},
-                r'^/node_class/': {'GET': get_class, 'media_type': 'application/json'},
-
-                r'^/nodes$': {'GET': get_nodes, 'media_type': 'application/json'},
-                r'^/node/': {'GET': get_node, 'media_type': 'application/json'}
-
+                r'^/nodes$': {'GET': get_nodes, 'media_type': 'application/json'}
             }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         return BaseHTTPServer.BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
     
