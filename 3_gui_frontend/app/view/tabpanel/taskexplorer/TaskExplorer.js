@@ -1,6 +1,7 @@
 Ext.define('LHCb.view.tabpanel.taskexplorer.TaskExplorer', {
     extend: 'Ext.Container',
 
+    itemId: 'taskexplorer',
     xtype: 'taskexplorer',
     controller: 'main',
 
@@ -32,6 +33,7 @@ Ext.define('LHCb.view.tabpanel.taskexplorer.TaskExplorer', {
         },
         {
             xtype: 'grid',
+            id: 'taskexplorergrid',
             bind: '{tasks}',
             columns: [
                 {

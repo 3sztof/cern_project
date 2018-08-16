@@ -87,9 +87,10 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
                             flex: 1,
                             text: 'Delete task',
                             glyph: 'f056@FontAwesome',
-                            handler: function() {
-                                alert('Delete selected task trough REST api, optional: ask if the user is sure')
-                            }
+                            handler: 'onDeleteTask'
+                            // handler: function() {
+                            //     alert('Delete selected task trough REST api, optional: ask if the user is sure')
+                            // }
                         }
                     ],
                     align: 'bottom'

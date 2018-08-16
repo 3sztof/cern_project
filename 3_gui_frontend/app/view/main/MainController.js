@@ -24,6 +24,36 @@ Ext.define('LHCb.view.main.MainController', {
     showFullTasksTable: function() {
         var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
         operationwindow.setActiveItem(0);
+    },
+
+    onDeleteTask: function() {
+        Ext.Msg.confirm('Confirm', 'Are you sure?', 'onConfirmDeleteTask', this);
+    },
+
+    onConfirmDeleteTask: function() {
+        Ext.Ajax.request({
+            method: 'PUT',
+            // Send a JSONRPC request to the server (delete selected item)
+            jsonData: new JSON_RPC.Request('deleteTask', [{'task':LHCb.store.SelectedItemData.task}]),
+            dataType: 'json',
+            url: 'http://localhost:8080/tasks',
+            
+            success: function() {
+                // Switch to single task view
+                var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
+                operationwindow.setActiveItem(0);
+                // Alert that the task has been deleted
+                Ext.MessageBox.alert('Status', 'The task has been deleted from the database.', this.showResult, this);
+                // Reload store to refresh tables
+                Ext.getCmp('taskexplorergrid').getStore().reload();
+                Ext.getCmp('taskstablegrid').getStore().reload();
+                //taskexplorer.viewModel.stores.tasks.reload()
+            },
+            failure: function() {
+                Ext.MessageBox.alert('Status', 'Request failed: the task has not been deleted from the database.', this.showResult, this);
+            }         
+         });
+         
     }
 
 });

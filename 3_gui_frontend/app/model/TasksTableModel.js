@@ -41,11 +41,19 @@ Ext.define('LHCb.model.TasksTableModel', {
 
     proxy: {
         type: 'rest',
+        // disableCache: false,
+        //method: 'POST',
+        actionMethods : {create: "POST", read: "POST", update: "POST", destroy: "POST"},
         reader: {
             type: 'json',
             rootProperty: 'data'
         },
-        url: 'http://localhost/tasks'
+        useDefaultXhrHeader : false,
+        noCache: false,
+        limitParam: undefined,
+        pageParam: undefined,
+        startParam: undefined,
+        url: 'http://localhost:8080/tasks'
     },
 
     // validators: {

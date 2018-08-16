@@ -222,6 +222,19 @@ def modify_node(handler):
 
 # =====================================================================================================================
 
+def rpc_prototype(handler):
+    payload = handler.get_payload()
+    params = ''
+    method = payload['method']
+    for row in payload['params'][0]:
+        params += row + '=\''
+        params += payload['params'][0][row] + '\' '
+    result = eval('ApiSingleton.instance().api.' + method + '(' + params + ')')
+    print result
+    return 'Success'
+
+# =====================================================================================================================
+
 def rest_call_json(url, payload=None, with_payload_method='PUT'):
     'REST call with JSON decoding of the response and JSON payloads'
     if payload:
@@ -254,7 +267,7 @@ class RESTRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         self.routes = {
 
-                r'^/tasks$': {'GET': get_tasks, 'media_type': 'application/json'},
+                r'^/tasks$': {'PUT': rpc_prototype, 'POST': get_tasks, 'media_type': 'application/json'},
                 r'^/task/': {'GET': get_task, 'PUT': put_task, 'DELETE': delete_task, 'POST': modify_task, 'media_type': 'application/json'},
 
                 r'^/task_sets$': {'GET': get_sets, 'media_type': 'application/json'},
@@ -284,6 +297,14 @@ class RESTRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def do_DELETE(self):
         self.handle_method('DELETE')
+
+    def do_OPTIONS(self):
+        self.send_response(200, "ok")
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        self.send_header("Access-Control-Allow-Headers", "X-Requested-With")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.end_headers()
     
     def get_payload(self):
         payload_len = int(self.headers.getheader('content-length', 0))
@@ -362,7 +383,7 @@ def rest_server(port):
     http_server.server_close()
 
 def main(argv):
-    rest_server(1841)
+    rest_server(8080)
 
 if __name__ == '__main__':
     main(sys.argv[1:])

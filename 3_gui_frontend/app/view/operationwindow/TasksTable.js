@@ -2,6 +2,8 @@ Ext.define('LHCb.view.operationwindow.TasksTable', {
     extend: 'Ext.grid.Panel',
     xtype: 'taskstable',
 
+    id: 'taskstablegrid',
+
     requires: ['LHCb.model.TasksTableModel'],
 
     controller: 'main',
