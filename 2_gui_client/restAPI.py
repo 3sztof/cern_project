@@ -228,7 +228,7 @@ def rpc_prototype(handler):
     method = payload['method']
     for row in payload['params'][0]:
         params += row + '=\''
-        params += payload['params'][0][row] + '\' '
+        params += payload['params'][0][row] + '\', '
     result = eval('ApiSingleton.instance().api.' + method + '(' + params + ')')
     print result
     return 'Success'

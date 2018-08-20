@@ -44,20 +44,21 @@ Ext.define('LHCb.view.operationwindow.TasksTable', {
         },
         {
             text: 'PcAdd parameters', dataIndex: 'command_parameters', flex: 1
-        },
-        {
-            xtype: 'actioncolumn',
-            width: 40,
-            items: 
-            [
-                {
-                    glyph: 'f044@FontAwesome',
-                    handler: function(grid, rowIndex, colindex) {
-                        alert('Edit row: ' + rowIndex + ' column: ' + colindex);
-                    }
-                }
-            ]
         }
+        // {
+        //     xtype: 'actioncolumn',
+        //     flex: 1,
+        //     items: 
+        //     [
+        //         {
+        //             glyph: 'f044@FontAwesome',
+        //             handler: function(grid, rowIndex, colindex) {
+        //                 console.log(grid)
+        //                 alert('Edit row: ' + rowIndex + ' column: ' + colindex);
+        //             }
+        //         }
+        //     ]
+        // }
         // {
         //     text: 'Process description', dataIndex: 'description', flex: 1.8
         // },

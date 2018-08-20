@@ -34,9 +34,10 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
                             flex: 1,
                             text: 'Add task',
                             glyph: 'f055@FontAwesome',
-                            handler: function() {
-                                alert('Switch to "Add task" popup, PUT to DB via REST api');
-                            }
+                            handler: 'onAddTask'
+                            // function() {
+                            //     alert('Switch to "Add task" popup, PUT to DB via REST api');
+                            // }
                         },
                         {
                             flex: 1,
@@ -79,9 +80,7 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
                             flex: 1,
                             text: 'Modify task',
                             glyph: 'f044@FontAwesome',
-                            handler: function() {
-                                alert('Switch to modifying popup - store the task\'s data in the store.SelectedItemData singleton.');
-                            }
+                            handler: 'onModifyTask'
                         },
                         {
                             flex: 1,
