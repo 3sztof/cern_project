@@ -10,6 +10,7 @@ Ext.application({
 
     requires: [
         'LHCb.view.main.Main',
+        //'json-rpc',
         'Ext.plugin.Viewport',
         'LHCb.view.operationwindow.TasksTable',
         'LHCb.model.TasksTableModel',

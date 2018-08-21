@@ -9,7 +9,7 @@ Ext.define('LHCb.proxy.MyProxy', {
             request = writer.write(request);
         }
         
-        console.log('Making a request using custom proxy: LHCb.proxy.MyProxy');
+        // console.log('Making a request using custom proxy: LHCb.proxy.MyProxy');
 
         Ext.apply(request, {
             url           : this.url,
@@ -27,7 +27,7 @@ Ext.define('LHCb.proxy.MyProxy', {
         
         Ext.Ajax.request(request);
         
-        console.log('jsonData: ' + request.jsonData);
+        // console.log('jsonData: ' + request.jsonData);
 
         return request;
     },

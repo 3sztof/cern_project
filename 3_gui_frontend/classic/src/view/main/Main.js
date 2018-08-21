@@ -35,8 +35,6 @@ Ext.define('LHCb.view.main.Main', {
                 {
                     layout: {
                         type: 'hbox',
-                        // pack: 'start',
-                        // align: 'stretch'
                     },
                     items: [
                         {
@@ -47,6 +45,7 @@ Ext.define('LHCb.view.main.Main', {
                                 items: [
                                     {
                                         glyph: 'f129@FontAwesome',
+                                        tooltip: 'About',
                                         handler: function(){
                                             Ext.MessageBox.alert('About', '<center><b>LHCb Online Farm Process Explorer</b><br><br>Author: Krzysztof Wilczynski<ul list-style-position: inside; margin-top: 0;><li><a href="mailto:krzysztofwilczynski@mail.com">krzysztofwilczynski@mail.com</a></li><li><a href="https://www.linkedin.com/in/3sztof">www.linkedin.com/in/3sztof/</a></li><li><a href="tel:+48668876202">+48 669 876 202</a></li></ul>Supervisor: Markus Frank<ul list-style-position: inside; margin-top: 0;><li><a href="mailto:markus.frank@cern.ch">markus.frank@cern.ch</a></li></ul></center>', this.showResult, this);
                                         }

@@ -24,10 +24,6 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
             },
             
             items: [
-                // {
-                //     xtype: 'panel',
-                //     title: '<center>Tasks</center>'
-                // },
                 {
                     tbar: [
                         {
@@ -43,9 +39,10 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
                             flex: 1,
                             text: 'Delete task(s)',
                             glyph: 'f056@FontAwesome',
-                            handler: function() {
-                                alert('Delete selected tasks trough REST api, optional: ask if the user is sure')
-                            }
+                            handler: 'onDeleteTasks'
+                            // handler: function() {
+                            //     alert('Delete selected tasks trough REST api, optional: ask if the user is sure')
+                            // }
                         }
                     ],
                 },
@@ -55,7 +52,7 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
                 
             ]
         }, 
-        // View 1 - clicked (navigation) task details? - TODO
+        // View 1 - clicked (navigation) task details
         {
             layout: {
                 type: 'vbox',
@@ -95,7 +92,92 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
                     align: 'bottom'
                 }
             ]
-        } 
+        },
+        // View 2 - Task Sets full table
+        {
+            layout: {
+                type: 'vbox',
+                pack: 'start',
+                align: 'stretch'
+            },
+            
+            items: [
+                // {
+                //     xtype: 'panel',
+                //     title: '<center>Tasks</center>'
+                // },
+                {
+                    tbar: [
+                        {
+                            flex: 1,
+                            text: 'Add task set',
+                            glyph: 'f055@FontAwesome',
+                            handler: 'onAddTaskSet'
+                        },
+                        {
+                            flex: 1,
+                            text: 'Delete task set(s)',
+                            glyph: 'f056@FontAwesome',
+                            handler: 'onDeleteTaskSets'
+                        }
+                    ],
+                },
+                {
+                    xtype: 'tasksetstable'
+                }
+                
+            ]
+        },
+        // View 3 - clicked (navigation) task set details
+        {
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+
+            items: [
+                {
+                    layout: {
+                        type: 'fit',
+                    },
+                    items: [
+                        {
+                            xtype: 'singletaskset',
+                            flex: 1
+                        }
+                    ]
+                },
+                {
+                    bbar: [
+                        {
+                            flex: 1,
+                            text: 'Modify task set',
+                            glyph: 'f044@FontAwesome',
+                            handler: 'onModifyTaskSet'
+                        },
+                        {
+                            flex: 1,
+                            text: 'Assign tasks',
+                            iconCls: 'x-fa fa-sign-in',
+                            handler: 'onAssignToTaskSet'
+                        },
+                        {
+                            flex: 1,
+                            text: 'Unassign tasks',
+                            iconCls: 'x-fa fa-sign-out',
+                            handler: 'onUnassignFromTaskSet'
+                        },
+                        {
+                            flex: 1,
+                            text: 'Delete task set',
+                            glyph: 'f056@FontAwesome',
+                            handler: 'onDeleteTaskSet'
+                        }
+                    ],
+                    align: 'bottom'
+                }
+            ]
+        }  
     ]
 
 })

@@ -54,7 +54,7 @@ Ext.define('LHCb.view.tabpanel.taskexplorer.TaskExplorer', {
                             var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                             operationwindow.setActiveItem(1);
                             // Update the description window with the singleton store record
-                            Ext.ComponentQuery.query('panel[itemId=descriptionwindow]')[0].body.update('<br><center>' + LHCb.store.SelectedItemData.description + '</center>');
+                            Ext.ComponentQuery.query('panel[itemId=descriptionwindow]')[0].body.update('<br><center>' + LHCb.store.SelectedItemData.task + ': ' + LHCb.store.SelectedItemData.description + '</center>');
                             // Update the default fields in the task overview window
                             Ext.ComponentQuery.query('panel[itemId=singletaskwindow]')[0].items.items[0].setValue(LHCb.store.SelectedItemData.task);
                             Ext.ComponentQuery.query('panel[itemId=singletaskwindow]')[0].items.items[1].setValue(LHCb.store.SelectedItemData.command);

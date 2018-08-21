@@ -31,8 +31,12 @@ Ext.define('LHCb.view.tabpanel.TabPanel', {
         },
         {
             title: 'Task Sets',
-            html : 'Task Sets tree from DB via REST.',
-            cls: 'card'
+            cls: 'card',
+            items: [
+                {                
+                    xtype: 'tasksetsexplorer'
+                }
+            ]
         },
         {
             title: 'Node Classes',
