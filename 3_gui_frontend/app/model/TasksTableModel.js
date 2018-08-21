@@ -45,10 +45,10 @@ Ext.define('LHCb.model.TasksTableModel', {
         type: 'myproxy',
         dataType: 'json',
         actionMethods : {create: "POST", read: "POST", update: "POST", destroy: "POST"},
-        jsonData: new JSON_RPC.Request('getTask', [{'task':"*"}]),
+        jsonData: new JSON_RPC.Request("getTask", [{"task":"*"}]),
         reader: {
             type: 'json',
-            rootProperty: 'data'
+            rootProperty: 'result'
         },
         writer: {
             method:'POST',
