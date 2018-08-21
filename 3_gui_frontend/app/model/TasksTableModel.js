@@ -40,23 +40,28 @@ Ext.define('LHCb.model.TasksTableModel', {
     ],
 
     proxy: {
-        type: 'rest',
-        // disableCache: false,
-        //method: 'POST',
+        disableCache: false,
+        method: 'POST',
+        type: 'myproxy',
+        dataType: 'json',
         actionMethods : {create: "POST", read: "POST", update: "POST", destroy: "POST"},
+        jsonData: new JSON_RPC.Request('getTask', [{'task':"*"}]),
         reader: {
             type: 'json',
             rootProperty: 'data'
+        },
+        writer: {
+            method:'POST',
+            type: 'json',
+            writeAllFields: true,
         },
         useDefaultXhrHeader : false,
         noCache: false,
         limitParam: undefined,
         pageParam: undefined,
         startParam: undefined,
-        url: 'http://localhost:8080/tasks'
+        //url: 'http://localhost:8080/tasks'
+        url: 'http://localhost:8081/TDBDATA/JSONRPC'
     },
 
-    // validators: {
-    //     name: 'presence'
-    // }otepa
 });

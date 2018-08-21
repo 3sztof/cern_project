@@ -223,7 +223,9 @@ def modify_node(handler):
 # =====================================================================================================================
 
 def rpc_prototype(handler):
+    print handler
     payload = handler.get_payload()
+    print payload
     params = ''
     method = payload['method']
     for row in payload['params'][0]:
@@ -231,7 +233,7 @@ def rpc_prototype(handler):
         params += payload['params'][0][row] + '\', '
     result = eval('ApiSingleton.instance().api.' + method + '(' + params + ')')
     print result
-    return 'Success'
+    return json.loads(result)
 
 # =====================================================================================================================
 
@@ -267,7 +269,7 @@ class RESTRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         self.routes = {
 
-                r'^/tasks$': {'PUT': rpc_prototype, 'POST': get_tasks, 'media_type': 'application/json'},
+                r'^/tasks$': {'PUT': rpc_prototype, 'POST': rpc_prototype, 'GET': rpc_prototype, 'media_type': 'application/json'},
                 r'^/task/': {'GET': get_task, 'PUT': put_task, 'DELETE': delete_task, 'POST': modify_task, 'media_type': 'application/json'},
 
                 r'^/task_sets$': {'GET': get_sets, 'media_type': 'application/json'},

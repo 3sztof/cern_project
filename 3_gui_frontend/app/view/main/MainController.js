@@ -40,11 +40,11 @@ Ext.define('LHCb.view.main.MainController', {
 
     onConfirmDeleteTask: function() {
         Ext.Ajax.request({
-            method: 'PUT',
+            method: 'POST',
             // Send a JSONRPC request to the server (delete selected item)
             jsonData: new JSON_RPC.Request('deleteTask', [{'task':LHCb.store.SelectedItemData.task}]),
             dataType: 'json',
-            url: 'http://localhost:8080/tasks',
+            url: 'http://localhost:8081/TDBDATA/JSONRPC',
             
             success: function(response) {
                 // Switch to single task view
@@ -124,7 +124,7 @@ Ext.define('LHCb.view.main.MainController', {
                         var form = this.up('form'); // get the form panel
                         var formFields = form.items;
                         Ext.Ajax.request({
-                            method: 'PUT',
+                            method: 'POST',
                             // Send a JSONRPC request to the server (delete selected item)
                             jsonData: new JSON_RPC.Request('modifyTask', [{
                                     'original_task': LHCb.store.SelectedItemData.task,
@@ -136,7 +136,7 @@ Ext.define('LHCb.view.main.MainController', {
                                     'description': formFields.items[5].value
                                 }]),
                             dataType: 'json',
-                            url: 'http://localhost:8080/tasks',
+                            url: 'http://localhost:8081/TDBDATA/JSONRPC',
                             
                             success: function(response) {
                                 // Switch to single task view
@@ -224,7 +224,7 @@ Ext.define('LHCb.view.main.MainController', {
                         var form = this.up('form'); // get the form panel
                         var formFields = form.items;
                         Ext.Ajax.request({
-                            method: 'PUT',
+                            method: 'POST',
                             // Send a JSONRPC request to the server (delete selected item)
                             jsonData: new JSON_RPC.Request('addTask', [{
                                     'task': formFields.items[0].value,
@@ -235,7 +235,7 @@ Ext.define('LHCb.view.main.MainController', {
                                     'description': formFields.items[5].value
                                 }]),
                             dataType: 'json',
-                            url: 'http://localhost:8080/tasks',
+                            url: 'http://localhost:8081/TDBDATA/JSONRPC',
                             
                             success: function(response) {
                                 // Alert that the task has been added
