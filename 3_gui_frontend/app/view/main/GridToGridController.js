@@ -27,14 +27,12 @@ Ext.define('LHCb.view.main.GridToGridController', {
         this.onDrop(dropRec, data.records[0], dropPosition, 'Drag from right to left');
         itemtoremove = LHCb.store.AssignItemsStore.tasks.indexOf(data.event.item.innerText);
         LHCb.store.AssignItemsStore.tasks.splice(itemtoremove, 1);
-        console.log(LHCb.store.AssignItemsStore.tasks);
     },
 
     onDropGrid2: function (node, data, dropRec, dropPosition) {
         this.onDrop(dropRec, data.records[0], dropPosition, 'Drag from left to right');
 
         LHCb.store.AssignItemsStore.tasks.push(data.event.item.innerText);
-        console.log(LHCb.store.AssignItemsStore.tasks);
     },
 
     // onResetClick: function () {

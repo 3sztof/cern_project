@@ -642,32 +642,23 @@ Ext.define('LHCb.view.main.MainController', {
             text: 'Save',
             handler: function() {
                 var assignTaskWindow = Ext.ComponentQuery.query('panel[itemId=assigntasktotaskset]')[0];
-                var assignTasksGrid = Ext.ComponentQuery.query('grid[itemId=assigntasksgrid]')[0];
 
+                tasks_to_assign = LHCb.store.AssignItemsStore.tasks;
 
+                for (var i in tasks_to_assign){
+                    Ext.Ajax.request({
+                        method: 'POST',
+                        // Send a JSONRPC request to the server (delete selected item)
+                        jsonData: new JSON_RPC.Request('assignTask', [{
+                                'task': tasks_to_assign[i],
+                                'task_set': LHCb.store.SelectedItemData.task_set
+                            }]),
+                        dataType: 'json',
+                        url: 'http://localhost:8081/TDBDATA/JSONRPC',     
+                     });
+                }
 
-                // Ext.Ajax.request({
-                //     method: 'POST',
-                //     // Send a JSONRPC request to the server (delete selected item)
-                //     jsonData: new JSON_RPC.Request('addSet', [{
-                //             'task_set': formFields.items[0].value,
-                //             'description': formFields.items[1].value
-                //         }]),
-                //     dataType: 'json',
-                //     url: 'http://localhost:8081/TDBDATA/JSONRPC',
-                    
-                //     success: function(response) {
-                //         // Alert that the task has been added
-                //         Ext.MessageBox.alert('Status', 'The task set has been added to the database.', this.showResult, this);
-                //         // Reload store to refresh tables
-                //         Ext.getCmp('tasksetsexplorergrid').getStore().reload();
-                //         Ext.getCmp('tasksetstablegrid').getStore().reload();
-                //         // console.log(response.responseText);
-                //     },
-                //     failure: function(response) {
-                //         Ext.MessageBox.alert('Status', 'Request failed: the task set has not been added to the the database. Details: ' + response.responseText, this.showResult, this);
-                //     }         
-                // }); 
+                Ext.MessageBox.alert('Status', 'The tasks have been assigned to the task set.', this.showResult, this);
                 assignTaskWindow.destroy();
             }
         }]
