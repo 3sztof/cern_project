@@ -532,15 +532,14 @@ Ext.define('LHCb.view.main.MainController', {
             title: 'Assign tasks to a task set',
             controller: 'dd-grid-to-grid',
             
+            itemId: 'assigntasktotaskset',
+
             closable: true,
             closeAction: 'destroy',
             width: 350,
             minWidth: 250,
             border: false,
             modal: true,
-            layout: {
-                type: 'hbox'
-            },
             width: 650,
             height: 300,
             viewModel: {
@@ -551,12 +550,13 @@ Ext.define('LHCb.view.main.MainController', {
                     },
                     assign_items: {
                         model: 'LHCb.model.AssignItems',
-                        autoLoad: true
+                        autoLoad: false
                     }
                 }
             },
             layout: {
                 type: 'hbox',
+                pack: 'center',
                 align: 'stretch'
             },  
             items: [{
@@ -601,7 +601,6 @@ Ext.define('LHCb.view.main.MainController', {
             },
             {
                 xtype: 'grid',
-                // title: 'Second Grid',
                 reference: 'grid2',
 
                 flex: 1,
@@ -619,7 +618,6 @@ Ext.define('LHCb.view.main.MainController', {
                         dropZone: {
                             overClass: 'dd-over-gridview'
                         }
-                        // TODO: implement the viewcontroller in a clever way
                     },
 
                     listeners: {
@@ -640,34 +638,33 @@ Ext.define('LHCb.view.main.MainController', {
         ],
         fbar: [{
             text: 'Save',
-            formBind: true,
-            // itemId: 'submit',
             handler: function() {
-                var form = this.up('form'); // get the form panel
-                var formFields = form.items;
-                Ext.Ajax.request({
-                    method: 'POST',
-                    // Send a JSONRPC request to the server (delete selected item)
-                    jsonData: new JSON_RPC.Request('addSet', [{
-                            'task_set': formFields.items[0].value,
-                            'description': formFields.items[1].value
-                        }]),
-                    dataType: 'json',
-                    url: 'http://localhost:8081/TDBDATA/JSONRPC',
+                var assignTaskWindow = Ext.ComponentQuery.query('panel[itemId=assigntasktotaskset]')[0];
+                console.log(assignTaskWindow);
+
+                // Ext.Ajax.request({
+                //     method: 'POST',
+                //     // Send a JSONRPC request to the server (delete selected item)
+                //     jsonData: new JSON_RPC.Request('addSet', [{
+                //             'task_set': formFields.items[0].value,
+                //             'description': formFields.items[1].value
+                //         }]),
+                //     dataType: 'json',
+                //     url: 'http://localhost:8081/TDBDATA/JSONRPC',
                     
-                    success: function(response) {
-                        // Alert that the task has been added
-                        Ext.MessageBox.alert('Status', 'The task set has been added to the database.', this.showResult, this);
-                        // Reload store to refresh tables
-                        Ext.getCmp('tasksetsexplorergrid').getStore().reload();
-                        Ext.getCmp('tasksetstablegrid').getStore().reload();
-                        // console.log(response.responseText);
-                    },
-                    failure: function(response) {
-                        Ext.MessageBox.alert('Status', 'Request failed: the task set has not been added to the the database. Details: ' + response.responseText, this.showResult, this);
-                    }         
-                }); 
-                Ext.ComponentQuery.query('panel[itemId=addtasksetform]')[0].destroy();
+                //     success: function(response) {
+                //         // Alert that the task has been added
+                //         Ext.MessageBox.alert('Status', 'The task set has been added to the database.', this.showResult, this);
+                //         // Reload store to refresh tables
+                //         Ext.getCmp('tasksetsexplorergrid').getStore().reload();
+                //         Ext.getCmp('tasksetstablegrid').getStore().reload();
+                //         // console.log(response.responseText);
+                //     },
+                //     failure: function(response) {
+                //         Ext.MessageBox.alert('Status', 'Request failed: the task set has not been added to the the database. Details: ' + response.responseText, this.showResult, this);
+                //     }         
+                // }); 
+                assignTaskWindow.destroy();
             }
         }]
                     }).show();

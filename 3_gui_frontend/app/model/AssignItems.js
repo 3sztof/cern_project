@@ -3,6 +3,8 @@ Ext.define('LHCb.model.AssignItems', {
 
     alias: 'viewmodel.assignitems',
 
+    itemId: 'assigneditemsstore',
+
     fields: [
         {name: 'task', type: 'string'} 
     ],
