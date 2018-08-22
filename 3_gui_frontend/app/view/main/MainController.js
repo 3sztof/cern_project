@@ -603,6 +603,8 @@ Ext.define('LHCb.view.main.MainController', {
                 xtype: 'grid',
                 reference: 'grid2',
 
+                itemId: 'assigntasksgrid',
+
                 flex: 1,
                 stripeRows: true,
 
@@ -640,7 +642,9 @@ Ext.define('LHCb.view.main.MainController', {
             text: 'Save',
             handler: function() {
                 var assignTaskWindow = Ext.ComponentQuery.query('panel[itemId=assigntasktotaskset]')[0];
-                console.log(assignTaskWindow);
+                var assignTasksGrid = Ext.ComponentQuery.query('grid[itemId=assigntasksgrid]')[0];
+
+
 
                 // Ext.Ajax.request({
                 //     method: 'POST',
