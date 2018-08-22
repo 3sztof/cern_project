@@ -548,12 +548,36 @@ Ext.define('LHCb.view.main.MainController', {
                         model: 'LHCb.model.TasksTableModel',
                         autoLoad: true
                     },
-                    assign_items: {
-                        model: 'LHCb.model.AssignItems',
-                        autoLoad: false
+                    assigned_items: {
+                        autoLoad: true,
+                        fields: [
+                            {name: 'task', type: 'string'} 
+                        ],
+                    
+                    
+                        proxy: {
+                            disableCache: false,
+                            method: 'POST',
+                            type: 'myproxy',
+                            dataType: 'json',
+                            actionMethods : {create: "POST", read: "POST", update: "POST", destroy: "POST"},
+                            jsonData: new JSON_RPC.Request("tasksInSet", [{"task_set":LHCb.store.SelectedItemData.task_set}]),
+                            a: console.log('store loading'),
+                            reader: {
+                                type: 'json',
+                                rootProperty: 'result'
+                            },
+                            url: 'http://localhost:8081/TDBDATA/JSONRPC'
+                        }
+                    
                     }
                 }
             },
+            tools: [{
+                type: 'refresh',
+                tooltip: 'Reset assignment',
+                handler: 'onResetClick'
+            }],
             layout: {
                 type: 'hbox',
                 pack: 'center',
@@ -569,11 +593,7 @@ Ext.define('LHCb.view.main.MainController', {
                 multiSelect: true,
                 margin: '0 5 0 0',
 
-                // tools: [{
-                //     type: 'refresh',
-                //     tooltip: 'Reset assignment',
-                //     handler: 'onResetClick'
-                // }],
+                
 
                 viewConfig: {
                     plugins: {
@@ -627,10 +647,10 @@ Ext.define('LHCb.view.main.MainController', {
                     }
                 },
 
-                bind: '{assign_items}',
+                bind: '{assigned_items}',
         
                 columns: [{
-                    text: 'Tasks to assign',
+                    text: 'Assigned tasks',
                     dataIndex: 'task',
         
                     flex: 1,
@@ -638,6 +658,7 @@ Ext.define('LHCb.view.main.MainController', {
                 }]
             }
         ],
+
         fbar: [{
             text: 'Save',
             handler: function() {

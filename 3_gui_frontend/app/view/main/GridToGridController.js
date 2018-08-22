@@ -4,9 +4,9 @@ Ext.define('LHCb.view.main.GridToGridController', {
     alias: 'controller.dd-grid-to-grid',
 
     beforeRender: function () {
-        var store = this.lookup('grid1').store,
-            data = (this.myData = []),
-            obj;
+        // var store = this.lookup('grid1').store,
+        //     data = (this.myData = []),
+        //     obj;
 
         LHCb.store.AssignItemsStore.tasks = [];
 
@@ -17,26 +17,29 @@ Ext.define('LHCb.view.main.GridToGridController', {
         // });
     },
 
+
     onDrop: function (onRec, rec, dropPosition, title) {
-        var dropOn = onRec ? ' ' + dropPosition + ' ' + onRec.get('name') : ' on empty view';
+        // var dropOn = onRec ? ' ' + dropPosition + ' ' + onRec.get('name') : ' on empty view';
 
         // KitchenSink.toast(title, 'Dropped ' + rec.get('name') + dropOn);
     },
 
     onDropGrid1: function (node, data, dropRec, dropPosition) {
-        this.onDrop(dropRec, data.records[0], dropPosition, 'Drag from right to left');
+        // this.onDrop(dropRec, data.records[0], dropPosition, 'Drag from right to left');
+
         itemtoremove = LHCb.store.AssignItemsStore.tasks.indexOf(data.event.item.innerText);
         LHCb.store.AssignItemsStore.tasks.splice(itemtoremove, 1);
     },
 
     onDropGrid2: function (node, data, dropRec, dropPosition) {
-        this.onDrop(dropRec, data.records[0], dropPosition, 'Drag from left to right');
+        // this.onDrop(dropRec, data.records[0], dropPosition, 'Drag from left to right');
 
         LHCb.store.AssignItemsStore.tasks.push(data.event.item.innerText);
     },
 
-    // onResetClick: function () {
-    //     this.lookup('grid1').getStore().loadData(this.myData);
-    //     this.lookup('grid2').getStore().removeAll();
-    // }
+    onResetClick: function () {
+
+        this.lookup('grid1').getStore().reload();
+        this.lookup('grid2').getStore().reload();
+    }
 });

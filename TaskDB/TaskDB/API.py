@@ -29,10 +29,13 @@ class Connection:
         if database is None:
             my_path = os.path.dirname(os.path.realpath(__file__))
             database = 'sqlite:///' + my_path + os.sep + 'LHCb.db'
-        if Connection.debug: 
-            logging.info('++ Connection to database:'+database)
-        # Initiate a connection, cursor object and turn on the constraints to protect the schema (created in initDB.py)
         self.database = database
+        self.init()
+
+    def init(self):
+        if Connection.debug: 
+            logging.info('++ Connection to database:'+self.database)
+        # Initiate a connection, cursor object and turn on the constraints to protect the schema (created in initDB.py)
         self.open()
         self.configure()
 
@@ -55,6 +58,10 @@ class Connection:
 
     def close(self):
         return self.handle.close()
+
+    def reconnect(self):
+        self.init()
+
 
 # =========================================================================================================================
 # Database creator
@@ -189,6 +196,12 @@ class TaskDB:
         self.dbg = dbg
         self.connection = connection
 
+    def reconnect(self, arg=None):
+        if self.connection:
+            self.connection.reconnect()
+            return 'Success'
+        return 'FAILED'
+    
     # =====================================================================================================================
     # Helper function to execute a single SQL statement within the engine
     # \param   statement     SQL string describing the statement to be executed
@@ -338,6 +351,12 @@ class TaskDB:
     # ---------------------------------------------------------------------------------------------------------------------
     def assignTask(self, task, task_set):
         try:
+            # Handle bulk assignments/unassignments
+            if task.__class__ == list:
+                for t in task:
+                    self.execStatement("insert into Tasks_to_Task_Sets values ('{0}', '{1}')".format(t, task_set))
+                return SUCCESS
+            # Handle single assignments/unassignments
             self.execStatement("insert into Tasks_to_Task_Sets values ('{0}', '{1}')".format(task, task_set))
             return SUCCESS
         except Exception, e:
@@ -355,12 +374,42 @@ class TaskDB:
     # ---------------------------------------------------------------------------------------------------------------------
     def unassignTask(self, task, task_set):
         try:
+            # Handle bulk assignments/unassignments
+            if task.__class__ == list:
+                for t in task:
+                    self.execStatement("delete from Tasks_to_Task_Sets where task='{0}' and task_set='{1}'".format(t, task_set))
+                return SUCCESS
+            # Handle single assignments/unassignments
             query = self.execStatement("delete from Tasks_to_Task_Sets where task='{0}' and task_set='{1}'".format(task,task_set))
             if(query.rowcount >= 1):
                 return SUCCESS
             raise Exception('unassignTask: The specified assignment pair does not exist in the database: ' + task + ' <-> ' + task_set)
         except Exception, e:
             return self.handleException(e,'Failed to un-assign task "%s" from task set "%s"'%(task,task_set,))
+
+    # =====================================================================================================================
+    # Query the tasks assigned to a given task set
+    # 
+    # \param  task_set           [REQUIRED]  Name of the task set the task should be queried
+    # \return                                Statuscode indicating success or failure / Exception
+    #
+    # \author  K.Wilczynski
+    # \version 1.0
+    # ---------------------------------------------------------------------------------------------------------------------
+    def tasksInSet(self, task_set):
+        message = None
+        try:
+            query = self.execStatement("SELECT task FROM Tasks_to_Task_Sets WHERE task_set='{0}'".format(task_set))
+            result = [dict(zip(tuple(query.keys()), i)) for i in query.cursor]
+            if len(result) > 0:
+                return result
+            if self.inDb('Task_Sets',task_set=task_set):
+                return result
+            message = 'The task set "%s" does not exist!'%(task_set,)
+        except Exception, e:
+            return self.handleException(e,'Failed to retrieve tasks for task set "%s"'%(task_set,))
+        if message:
+            raise Exception(message)
 
     # =====================================================================================================================
     # Create a new TaskSet instance to the Task_Sets table
@@ -489,6 +538,30 @@ class TaskDB:
             return self.handleException(e,'Failed to un-assign task set "%s" from node class "%s"'%(task_set, node_class,))
 
     # =====================================================================================================================
+    # Query the task sets assigned to a given node class
+    # 
+    # \param  task_set           [REQUIRED]  Name of the node class to be queried
+    # \return                                Statuscode indicating success or failure / Exception
+    #
+    # \author  K.Wilczynski
+    # \version 1.0
+    # ---------------------------------------------------------------------------------------------------------------------
+    def tasksetsInClass(self, node_class):
+        message = None
+        try:
+            query = self.execStatement("SELECT task_set as task_set FROM Task_Sets_to_Classes WHERE node_class='{0}'".format(node_class))
+            result = [dict(zip(tuple(query.keys()), i)) for i in query.cursor]
+            if len(result) > 0:
+                return result
+            if self.inDb('Classes',node_class=node_class):
+                return result
+            message = 'The node class "%s" does not exist!'%(node_class,)
+        except Exception, e:
+            return self.handleException(e,'Failed to retrieve task sets for node class "%s"'%(node_class,))
+        if message:
+            raise Exception(message)
+
+    # =====================================================================================================================
     # Create a new (non-existing) node class object
     # 
     # \param  node_class         [REQUIRED]  Name of the node class to be created
@@ -611,6 +684,30 @@ class TaskDB:
             raise Exception('unassignClass: The specified assignment pair does not exist in the database: ' + node_class + ' <-> ' + node_regex)
         except Exception,e:
             return self.handleException(e,'Failed to un-assign node class "%s" from node type "%s"'%(node_class, node_regex,))
+
+    # =====================================================================================================================
+    # Query the node classes assigned to a given node type
+    # 
+    # \param  regex              [REQUIRED]  Name of the node type of which the assigned objects should be returned
+    # \return                                Statuscode indicating success or failure / Exception
+    #
+    # \author  K.Wilczynski
+    # \version 1.0
+    # ---------------------------------------------------------------------------------------------------------------------
+    def nodeclassInNode(self, regex):
+        message = None
+        try:
+            query = self.execStatement("SELECT node_class as node_class FROM Classes_to_Nodes WHERE regex='{0}'".format(regex))
+            result = [dict(zip(tuple(query.keys()), i)) for i in query.cursor]
+            if len(result) > 0:
+                return result
+            if self.inDb('Nodes',regex=regex):
+                return result
+            message = 'The node type "%s" does not exist!'%(regex,)
+        except Exception, e:
+            return self.handleException(e,'Failed to retrieve the node classes for node type "%s"'%(regex,))
+        if message:
+            raise Exception(message)
 
     # =====================================================================================================================
     # Create a new (non-existing) node type object
