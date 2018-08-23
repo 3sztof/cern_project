@@ -544,10 +544,7 @@ Ext.define('LHCb.view.main.MainController', {
             height: 300,
             viewModel: {
                 stores: {
-                    tasks: {
-                        model: 'LHCb.model.TasksTableModel',
-                        autoLoad: true
-                    },
+                    
                     assigned_items: {
                         autoLoad: true,
                         fields: [
@@ -562,14 +559,60 @@ Ext.define('LHCb.view.main.MainController', {
                             dataType: 'json',
                             actionMethods : {create: "POST", read: "POST", update: "POST", destroy: "POST"},
                             jsonData: new JSON_RPC.Request("tasksInSet", [{"task_set":LHCb.store.SelectedItemData.task_set}]),
-                            a: console.log('store loading'),
                             reader: {
                                 type: 'json',
                                 rootProperty: 'result'
-                            },
-                            url: 'http://localhost:8081/TDBDATA/JSONRPC'
-                        }
-                    
+                            }
+                        },
+                        
+                    },
+                    tasks: {
+                        //model: 'LHCb.model.TasksTableModel',
+                        autoLoad: true,
+
+                        fields: [
+                            {name: 'task', type: 'string'} 
+                        ],
+                                        
+                        proxy: {
+                            disableCache: false,
+                            method: 'POST',
+                            type: 'myproxy',
+                            dataType: 'json',
+                            actionMethods : {create: "POST", read: "POST", update: "POST", destroy: "POST"},
+                            jsonData: new JSON_RPC.Request("getTask", [{"task":"*"}]),
+                            reader: {
+                                type: 'json',
+                                rootProperty: 'result'
+                            }
+                        },
+                        listeners: { 
+                            load: function() {
+                                // Only overwrite the tasks table (remove tasks that are assigned) if both tables are not empty - otherwise the algorithm will crash badly! :D
+                                 if(typeof this.data.items[0] !== "undefined" &&  typeof Ext.ComponentQuery.query('panel[itemId=assigntasktotaskset]')[0].viewModel.storeInfo.assigned_items.data.items[0] !== "undefined"){
+                                    // console.log("Store loading, attempting to delete some items... :DD")
+                                    
+                                    // Thats a crazy query! Come on!
+                                    var notInSetRows = this.data.items[0].store.data.items; //working
+                                    var inSetRows = Ext.ComponentQuery.query('panel[itemId=assigntasktotaskset]')[0].viewModel.storeInfo.assigned_items.data.items[0].store.data.items;                
+
+        
+                                    for(var i = 0; i < notInSetRows.length; i++){
+                                        // console.log("Scanning notInSetRows")
+                                        for(var k = 0; k < inSetRows.length; k++){
+                                            // console.log("Scanning inSetRows")
+                                            if(inSetRows[k].data["task"] == notInSetRows[i].data["task"]){
+                                                // console.log("Deleting " + notInSetRows[i].data["task"] + " from Tasks to Assign table as it appears to be already assigned.")
+                                                // console.log(this.data.items[0].store.find('task', inSetRows[k].data["task"]))
+                                                this.removeAt(this.find('task', inSetRows[k].data["task"]))
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                            }
+                         }
+                        
                     }
                 }
             },
@@ -587,6 +630,8 @@ Ext.define('LHCb.view.main.MainController', {
                 xtype: 'grid',
                 // title: 'First Grid',
                 reference: 'grid1',
+
+                itemId: 'notassignedtasksgrid',
 
                 flex: 1,
 
@@ -635,8 +680,7 @@ Ext.define('LHCb.view.main.MainController', {
                         dragGroup: 'dd-grid-to-grid-group2',
                         dropGroup: 'dd-grid-to-grid-group1',
 
-                        // The right hand drop zone gets special styling
-                        // when dragging over it.
+                        // The right hand drop zone gets special styling when dragging over it.
                         dropZone: {
                             overClass: 'dd-over-gridview'
                         }
@@ -663,8 +707,13 @@ Ext.define('LHCb.view.main.MainController', {
             text: 'Save',
             handler: function() {
                 var assignTaskWindow = Ext.ComponentQuery.query('panel[itemId=assigntasktotaskset]')[0];
+ 
+                // Note that those for loops are not as stupid as they seem to be (if there is multiple movement of one item in
+                // the tables, the Assign/Unassign stores will contain doubled invalid entries - thanks to the for loops, the DB API
+                // will throw errors only for those single items and no invalid assignment / unassignment will be made - while keeping
+                // the correct ones... I know, that's not elegant... but it is way less coding than checking stores in every drag & drop handler...)
 
-                tasks_to_assign = LHCb.store.AssignItemsStore.tasks;
+                var tasks_to_assign = LHCb.store.AssignItemsStore.tasks;
 
                 for (var i in tasks_to_assign){
                     Ext.Ajax.request({
@@ -679,7 +728,22 @@ Ext.define('LHCb.view.main.MainController', {
                      });
                 }
 
-                Ext.MessageBox.alert('Status', 'The tasks have been assigned to the task set.', this.showResult, this);
+                var tasks_to_unassign = LHCb.store.UnassignItemsStore.tasks;
+
+                for (var i in tasks_to_unassign){
+                    Ext.Ajax.request({
+                        method: 'POST',
+                        // Send a JSONRPC request to the server (delete selected item)
+                        jsonData: new JSON_RPC.Request('unassignTask', [{
+                                'task': tasks_to_unassign[i],
+                                'task_set': LHCb.store.SelectedItemData.task_set
+                            }]),
+                        dataType: 'json',
+                        url: 'http://localhost:8081/TDBDATA/JSONRPC',     
+                     });
+                }
+
+                Ext.MessageBox.alert('Status', 'The tasks have been assigned to (and unassigned from) the task set.', this.showResult, this);
                 assignTaskWindow.destroy();
             }
         }]
@@ -687,12 +751,6 @@ Ext.define('LHCb.view.main.MainController', {
     },
     }
 
-    // db    db d8b   db  .d8b.  .d8888. .d8888. d888888b  d888b  d8b   db 
-    // 88    88 888o  88 d8' `8b 88'  YP 88'  YP   `88'   88' Y8b 888o  88 
-    // 88    88 88V8o 88 88ooo88 `8bo.   `8bo.      88    88      88V8o 88 
-    // 88    88 88 V8o88 88~~~88   `Y8b.   `Y8b.    88    88  ooo 88 V8o88 
-    // 88b  d88 88  V888 88   88 db   8D db   8D   .88.   88. ~8~ 88  V888 
-    // ~Y8888P' VP   V8P YP   YP `8888Y' `8888Y' Y888888P  Y888P  VP   V8P 
     
 
 );

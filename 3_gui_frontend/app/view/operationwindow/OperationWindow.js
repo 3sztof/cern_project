@@ -156,16 +156,10 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
                             handler: 'onModifyTaskSet'
                         },
                         {
-                            flex: 1,
-                            text: 'Assign tasks',
+                            flex: 2,
+                            text: 'Assign & unassign tasks',
                             iconCls: 'x-fa fa-sign-in',
                             handler: 'onAssignToTaskSet'
-                        },
-                        {
-                            flex: 1,
-                            text: 'Unassign tasks',
-                            iconCls: 'x-fa fa-sign-out',
-                            handler: 'onUnassignFromTaskSet'
                         },
                         {
                             flex: 1,

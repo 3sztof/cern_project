@@ -5,6 +5,8 @@ Ext.define('LHCb.model.TasksTableModel', {
     //     'Ext.data.proxy.Rest'
     // ],
 
+    itemId: 'taskstablemodel',
+
     alias: 'viewmodel.taskstable',
 
     fields: [
