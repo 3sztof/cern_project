@@ -536,12 +536,11 @@ Ext.define('LHCb.view.main.MainController', {
 
             closable: true,
             closeAction: 'destroy',
-            width: 350,
             minWidth: 250,
             border: false,
             modal: true,
             width: 650,
-            height: 300,
+            height: 420,
             viewModel: {
                 stores: {
                     
@@ -635,7 +634,7 @@ Ext.define('LHCb.view.main.MainController', {
 
                 flex: 1,
 
-                multiSelect: true,
+                multiSelect: false,
                 margin: '0 5 0 0',
 
                 
