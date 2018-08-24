@@ -46,7 +46,7 @@ Ext.define('LHCb.view.main.Main', {
                                     {
                                         glyph: 'f129@FontAwesome',
                                         tooltip: 'About',
-                                        handler: function(){
+                                        handler: function() {
                                             Ext.MessageBox.alert('About', '<center><b>LHCb Online Farm Process Explorer</b><br><br>Author: Krzysztof Wilczynski<ul list-style-position: inside; margin-top: 0;><li><a href="mailto:krzysztofwilczynski@mail.com">krzysztofwilczynski@mail.com</a></li><li><a href="https://www.linkedin.com/in/3sztof">www.linkedin.com/in/3sztof/</a></li><li><a href="tel:+48668876202">+48 669 876 202</a></li></ul>Supervisor: Markus Frank<ul list-style-position: inside; margin-top: 0;><li><a href="mailto:markus.frank@cern.ch">markus.frank@cern.ch</a></li></ul></center>', this.showResult, this);
                                         }
                                     }
@@ -83,8 +83,27 @@ Ext.define('LHCb.view.main.Main', {
                                     xtype: 'tabpanel',
                                     flex: 1,
                                     width: 350,
-                                    title: '<center>Navigation</center>',
-                                    margin: '0 0 5 0'
+                                    title: 'Navigation',
+                                    margin: '0 0 5 0',
+                                    header: {
+                                        items: [
+                                            {
+                                                xtype: 'button',
+                                                text: 'Show all ',
+                                                glyph: 'f0ce@FontAwesome',
+                                                handler: function() {
+                                                    var rpcController = LHCb.app.getController("LHCb.controller.RPCController");
+                                                    var tabName = Ext.ComponentQuery.query('tabpanel[itemId=tabpanel]')[0].activeTab.tabname;
+                                                    if(tabName == 'tasks'){
+                                                        rpcController.showFullTasksTable();
+                                                    }
+                                                    if(tabName == 'task sets'){
+                                                        rpcController.showFullTaskSetsTable();
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
                                 },
                                 {
                                     xtype: 'panel',
@@ -105,8 +124,105 @@ Ext.define('LHCb.view.main.Main', {
                                 align: 'stretch'
                             },
                             items: [
+                                // {
+                                //     title: '<center>Operation</center>'
+                                // },
                                 {
-                                    title: '<center>Operation</center>'
+                                    // Default tools panel (for the main table view) - checks on which tab it is and handles operations
+                                    itemId: 'mainoperationwindowtoolbar',
+                                    title: 'Operation',
+                                    header: {
+                                        items: [
+                                            {
+                                                xtype: 'button',
+                                                text: 'Create',
+                                                glyph: 'f055@FontAwesome',
+                                                tooltip: 'Create a new item',
+                                                handler: function() {
+                                                    var rpcController = LHCb.app.getController("LHCb.controller.RPCController");
+                                                    var activeWindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0].getLayout().getActiveItem().toolbaridentifier;
+                                                    if(activeWindow == 'taskstable'){
+                                                        rpcController.onAddTask();
+                                                    }
+                                                    if(activeWindow == 'setstable'){
+                                                        rpcController.onAddTaskSet();
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                xtype: 'button',
+                                                glyph: 'f056@FontAwesome',
+                                                tooltip: 'Delete the selected item(s)',
+                                                text: 'Delete',
+                                                handler: function() {
+                                                    var rpcController = LHCb.app.getController("LHCb.controller.RPCController");
+                                                    var activeWindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0].getLayout().getActiveItem().toolbaridentifier;
+                                                    if(activeWindow == 'taskstable'){
+                                                        rpcController.onDeleteTasks();
+                                                    }
+                                                    if(activeWindow == 'setstable'){
+                                                        rpcController.onDeleteTaskSets();
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    // Single item toolbar - same as above but for single item views :P
+                                    itemId: 'singleoperationwindowtoolbar',
+                                    // hidemebydefault: Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].setVisible(false),
+                                    title: 'Operation',
+                                    hidden: true,
+                                    header: {
+                                        items: [
+                                            {
+                                                xtype: 'button',
+                                                text: 'Modify',
+                                                glyph: 'f044@FontAwesome',
+                                                tooltip: 'Modify the selected item',
+                                                handler: function() {
+                                                    var rpcController = LHCb.app.getController("LHCb.controller.RPCController");
+                                                    var activeWindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0].getLayout().getActiveItem().toolbaridentifier;
+                                                    if(activeWindow == 'singletask'){
+                                                        rpcController.onModifyTask();
+                                                    }
+                                                    if(activeWindow == 'singleset'){
+                                                        rpcController.onModifyTaskSet();
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                xtype: 'button',
+                                                text: 'Assign / unassign items',
+                                                iconCls: 'x-fa fa-sign-in',
+                                                tooltip: 'Assign items to the selected set',
+                                                handler: function() {
+                                                    var rpcController = LHCb.app.getController("LHCb.controller.RPCController");
+                                                    var activeWindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0].getLayout().getActiveItem().toolbaridentifier;
+                                                    if(activeWindow == 'singleset'){
+                                                        rpcController.onAssignToTaskSet();
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                xtype: 'button',
+                                                glyph: 'f056@FontAwesome',
+                                                tooltip: 'Delete the selected item',
+                                                text: 'Delete',
+                                                handler: function() {
+                                                    var rpcController = LHCb.app.getController("LHCb.controller.RPCController");
+                                                    var activeWindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0].getLayout().getActiveItem().toolbaridentifier;
+                                                    if(activeWindow == 'singletask'){
+                                                        rpcController.onDeleteTask();
+                                                    }
+                                                    if(activeWindow == 'singleset'){
+                                                        rpcController.onDeleteTaskSet();
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
                                 },
                                 {
                                     autoScroll: true,
@@ -116,6 +232,7 @@ Ext.define('LHCb.view.main.Main', {
                                         itemId: 'mainoperationwindow'
                                     }]  
                                 }
+                                
                             ]
                                                         
                         }

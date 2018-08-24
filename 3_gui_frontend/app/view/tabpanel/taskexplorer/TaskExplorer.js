@@ -22,15 +22,15 @@ Ext.define('LHCb.view.tabpanel.taskexplorer.TaskExplorer', {
         align: 'stretch'
     },
     items: [
-        {
-            xtype: 'panel',
-            tbar: [{
-                flex: 1,
-                text: 'Show all tasks',
-                glyph: 'f0ce@FontAwesome',
-                handler: 'showFullTasksTable'
-            }]
-        },
+        // {
+        //     xtype: 'panel',
+        //     tbar: [{
+        //         flex: 1,
+        //         text: 'Show all tasks',
+        //         glyph: 'f0ce@FontAwesome',
+        //         handler: 'showFullTasksTable'
+        //     }]
+        // },
         {
             xtype: 'grid',
             id: 'taskexplorergrid',
@@ -50,9 +50,12 @@ Ext.define('LHCb.view.tabpanel.taskexplorer.TaskExplorer', {
                             LHCb.store.SelectedItemData.command_parameters = rowdata.data['command_parameters'];
                             LHCb.store.SelectedItemData.utgid = rowdata.data['utgid'];
                             LHCb.store.SelectedItemData.command = rowdata.data['command'];
-                            // Switch to single task view
+                            // Switch to single task view and hide assignment button
                             var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                             operationwindow.setActiveItem(1);
+                            Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].setVisible(true);
+                            Ext.ComponentQuery.query('panel[itemId=mainoperationwindowtoolbar]')[0].setVisible(false);
+                            Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].header.items.items[2].setVisible(false);
                             // Update the description window with the singleton store record
                             Ext.ComponentQuery.query('panel[itemId=descriptionwindow]')[0].body.update('<br><center>' + LHCb.store.SelectedItemData.task + ': ' + LHCb.store.SelectedItemData.description + '</center>');
                             // Update the default fields in the task overview window

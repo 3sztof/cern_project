@@ -5,6 +5,8 @@ Ext.define('LHCb.view.tabpanel.TabPanel', {
 
     controller: 'main',
 
+    itemId: 'tabpanel',
+
     shadow: true,
     frame: true,
     cls: 'demo-solid-background',
@@ -21,10 +23,10 @@ Ext.define('LHCb.view.tabpanel.TabPanel', {
         {
             title: 'Tasks',
             id: 'tasktreeID',
+            tabname: 'tasks',
             cls: 'card',
             items: [
                 {                
-                    //xtype: 'tasktree' // Initial idea - task tree, replaced by regular associated table
                     xtype: 'taskexplorer'
                 }
             ]
@@ -32,6 +34,7 @@ Ext.define('LHCb.view.tabpanel.TabPanel', {
         {
             title: 'Task Sets',
             cls: 'card',
+            tabname: 'task sets',
             items: [
                 {                
                     xtype: 'tasksetsexplorer'
@@ -40,11 +43,13 @@ Ext.define('LHCb.view.tabpanel.TabPanel', {
         },
         {
             title: 'Node Classes',
+            tabname: 'node classes',
             html : 'Node Classes tree from DB via REST.',
             cls: 'card'
         },
         {
             title: 'Nodes',
+            tabname: 'nodes',
             html : 'Node names or regular expressions from DB via REST.',
             cls: 'card'
         }
