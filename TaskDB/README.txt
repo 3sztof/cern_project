@@ -33,7 +33,7 @@ cl_dir  = implementation.connect('direct', 'sqlite:///test.db')
 cl_xml  = implementation.connect('rpc', 'http://localhost:8081/TDBDATA/XMLRPC')
 #
 # Instantiate a 'jsonrpc' client
-cl_json = implementation.connect('rpc', 'http://localhost:8081/TDBDATA/JSONRPC')
+cl_json = implementation.connect('rpc', LHCb.Application.Globals_request_path)
 #
 #
 # ========================================================================

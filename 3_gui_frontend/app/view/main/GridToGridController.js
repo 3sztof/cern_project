@@ -22,10 +22,10 @@ Ext.define('LHCb.view.main.GridToGridController', {
     onDrop: function (onRec, rec, dropPosition, title) {
         // var dropOn = onRec ? ' ' + dropPosition + ' ' + onRec.get('name') : ' on empty view';
 
-        console.log('Items to assign:');
-        console.log(LHCb.store.AssignItemsStore.tasks);
-        console.log('Items to unassign:');
-        console.log(LHCb.store.UnassignItemsStore.tasks);
+        // console.log('Items to assign:');
+        // console.log(LHCb.store.AssignItemsStore.tasks);
+        // console.log('Items to unassign:');
+        // console.log(LHCb.store.UnassignItemsStore.tasks);
 
         // KitchenSink.toast(title, 'Dropped ' + rec.get('name') + dropOn);
     },
@@ -55,15 +55,16 @@ Ext.define('LHCb.view.main.GridToGridController', {
         // Unassign Logic
         itemtoremove = data.event.item.innerText;
         delete LHCb.store.UnassignItemsStore.tasks[itemtoremove];
-        this.onDrop();
+        //this.onDrop();
     },
 
     onResetClick: function () {
         LHCb.store.AssignItemsStore.tasks = [];
         LHCb.store.UnassignItemsStore.tasks = [];
         this.lookup('grid1').getStore().reload();
+        //console.log(this.lookup('grid1').getStore())
         this.lookup('grid2').getStore().reload();
-        this.onDrop();
+        //this.onDrop();
     }
 
         

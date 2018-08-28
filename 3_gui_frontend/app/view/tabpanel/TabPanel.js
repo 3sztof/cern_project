@@ -44,8 +44,12 @@ Ext.define('LHCb.view.tabpanel.TabPanel', {
         {
             title: 'Node Classes',
             tabname: 'node classes',
-            html : 'Node Classes tree from DB via REST.',
-            cls: 'card'
+            cls: 'card',
+            items: [
+                {                
+                    xtype: 'classesexplorer'
+                }
+            ]
         },
         {
             title: 'Nodes',

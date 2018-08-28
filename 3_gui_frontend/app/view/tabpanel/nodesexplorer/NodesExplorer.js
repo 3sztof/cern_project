@@ -1,16 +1,16 @@
-Ext.define('LHCb.view.tabpanel.tasksetsexplorer.TaskSetsExplorer', {
+Ext.define('LHCb.view.tabpanel.nodesexplorer.NodesExplorer', {
     extend: 'Ext.Container',
 
-    itemId: 'tasksetsexplorer',
-    xtype: 'tasksetsexplorer',
+    itemId: 'nodesexplorer',
+    xtype: 'nodesexplorer',
     controller: 'main',
 
-    requires: ['LHCb.model.TaskSetsTableModel', 'LHCb.store.SelectedItemData'],
+    requires: ['LHCb.model.NodesTableModel', 'LHCb.store.SelectedItemData'],
 
     viewModel: {
         stores: {
-            task_sets: {
-                model: 'LHCb.model.TaskSetsTableModel',
+            nodes: {
+                model: 'LHCb.model.NodesTableModel',
                 autoLoad: true
             }
         }
@@ -33,23 +33,23 @@ Ext.define('LHCb.view.tabpanel.tasksetsexplorer.TaskSetsExplorer', {
         // },
         {   
             xtype: 'grid',
-            id: 'tasksetsexplorergrid',
-            bind: '{task_sets}',
+            id: 'nodesexplorergrid',
+            bind: '{nodes}',
             columns: [
                 {
-                    text: 'Select a task set:', dataIndex: 'task_set', flex: 1,
+                    text: 'Select a node:', dataIndex: 'regex', flex: 1,
                     listeners: {
                         click: function(grid, cellElement, rowIndex, cellIndex){
                             // Sweep trough the table objects
                             var gridstore = grid.getStore();
                             var rowdata = gridstore.data.items[rowIndex];
                             // Set selected item data in common singleton to be accessed by other windows
-                            LHCb.store.SelectedItemData.task_set = rowdata.data['task_set'];
+                            LHCb.store.SelectedItemData.regex = rowdata.data['regex'];
                             LHCb.store.SelectedItemData.description = rowdata.data['description'];
                             // Switch to single task set view and reassure that the assignment button is visible
                             var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
-                            operationwindow.setActiveItem(3);
-                            Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].setVisible(true);
+                            operationwindow.setActiveItem(7);
+      // Break!                      Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].setVisible(true);
                             Ext.ComponentQuery.query('panel[itemId=mainoperationwindowtoolbar]')[0].setVisible(false);
                             Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].header.items.items[2].setVisible(true);
                             // Update the description window with the singleton store record
@@ -64,7 +64,7 @@ Ext.define('LHCb.view.tabpanel.tasksetsexplorer.TaskSetsExplorer', {
                 }       
             ],
             viewConfig: {
-                emptyText: 'No task sets in the database or database API offline...',
+                emptyText: 'No tasks in the database or database API offline...',
                 deferEmptyText: false
             }
         }

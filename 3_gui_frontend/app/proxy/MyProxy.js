@@ -2,7 +2,7 @@ Ext.define('LHCb.proxy.MyProxy', {
     extend: 'Ext.data.proxy.Ajax',
     alias: 'proxy.myproxy',
 
-    url: 'http://localhost:8081/TDBDATA/JSONRPC',
+    url: "http://localhost:8081/TDBDATA/JSONRPC",
 
     doRequest: function(operation, callback, scope) {
         var writer  = this.getWriter(),

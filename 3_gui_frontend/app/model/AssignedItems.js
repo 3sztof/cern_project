@@ -22,7 +22,7 @@
 //             type: 'json',
 //             rootProperty: 'result'
 //         },
-//         url: 'http://localhost:8081/TDBDATA/JSONRPC'
+//         url: "http://localhost:8081/TDBDATA/JSONRPC"
 //     },
 
 // });

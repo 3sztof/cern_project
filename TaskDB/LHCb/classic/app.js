@@ -64484,6 +64484,151 @@ Ext.define('Ext.grid.RowContext', {constructor:function(config) {
   Ext.destroy(me.viewModel);
   me.callParent();
 }});
+Ext.define('Ext.view.DropZone', {extend:Ext.dd.DropZone, indicatorCls:Ext.baseCSSPrefix + 'grid-drop-indicator', indicatorHtml:['\x3cdiv class\x3d"', Ext.baseCSSPrefix, 'grid-drop-indicator-left" role\x3d"presentation"\x3e\x3c/div\x3e', '\x3cdiv class\x3d"' + Ext.baseCSSPrefix + 'grid-drop-indicator-right" role\x3d"presentation"\x3e\x3c/div\x3e'].join(''), constructor:function(config) {
+  var me = this;
+  Ext.apply(me, config);
+  if (!me.ddGroup) {
+    me.ddGroup = 'view-dd-zone-' + me.view.id;
+  }
+  me.callParent([me.view.el]);
+}, fireViewEvent:function() {
+  var me = this, result;
+  me.lock();
+  result = me.view.fireEvent.apply(me.view, arguments);
+  me.unlock();
+  return result;
+}, getTargetFromEvent:function(e) {
+  var node = e.getTarget(this.view.getItemSelector()), mouseY, nodeList, testNode, i, len, box;
+  if (!node) {
+    mouseY = e.getY();
+    for (i = 0, nodeList = this.view.getNodes(), len = nodeList.length; i < len; i++) {
+      testNode = nodeList[i];
+      box = Ext.fly(testNode).getBox();
+      if (mouseY <= box.bottom) {
+        return testNode;
+      }
+    }
+  }
+  return node;
+}, getIndicator:function() {
+  var me = this;
+  if (!me.indicator) {
+    me.indicator = new Ext.Component({ariaRole:'presentation', html:me.indicatorHtml, cls:me.indicatorCls, ownerCt:me.view, floating:true, alignOnScroll:false, shadow:false});
+  }
+  return me.indicator;
+}, getPosition:function(e, node) {
+  var y = e.getXY()[1], region = Ext.fly(node).getRegion(), pos;
+  if (region.bottom - y >= (region.bottom - region.top) / 2) {
+    pos = 'before';
+  } else {
+    pos = 'after';
+  }
+  return pos;
+}, containsRecordAtOffset:function(records, record, offset) {
+  if (!record) {
+    return false;
+  }
+  var view = this.view, recordIndex = view.indexOf(record), nodeBefore = view.getNode(recordIndex + offset), recordBefore = nodeBefore ? view.getRecord(nodeBefore) : null;
+  return recordBefore && Ext.Array.contains(records, recordBefore);
+}, positionIndicator:function(node, data, e) {
+  var me = this, view = me.view, pos = me.getPosition(e, node), overRecord = view.getRecord(node), draggingRecords = data.records, indicatorY;
+  if (!Ext.Array.contains(draggingRecords, overRecord) && (pos === 'before' && !me.containsRecordAtOffset(draggingRecords, overRecord, -1) || pos === 'after' && !me.containsRecordAtOffset(draggingRecords, overRecord, 1))) {
+    me.valid = true;
+    if (me.overRecord !== overRecord || me.currentPosition !== pos) {
+      indicatorY = Ext.fly(node).getY() - view.el.getY() - 1;
+      if (pos === 'after') {
+        indicatorY += Ext.fly(node).getHeight();
+      }
+      me.getIndicator().setWidth(Ext.fly(view.el).getWidth()).showAt(0, indicatorY);
+      me.overRecord = overRecord;
+      me.currentPosition = pos;
+    }
+  } else {
+    me.invalidateDrop();
+  }
+}, invalidateDrop:function() {
+  if (this.valid) {
+    this.valid = false;
+    this.getIndicator().hide();
+  }
+}, onNodeOver:function(node, dragZone, e, data) {
+  var me = this;
+  if (!Ext.Array.contains(data.records, me.view.getRecord(node))) {
+    me.positionIndicator(node, data, e);
+  }
+  return me.valid ? me.dropAllowed : me.dropNotAllowed;
+}, notifyOut:function(node, dragZone, e, data) {
+  var me = this;
+  me.callParent(arguments);
+  me.overRecord = me.currentPosition = null;
+  me.valid = false;
+  if (me.indicator) {
+    me.indicator.hide();
+  }
+}, onContainerOver:function(dd, e, data) {
+  var me = this, view = me.view, count = view.dataSource.getCount();
+  if (count) {
+    me.positionIndicator(view.all.last(), data, e);
+  } else {
+    me.overRecord = me.currentPosition = null;
+    me.getIndicator().setWidth(Ext.fly(view.el).getWidth()).showAt(0, 0);
+    me.valid = true;
+  }
+  return me.dropAllowed;
+}, onContainerDrop:function(dd, e, data) {
+  return this.onNodeDrop(dd, null, e, data);
+}, onNodeDrop:function(targetNode, dragZone, e, data) {
+  var me = this, dropHandled = false, dropHandlers = {wait:false, processDrop:function() {
+    me.invalidateDrop();
+    me.handleNodeDrop(data, me.overRecord, me.currentPosition);
+    dropHandled = true;
+    me.fireViewEvent('drop', targetNode, data, me.overRecord, me.currentPosition);
+  }, cancelDrop:function() {
+    me.invalidateDrop();
+    dropHandled = true;
+  }}, performOperation = false;
+  if (me.valid) {
+    performOperation = me.fireViewEvent('beforedrop', targetNode, data, me.overRecord, me.currentPosition, dropHandlers);
+    if (dropHandlers.wait) {
+      return;
+    }
+    if (performOperation !== false) {
+      if (!dropHandled) {
+        dropHandlers.processDrop();
+      }
+    }
+  }
+  return performOperation;
+}, destroy:function() {
+  this.indicator = Ext.destroy(this.indicator);
+  this.callParent();
+}});
+Ext.define('Ext.grid.ViewDropZone', {extend:Ext.view.DropZone, indicatorHtml:'\x3cdiv class\x3d"' + Ext.baseCSSPrefix + 'grid-drop-indicator-left" role\x3d"presentation"\x3e\x3c/div\x3e\x3cdiv class\x3d"' + Ext.baseCSSPrefix + 'grid-drop-indicator-right" role\x3d"presentation"\x3e\x3c/div\x3e', indicatorCls:Ext.baseCSSPrefix + 'grid-drop-indicator', handleNodeDrop:function(data, record, position) {
+  var view = this.view, store = view.getStore(), crossView = view !== data.view, index, records, i, len;
+  if (data.copy) {
+    records = data.records;
+    for (i = 0, len = records.length; i < len; i++) {
+      records[i] = records[i].copy();
+    }
+  } else {
+    if (crossView) {
+      data.view.store.remove(data.records);
+    }
+  }
+  if (record && position) {
+    index = store.indexOf(record);
+    if (position !== 'before') {
+      index++;
+    }
+    store.insert(index, data.records);
+  } else {
+    store.add(data.records);
+  }
+  if (crossView) {
+    view.getSelectionModel().select(data.records);
+  }
+  view.getNavigationModel().setPosition(data.records[0]);
+}});
 Ext.define('Ext.grid.plugin.HeaderResizer', {extend:Ext.plugin.Abstract, alias:'plugin.gridheaderresizer', disabled:false, config:{dynamic:false}, colHeaderCls:Ext.baseCSSPrefix + 'column-header', minColWidth:40, maxColWidth:1000, eResizeCursor:'col-resize', init:function(headerCt) {
   var me = this;
   me.headerCt = headerCt;
@@ -69240,6 +69385,44 @@ Ext.define('Ext.grid.plugin.BufferedRenderer', {extend:Ext.AbstractPlugin, alias
   Ext.destroy(me.viewListeners, me.stretcher, me.gridListeners, me.scrollListeners);
   me.callParent();
 }});
+Ext.define('Ext.grid.plugin.DragDrop', {extend:Ext.plugin.Abstract, alias:'plugin.gridviewdragdrop', dragText:'{0} selected row{1}', ddGroup:'GridDD', enableDrop:true, enableDrag:true, containerScroll:false, init:function(view) {
+  Ext.applyIf(view, {copy:this.copy, allowCopy:this.allowCopy});
+  view.on('render', this.onViewRender, this, {single:true});
+}, destroy:function() {
+  var me = this;
+  me.dragZone = me.dropZone = Ext.destroy(me.dragZone, me.dropZone);
+  me.callParent();
+}, enable:function() {
+  var me = this;
+  if (me.dragZone) {
+    me.dragZone.unlock();
+  }
+  if (me.dropZone) {
+    me.dropZone.unlock();
+  }
+  me.callParent();
+}, disable:function() {
+  var me = this;
+  if (me.dragZone) {
+    me.dragZone.lock();
+  }
+  if (me.dropZone) {
+    me.dropZone.lock();
+  }
+  me.callParent();
+}, onViewRender:function(view) {
+  var me = this, ownerGrid = view.ownerCt.ownerGrid || view.ownerCt, scrollEl;
+  ownerGrid.relayEvents(view, ['beforedrop', 'drop']);
+  if (me.enableDrag) {
+    if (me.containerScroll) {
+      scrollEl = view.getEl();
+    }
+    me.dragZone = new Ext.view.DragZone(Ext.apply({view:view, ddGroup:me.dragGroup || me.ddGroup, dragText:me.dragText, containerScroll:me.containerScroll, scrollEl:scrollEl}, me.dragZone));
+  }
+  if (me.enableDrop) {
+    me.dropZone = new Ext.grid.ViewDropZone(Ext.apply({view:view, ddGroup:me.dropGroup || me.ddGroup}, me.dropZone));
+  }
+}});
 Ext.define('Ext.util.Queue', {constructor:function() {
   this.clear();
 }, add:function(obj, replace) {
@@ -72780,6 +72963,85 @@ Ext.define('Ext.tab.Panel', {extend:Ext.panel.Panel, alias:'widget.tabpanel', al
 }}});
 Ext.define('Ext.toolbar.Fill', {extend:Ext.Component, alias:'widget.tbfill', alternateClassName:'Ext.Toolbar.Fill', ariaRole:'presentation', isFill:true, flex:1});
 Ext.define('Ext.toolbar.Spacer', {extend:Ext.Component, alias:'widget.tbspacer', alternateClassName:'Ext.Toolbar.Spacer', baseCls:Ext.baseCSSPrefix + 'toolbar-spacer', ariaRole:'presentation'});
+Ext.define('Ext.view.DragZone', {extend:Ext.dd.DragZone, containerScroll:false, constructor:function(config) {
+  var me = this, view, ownerCt, el;
+  Ext.apply(me, config);
+  if (!me.ddGroup) {
+    me.ddGroup = 'view-dd-zone-' + me.view.id;
+  }
+  view = me.view;
+  view.setItemsDraggable(true);
+  ownerCt = view.ownerCt;
+  if (ownerCt) {
+    el = ownerCt.getTargetEl().dom;
+  } else {
+    el = view.el.dom.parentNode;
+  }
+  me.callParent([el]);
+  me.ddel = document.createElement('div');
+  me.ddel.className = Ext.baseCSSPrefix + 'grid-dd-wrap';
+}, init:function(id, sGroup, config) {
+  var me = this, eventSpec = {itemmousedown:me.onItemMouseDown, scope:me};
+  if (Ext.supports.Touch) {
+    eventSpec.itemlongpress = me.onItemLongPress;
+    eventSpec.contextmenu = {element:'el', fn:me.onViewContextMenu};
+  }
+  me.initTarget(id, sGroup, config);
+  me.view.mon(me.view, eventSpec);
+}, onValidDrop:function(target, e, id) {
+  this.callParent([target, e, id]);
+  if (!target.el.contains(Ext.Element.getActiveElement())) {
+    target.el.focus();
+  }
+}, onViewContextMenu:function(e) {
+  if (e.pointerType !== 'mouse') {
+    e.preventDefault();
+  }
+}, onItemMouseDown:function(view, record, item, index, e) {
+  if (e.pointerType === 'mouse') {
+    this.onTriggerGesture(view, record, item, index, e);
+  }
+}, onItemLongPress:function(view, record, item, index, e) {
+  if (e.pointerType !== 'mouse') {
+    this.onTriggerGesture(view, record, item, index, e);
+  }
+}, onTriggerGesture:function(view, record, item, index, e) {
+  var navModel;
+  if (e.pointerType === 'touch' && e.type !== 'longpress' || e.position && e.position.isEqual(e.view.actionPosition)) {
+    return;
+  }
+  if (!this.isPreventDrag(e, record, item, index)) {
+    navModel = view.getNavigationModel();
+    if (e.position) {
+      navModel.setPosition(e.position);
+    } else {
+      navModel.setPosition(index);
+    }
+    this.handleMouseDown(e);
+  }
+}, isPreventDrag:function(e, record, item, index) {
+  return !!e.isInputFieldEvent;
+}, getDragData:function(e) {
+  var view = this.view, item = e.getTarget(view.getItemSelector());
+  if (item) {
+    return {copy:view.copy || view.allowCopy && e.ctrlKey, event:e, view:view, ddel:this.ddel, item:item, records:view.getSelectionModel().getSelection(), fromPosition:Ext.fly(item).getXY()};
+  }
+}, onInitDrag:function(x, y) {
+  var me = this, data = me.dragData, view = data.view, selectionModel = view.getSelectionModel(), record = view.getRecord(data.item);
+  if (!selectionModel.isSelected(record)) {
+    selectionModel.selectWithEvent(record, me.DDMInstance.mousedownEvent);
+  }
+  data.records = selectionModel.getSelection();
+  Ext.fly(me.ddel).setHtml(me.getDragText());
+  me.proxy.update(me.ddel);
+  me.onStartDrag(x, y);
+  return true;
+}, getDragText:function() {
+  var count = this.dragData.records.length;
+  return Ext.String.format(this.dragText, count, count === 1 ? '' : 's');
+}, getRepairXY:function(e, data) {
+  return data ? data.fromPosition : false;
+}});
 Ext.define('LHCb.Application', {extend:Ext.app.Application, name:'LHCb', quickTips:false, platformConfig:{desktop:{quickTips:true}}, stores:[], launch:function() {
 }, onAppUpdate:function() {
   Ext.Msg.confirm('Application Update', 'This application has an update, reload?', function(choice) {
@@ -72788,27 +73050,16 @@ Ext.define('LHCb.Application', {extend:Ext.app.Application, name:'LHCb', quickTi
     }
   });
 }});
-Ext.define('LHCb.model.TasksTableModel', {extend:Ext.data.Model, alias:'viewmodel.taskstable', fields:[{name:'task', type:'string'}, {name:'command', type:'string'}], proxy:{disableCache:false, method:'POST', type:'myproxy', dataType:'json', actionMethods:{create:'POST', read:'POST', update:'POST', destroy:'POST'}, jsonData:new JSON_RPC.Request('getTask', [{'task':'*'}]), reader:{type:'json', rootProperty:'result'}, writer:{method:'POST', type:'json', writeAllFields:true}, useDefaultXhrHeader:false, 
-noCache:false, limitParam:undefined, pageParam:undefined, startParam:undefined, url:'http://localhost:8081/TDBDATA/JSONRPC'}});
-Ext.define('LHCb.proxy.MyProxy', {extend:Ext.data.proxy.Ajax, alias:'proxy.myproxy', doRequest:function(operation, callback, scope) {
-  var writer = this.getWriter(), request = this.buildRequest(operation, callback, scope);
-  if (operation.allowWrite()) {
-    request = writer.write(request);
-  }
-  console.log('Making a request using custom proxy: LHCb.proxy.MyProxy');
-  Ext.apply(request, {url:this.url, headers:this.headers, timeout:this.timeout, jsonData:this.jsonData, scope:this, callback:this.createRequestCallback(request, operation, callback, scope), method:this.getMethod(request), disableCaching:false});
-  delete request.params;
-  Ext.Ajax.request(request);
-  console.log('jsonData: ' + request.jsonData);
-  return request;
-}, constructor:function() {
-  LHCb.proxy.MyProxy.superclass.constructor.apply(this, arguments);
-  this.actionMethods.read = 'POST';
-}});
-Ext.define('LHCb.store.SelectedItemData', {extend:Ext.data.Store, alias:'store.selecteditemdata', singleton:true, autoLoad:true, fields:['task', 'description', 'utgid', 'command', 'command_parameters', 'task_parameters'], task:'', description:'', utgid:'', command:'', command_parameters:'', task_parameters:''});
-Ext.define('LHCb.view.main.MainController', {extend:Ext.app.ViewController, alias:'controller.main', showFullTasksTable:function() {
+Ext.define('LHCb.controller.RPCController', {extend:Ext.app.Controller, showFullTasksTable:function() {
   var operationwindow = Ext.ComponentQuery.query('panel[itemId\x3dmainoperationwindow]')[0];
   operationwindow.setActiveItem(0);
+  Ext.ComponentQuery.query('panel[itemId\x3dmainoperationwindowtoolbar]')[0].setVisible(true);
+  Ext.ComponentQuery.query('panel[itemId\x3dsingleoperationwindowtoolbar]')[0].setVisible(false);
+}, showFullTaskSetsTable:function() {
+  var operationwindow = Ext.ComponentQuery.query('panel[itemId\x3dmainoperationwindow]')[0];
+  operationwindow.setActiveItem(2);
+  Ext.ComponentQuery.query('panel[itemId\x3dmainoperationwindowtoolbar]')[0].setVisible(true);
+  Ext.ComponentQuery.query('panel[itemId\x3dsingleoperationwindowtoolbar]')[0].setVisible(false);
 }, onDeleteTask:function() {
   Ext.Msg.confirm('Confirm', 'Are you sure?', function(btnText) {
     if (btnText === 'no') {
@@ -72829,9 +73080,29 @@ Ext.define('LHCb.view.main.MainController', {extend:Ext.app.ViewController, alia
   }, failure:function(response) {
     Ext.MessageBox.alert('Status', 'Request failed: the task has not been deleted from the database. Details: ' + response.responseText, this.showResult, this);
   }});
+}, onDeleteTaskSet:function() {
+  Ext.Msg.confirm('Confirm', 'Are you sure?', function(btnText) {
+    if (btnText === 'no') {
+      this.destroy();
+    } else {
+      if (btnText === 'yes') {
+        this.onConfirmDeleteTaskSet();
+      }
+    }
+  }, this);
+}, onConfirmDeleteTaskSet:function() {
+  Ext.Ajax.request({method:'POST', jsonData:new JSON_RPC.Request('deleteSet', [{'task_set':LHCb.store.SelectedItemData.task_set}]), dataType:'json', url:'http://localhost:8081/TDBDATA/JSONRPC', success:function(response) {
+    var operationwindow = Ext.ComponentQuery.query('panel[itemId\x3dmainoperationwindow]')[0];
+    operationwindow.setActiveItem(2);
+    Ext.MessageBox.alert('Status', 'The task set has been deleted from the database.', this.showResult, this);
+    Ext.getCmp('tasksetsexplorergrid').getStore().reload();
+    Ext.getCmp('tasksetstablegrid').getStore().reload();
+  }, failure:function(response) {
+    Ext.MessageBox.alert('Status', 'Request failed: the task has not been deleted from the database. Details: ' + response.responseText, this.showResult, this);
+  }});
 }, onModifyTask:function() {
   var taskModifyWindow = Ext.create('Ext.window.Window', {title:'Modify the selected task', itemId:'modifytaskform', closable:true, closeAction:'destroy', width:350, minWidth:250, border:false, modal:true, items:[{xtype:'form', layout:{type:'vbox', align:'center', pack:'center'}, items:[{xtype:'textfield', name:'task_mod', fieldLabel:"Task's unique name:", value:''}, {xtype:'textfield', name:'script_mod', fieldLabel:"Task's script name:", value:''}, {xtype:'textfield', name:'script_par_mod', fieldLabel:'Parameters for the script:', 
-  value:''}, {xtype:'textfield', name:'utgid_mod', fieldLabel:'Process identifier (utgid):', value:''}, {xtype:'textfield', name:'pcadd_par_mod', fieldLabel:'Parameters for the pcAdd command:', value:''}, {xtype:'textareafield', name:'description_mod', fieldLabel:"Task's description", value:''}], fbar:[{text:'Submit', formBind:true, itemId:'submit', handler:function() {
+  value:''}, {xtype:'textfield', name:'utgid_mod', fieldLabel:'Process identifier (utgid):', value:''}, {xtype:'textfield', name:'pcadd_par_mod', fieldLabel:'Parameters for the pcAdd command:', value:''}, {xtype:'textareafield', name:'description_mod', fieldLabel:"Task's description", value:''}], fbar:[{text:'Save', formBind:true, itemId:'submit', handler:function() {
     var form = this.up('form');
     var formFields = form.items;
     Ext.Ajax.request({method:'POST', jsonData:new JSON_RPC.Request('modifyTask', [{'original_task':LHCb.store.SelectedItemData.task, 'task':formFields.items[0].value, 'command':formFields.items[1].value, 'task_parameters':formFields.items[2].value, 'utgid':formFields.items[3].value, 'command_parameters':formFields.items[4].value, 'description':formFields.items[5].value}]), dataType:'json', url:'http://localhost:8081/TDBDATA/JSONRPC', success:function(response) {
@@ -72852,9 +73123,28 @@ Ext.define('LHCb.view.main.MainController', {extend:Ext.app.ViewController, alia
   form.items[3].setValue(LHCb.store.SelectedItemData.utgid);
   form.items[4].setValue(LHCb.store.SelectedItemData.command_parameters);
   form.items[5].setValue(LHCb.store.SelectedItemData.description);
+}, onModifyTaskSet:function() {
+  var taskSetModifyWindow = Ext.create('Ext.window.Window', {title:'Modify the selected task set', itemId:'modifytasksetform', closable:true, closeAction:'destroy', width:350, minWidth:250, border:false, modal:true, items:[{xtype:'form', layout:{type:'vbox', align:'center', pack:'center'}, items:[{xtype:'textfield', name:'task_mod', fieldLabel:"Task set's unique name:", value:''}, {xtype:'textareafield', name:'description_mod', fieldLabel:"Task set's description", value:''}], fbar:[{text:'Save', 
+  formBind:true, handler:function() {
+    var form = this.up('form');
+    var formFields = form.items;
+    Ext.Ajax.request({method:'POST', jsonData:new JSON_RPC.Request('modifySet', [{'original_task_set':LHCb.store.SelectedItemData.task_set, 'task_set':formFields.items[0].value, 'description':formFields.items[1].value}]), dataType:'json', url:'http://localhost:8081/TDBDATA/JSONRPC', success:function(response) {
+      var operationwindow = Ext.ComponentQuery.query('panel[itemId\x3dmainoperationwindow]')[0];
+      operationwindow.setActiveItem(2);
+      Ext.MessageBox.alert('Status', 'The task set has been modified.', this.showResult, this);
+      Ext.getCmp('tasksetsexplorergrid').getStore().reload();
+      Ext.getCmp('tasksetstablegrid').getStore().reload();
+    }, failure:function(response) {
+      Ext.MessageBox.alert('Status', 'Request failed: the task set has not been modified in the database. Details: ' + response.responseText, this.showResult, this);
+    }});
+    Ext.ComponentQuery.query('panel[itemId\x3dmodifytasksetform]')[0].destroy();
+  }}]}]}).show();
+  var form = taskSetModifyWindow.items.items[0].items;
+  form.items[0].setValue(LHCb.store.SelectedItemData.task_set);
+  form.items[1].setValue(LHCb.store.SelectedItemData.description);
 }, onAddTask:function() {
   var taskAddWindow = Ext.create('Ext.window.Window', {title:'Add a new task to the database', itemId:'addtaskform', closable:true, closeAction:'destroy', width:350, minWidth:250, border:false, modal:true, items:[{xtype:'form', layout:{type:'vbox', align:'center', pack:'center'}, items:[{xtype:'textfield', name:'task', fieldLabel:"Task's unique name:"}, {xtype:'textfield', name:'command', fieldLabel:"Task's script name:"}, {xtype:'textfield', name:'command_parameters', fieldLabel:'Parameters for the script:'}, 
-  {xtype:'textfield', name:'utgid', fieldLabel:'Process identifier (utgid):'}, {xtype:'textfield', name:'script_parameters', fieldLabel:'Parameters for the pcAdd command:'}, {xtype:'textareafield', name:'description', fieldLabel:"Task's description"}], fbar:[{text:'Submit', formBind:true, itemId:'submit', handler:function() {
+  {xtype:'textfield', name:'utgid', fieldLabel:'Process identifier (utgid):'}, {xtype:'textfield', name:'script_parameters', fieldLabel:'Parameters for the pcAdd command:'}, {xtype:'textareafield', name:'description', fieldLabel:"Task's description"}], fbar:[{text:'Save', formBind:true, itemId:'submit', handler:function() {
     var form = this.up('form');
     var formFields = form.items;
     Ext.Ajax.request({method:'POST', jsonData:new JSON_RPC.Request('addTask', [{'task':formFields.items[0].value, 'command':formFields.items[1].value, 'task_parameters':formFields.items[2].value, 'utgid':formFields.items[3].value, 'command_parameters':formFields.items[4].value, 'description':formFields.items[5].value}]), dataType:'json', url:'http://localhost:8081/TDBDATA/JSONRPC', success:function(response) {
@@ -72866,19 +73156,133 @@ Ext.define('LHCb.view.main.MainController', {extend:Ext.app.ViewController, alia
     }});
     Ext.ComponentQuery.query('panel[itemId\x3daddtaskform]')[0].destroy();
   }}]}]}).show();
+}, onAddTaskSet:function() {
+  var taskAddWindow = Ext.create('Ext.window.Window', {title:'Add a new task set to the database', itemId:'addtasksetform', closable:true, closeAction:'destroy', width:350, minWidth:250, border:false, modal:true, items:[{xtype:'form', layout:{type:'vbox', align:'center', pack:'center'}, items:[{xtype:'textfield', name:'task', fieldLabel:"Task set's unique name:"}, {xtype:'textareafield', name:'description', fieldLabel:"Task set's description"}], fbar:[{text:'Save', formBind:true, handler:function() {
+    var form = this.up('form');
+    var formFields = form.items;
+    Ext.Ajax.request({method:'POST', jsonData:new JSON_RPC.Request('addSet', [{'task_set':formFields.items[0].value, 'description':formFields.items[1].value}]), dataType:'json', url:'http://localhost:8081/TDBDATA/JSONRPC', success:function(response) {
+      Ext.MessageBox.alert('Status', 'The task set has been added to the database.', this.showResult, this);
+      Ext.getCmp('tasksetsexplorergrid').getStore().reload();
+      Ext.getCmp('tasksetstablegrid').getStore().reload();
+    }, failure:function(response) {
+      Ext.MessageBox.alert('Status', 'Request failed: the task set has not been added to the the database. Details: ' + response.responseText, this.showResult, this);
+    }});
+    Ext.ComponentQuery.query('panel[itemId\x3daddtasksetform]')[0].destroy();
+  }}]}]}).show();
+}, onDeleteTasks:function() {
+  var tasksGrid = Ext.getCmp('taskstablegrid');
+  var selectionModel = tasksGrid.getSelectionModel();
+  if (selectionModel.hasSelection()) {
+    var selectedItems = selectionModel.getSelection();
+    for (var i in selectedItems) {
+      Ext.Ajax.request({method:'POST', jsonData:new JSON_RPC.Request('deleteTask', [{'task':selectedItems[i].data['task']}]), dataType:'json', url:'http://localhost:8081/TDBDATA/JSONRPC'});
+    }
+    Ext.MessageBox.alert('Status', 'The selected tasks have been deleted from the database.', this.showResult, this);
+    Ext.getCmp('taskexplorergrid').getStore().reload();
+    Ext.getCmp('taskstablegrid').getStore().reload();
+  } else {
+    Ext.MessageBox.alert('Status', 'Error: no tasks were selected in the table, no action was taken.');
+  }
+}, onDeleteTaskSets:function() {
+  var tasksGrid = Ext.getCmp('tasksetstablegrid');
+  var selectionModel = tasksGrid.getSelectionModel();
+  if (selectionModel.hasSelection()) {
+    var selectedItems = selectionModel.getSelection();
+    for (var i in selectedItems) {
+      Ext.Ajax.request({method:'POST', jsonData:new JSON_RPC.Request('deleteSet', [{'task_set':selectedItems[i].data['task_set']}]), dataType:'json', url:'http://localhost:8081/TDBDATA/JSONRPC'});
+    }
+    Ext.MessageBox.alert('Status', 'The selected task sets have been deleted from the database.', this.showResult, this);
+    Ext.getCmp('tasksetsexplorergrid').getStore().reload();
+    Ext.getCmp('tasksetstablegrid').getStore().reload();
+  } else {
+    Ext.MessageBox.alert('Status', 'Error: no task sets were selected in the table, no action was taken.');
+  }
+}, onAssignToTaskSet:function() {
+  var assignToTaskSetWindow = Ext.create('Ext.window.Window', {title:'Assign tasks to a task set', controller:'dd-grid-to-grid', itemId:'assigntasktotaskset', closable:true, closeAction:'destroy', minWidth:250, border:false, modal:true, width:650, height:420, viewModel:{stores:{assigned_items:{autoLoad:true, fields:[{name:'task', type:'string'}], proxy:{disableCache:false, method:'POST', type:'myproxy', dataType:'json', actionMethods:{create:'POST', read:'POST', update:'POST', destroy:'POST'}, jsonData:new JSON_RPC.Request('tasksInSet', 
+  [{'task_set':LHCb.store.SelectedItemData.task_set}]), reader:{type:'json', rootProperty:'result'}}}, tasks:{autoLoad:true, fields:[{name:'task', type:'string'}], proxy:{disableCache:false, method:'POST', type:'myproxy', dataType:'json', actionMethods:{create:'POST', read:'POST', update:'POST', destroy:'POST'}, jsonData:new JSON_RPC.Request('getTask', [{'task':'*'}]), reader:{type:'json', rootProperty:'result'}}, listeners:{load:function() {
+    if (typeof this.data.items[0] !== 'undefined' && typeof Ext.ComponentQuery.query('panel[itemId\x3dassigntasktotaskset]')[0].viewModel.storeInfo.assigned_items.data.items[0] !== 'undefined') {
+      var notInSetRows = this.data.items[0].store.data.items;
+      var inSetRows = Ext.ComponentQuery.query('panel[itemId\x3dassigntasktotaskset]')[0].viewModel.storeInfo.assigned_items.data.items[0].store.data.items;
+      for (var i = 0; i < notInSetRows.length; i++) {
+        for (var k = 0; k < inSetRows.length; k++) {
+          if (inSetRows[k].data['task'] == notInSetRows[i].data['task']) {
+            this.removeAt(this.find('task', inSetRows[k].data['task']));
+          }
+        }
+      }
+    }
+  }}}}}, tools:[{type:'refresh', tooltip:'Reset assignment', handler:'onResetClick'}], layout:{type:'hbox', pack:'center', align:'stretch'}, items:[{xtype:'grid', reference:'grid1', itemId:'notassignedtasksgrid', flex:1, multiSelect:false, margin:'0 5 0 0', viewConfig:{plugins:{ptype:'gridviewdragdrop', containerScroll:true, dragGroup:'dd-grid-to-grid-group1', dropGroup:'dd-grid-to-grid-group2'}, listeners:{drop:'onDropGrid1'}}, bind:'{tasks}', columns:[{text:'Tasks', dataIndex:'task', flex:1, sortable:true}]}, 
+  {xtype:'grid', reference:'grid2', itemId:'assigntasksgrid', flex:1, stripeRows:true, viewConfig:{plugins:{ptype:'gridviewdragdrop', containerScroll:true, dragGroup:'dd-grid-to-grid-group2', dropGroup:'dd-grid-to-grid-group1', dropZone:{overClass:'dd-over-gridview'}}, listeners:{drop:'onDropGrid2'}}, bind:'{assigned_items}', columns:[{text:'Assigned tasks', dataIndex:'task', flex:1, sortable:true}]}], fbar:[{text:'Save', handler:function() {
+    var assignTaskWindow = Ext.ComponentQuery.query('panel[itemId\x3dassigntasktotaskset]')[0];
+    var tasks_to_assign = LHCb.store.AssignItemsStore.tasks;
+    for (var i in tasks_to_assign) {
+      Ext.Ajax.request({method:'POST', jsonData:new JSON_RPC.Request('assignTask', [{'task':tasks_to_assign[i], 'task_set':LHCb.store.SelectedItemData.task_set}]), dataType:'json', url:'http://localhost:8081/TDBDATA/JSONRPC'});
+    }
+    var tasks_to_unassign = LHCb.store.UnassignItemsStore.tasks;
+    for (var i in tasks_to_unassign) {
+      Ext.Ajax.request({method:'POST', jsonData:new JSON_RPC.Request('unassignTask', [{'task':tasks_to_unassign[i], 'task_set':LHCb.store.SelectedItemData.task_set}]), dataType:'json', url:'http://localhost:8081/TDBDATA/JSONRPC'});
+    }
+    Ext.MessageBox.alert('Status', 'The tasks have been assigned to (and unassigned from) the task set.', this.showResult, this);
+    assignTaskWindow.destroy();
+  }}]}).show();
 }});
+Ext.define('LHCb.model.TaskSetsTableModel', {extend:Ext.data.Model, alias:'viewmodel.tasksetstable', fields:[{name:'task_set', type:'string'}, {name:'description', type:'string'}], proxy:{disableCache:false, method:'POST', type:'myproxy', dataType:'json', actionMethods:{create:'POST', read:'POST', update:'POST', destroy:'POST'}, jsonData:new JSON_RPC.Request('getSet', [{'task_set':'*'}]), reader:{type:'json', rootProperty:'result'}, writer:{method:'POST', type:'json', writeAllFields:true}, useDefaultXhrHeader:false, 
+noCache:false, limitParam:undefined, pageParam:undefined, startParam:undefined, url:'http://localhost:8081/TDBDATA/JSONRPC'}});
+Ext.define('LHCb.model.TasksTableModel', {extend:Ext.data.Model, itemId:'taskstablemodel', alias:'viewmodel.taskstable', fields:[{name:'task', type:'string'}, {name:'command', type:'string'}], proxy:{disableCache:false, method:'POST', type:'myproxy', dataType:'json', actionMethods:{create:'POST', read:'POST', update:'POST', destroy:'POST'}, jsonData:new JSON_RPC.Request('getTask', [{'task':'*'}]), reader:{type:'json', rootProperty:'result'}, writer:{method:'POST', type:'json', writeAllFields:true}, 
+useDefaultXhrHeader:false, noCache:false, limitParam:undefined, pageParam:undefined, startParam:undefined, url:'http://localhost:8081/TDBDATA/JSONRPC'}});
+Ext.define('LHCb.proxy.MyProxy', {extend:Ext.data.proxy.Ajax, alias:'proxy.myproxy', url:'http://localhost:8081/TDBDATA/JSONRPC', doRequest:function(operation, callback, scope) {
+  var writer = this.getWriter(), request = this.buildRequest(operation, callback, scope);
+  if (operation.allowWrite()) {
+    request = writer.write(request);
+  }
+  Ext.apply(request, {url:this.url, headers:this.headers, timeout:this.timeout, jsonData:this.jsonData, scope:this, callback:this.createRequestCallback(request, operation, callback, scope), method:this.getMethod(request), disableCaching:false});
+  delete request.params;
+  Ext.Ajax.request(request);
+  return request;
+}, constructor:function() {
+  LHCb.proxy.MyProxy.superclass.constructor.apply(this, arguments);
+  this.actionMethods.read = 'POST';
+}});
+Ext.define('LHCb.store.AssignItemsStore', {extend:Ext.data.Store, alias:'store.assignitemsstore', singleton:true, autoLoad:true});
+Ext.define('LHCb.store.SelectedItemData', {extend:Ext.data.Store, alias:'store.selecteditemdata', singleton:true, autoLoad:true, fields:['task', 'description', 'utgid', 'command', 'command_parameters', 'task_parameters'], task:'', task_set:'', description:'', utgid:'', command:'', command_parameters:'', task_parameters:''});
+Ext.define('LHCb.store.UnassignItemsStore', {extend:Ext.data.Store, alias:'store.unassignitemsstore', singleton:true, autoLoad:true});
+Ext.define('LHCb.view.main.GridToGridController', {extend:Ext.app.ViewController, alias:'controller.dd-grid-to-grid', beforeRender:function() {
+  this.onResetClick();
+}, onDrop:function(onRec, rec, dropPosition, title) {
+}, onDropGrid1:function(node, data, dropRec, dropPosition) {
+  itemtoremove = data.event.item.innerText;
+  delete LHCb.store.AssignItemsStore.tasks[itemtoremove];
+  key = data.event.item.innerText;
+  value = data.event.item.innerText;
+  LHCb.store.UnassignItemsStore.tasks[key] = value;
+  this.onDrop();
+}, onDropGrid2:function(node, data, dropRec, dropPosition) {
+  key = data.event.item.innerText;
+  value = data.event.item.innerText;
+  LHCb.store.AssignItemsStore.tasks[key] = value;
+  itemtoremove = data.event.item.innerText;
+  delete LHCb.store.UnassignItemsStore.tasks[itemtoremove];
+}, onResetClick:function() {
+  LHCb.store.AssignItemsStore.tasks = [];
+  LHCb.store.UnassignItemsStore.tasks = [];
+  this.lookup('grid1').getStore().reload();
+  this.lookup('grid2').getStore().reload();
+}});
+Ext.define('LHCb.view.main.MainController', {extend:Ext.app.ViewController, itemId:'maincontroller', id:'maincontroller', alias:'controller.main'});
 Ext.define('LHCb.view.main.MainModel', {extend:Ext.app.ViewModel, alias:'viewmodel.main', data:{name:'LHCb', loremIpsum:'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'}});
 Ext.define('LHCb.view.operationwindow.SingleTask', {extend:Ext.panel.Panel, xtype:'singletask', controller:'main', itemId:'singletaskwindow', bodyPadding:10, layout:'form', items:[{xtype:'textfield', readOnly:true, name:'task_mod', fieldLabel:"Task's unique name:", value:''}, {xtype:'textfield', readOnly:true, name:'script_mod', fieldLabel:"Task's script name:", value:''}, {xtype:'textfield', readOnly:true, name:'script_par_mod', fieldLabel:'Parameters for the script:', value:''}, {xtype:'textfield', 
 readOnly:true, name:'utgid_mod', fieldLabel:'Process identifier (utgid):', value:''}, {xtype:'textfield', readOnly:true, name:'pcadd_par_mod', fieldLabel:'Parameters for the pcAdd command:', value:''}, {xtype:'textareafield', name:'description_mod', readOnly:true, fieldLabel:"Task's description", value:''}]});
-Ext.define('LHCb.view.operationwindow.OperationWindow', {extend:Ext.Panel, layout:'card', controller:'main', alias:'mainoperationwindow', xtype:'mainoperationwindow', activeItem:0, items:[{layout:{type:'vbox', pack:'start', align:'stretch'}, items:[{tbar:[{flex:1, text:'Add task', glyph:'f055@FontAwesome', handler:'onAddTask'}, {flex:1, text:'Delete task(s)', glyph:'f056@FontAwesome', handler:function() {
-  alert('Delete selected tasks trough REST api, optional: ask if the user is sure');
-}}]}, {xtype:'taskstable'}]}, {layout:{type:'vbox', align:'stretch'}, items:[{layout:{type:'fit'}, items:[{xtype:'singletask', flex:1}]}, {bbar:[{flex:1, text:'Modify task', glyph:'f044@FontAwesome', handler:'onModifyTask'}, {flex:1, text:'Delete task', glyph:'f056@FontAwesome', handler:'onDeleteTask'}], align:'bottom'}]}]});
-Ext.define('LHCb.view.operationwindow.TasksTable', {extend:Ext.grid.Panel, xtype:'taskstable', id:'taskstablegrid', controller:'main', scrollable:true, bind:'{tasks}', columnLines:true, selType:'checkboxmodel', viewModel:{stores:{tasks:{model:'LHCb.model.TasksTableModel', autoLoad:true}}}, columns:[{xtype:'rownumberer'}, {text:'Unique name', dataIndex:'task', flex:1}, {text:'Script name', dataIndex:'command', flex:1}, {text:'Script parameters', dataIndex:'task_parameters', flex:1}, {text:'Process identifier', 
-dataIndex:'utgid', flex:1}, {text:'PcAdd parameters', dataIndex:'command_parameters', flex:1}], viewConfig:{emptyText:'No tasks in the database or database API offline...', deferEmptyText:false}});
-Ext.define('LHCb.view.tabpanel.TabPanel', {extend:Ext.tab.Panel, xtype:'tabpanel', controller:'main', shadow:true, frame:true, cls:'demo-solid-background', tabBar:{layout:{pack:'center'}}, activeTab:0, defaults:{scrollable:true}, items:[{title:'Tasks', id:'tasktreeID', cls:'card', items:[{xtype:'taskexplorer'}]}, {title:'Task Sets', html:'Task Sets tree from DB via REST.', cls:'card'}, {title:'Node Classes', html:'Node Classes tree from DB via REST.', cls:'card'}, {title:'Nodes', html:'Node names or regular expressions from DB via REST.', 
-cls:'card'}]});
-Ext.define('LHCb.view.tabpanel.taskexplorer.TaskExplorer', {extend:Ext.Container, itemId:'taskexplorer', xtype:'taskexplorer', controller:'main', viewModel:{stores:{tasks:{model:'LHCb.model.TasksTableModel', autoLoad:true}}}, layout:{type:'vbox', pack:'start', align:'stretch'}, items:[{xtype:'panel', tbar:[{flex:1, text:'Show all tasks', glyph:'f0ce@FontAwesome', handler:'showFullTasksTable'}]}, {xtype:'grid', id:'taskexplorergrid', bind:'{tasks}', columns:[{text:'Select a task:', dataIndex:'task', 
-flex:1, listeners:{click:function(grid, cellElement, rowIndex, cellIndex) {
+Ext.define('LHCb.view.operationwindow.OperationWindow', {extend:Ext.Panel, layout:'card', controller:'main', alias:'mainoperationwindow', xtype:'mainoperationwindow', activeItem:0, items:[{toolbaridentifier:'taskstable', layout:{type:'vbox', pack:'start', align:'stretch'}, items:[{xtype:'taskstable'}]}, {toolbaridentifier:'singletask', layout:{type:'vbox', align:'stretch'}, items:[{layout:{type:'fit'}, items:[{xtype:'singletask', flex:1}]}]}, {toolbaridentifier:'setstable', layout:{type:'vbox', pack:'start', 
+align:'stretch'}, items:[{autoScroll:true, xtype:'tasksetstable'}]}, {toolbaridentifier:'singleset', layout:{type:'vbox', align:'stretch'}, items:[{layout:{type:'fit'}, items:[{xtype:'singletaskset', flex:1}]}]}]});
+Ext.define('LHCb.view.operationwindow.SingleTaskSet', {extend:Ext.panel.Panel, xtype:'singletaskset', controller:'main', itemId:'singletasksetwindow', bodyPadding:10, viewModel:{stores:{assigned_items:{autoLoad:true, fields:[{name:'task', type:'string'}], proxy:{disableCache:false, method:'POST', type:'myproxy', dataType:'json', actionMethods:{create:'POST', read:'POST', update:'POST', destroy:'POST'}, jsonData:new JSON_RPC.Request('tasksInSet', [{'task_set':LHCb.store.SelectedItemData.task_set}]), 
+reader:{type:'json', rootProperty:'result'}}}}}, layout:{type:'vbox', align:'stretch', pack:'start'}, items:[{layout:'form', items:[{xtype:'textfield', readOnly:true, fieldLabel:"Task set's unique name:", value:''}, {xtype:'textareafield', readOnly:true, fieldLabel:"Task set's description", value:''}]}, {xtype:'grid', flex:1, bind:'{assigned_items}', columns:[{text:'Assigned tasks:', dataIndex:'task', flex:1, sortable:true}]}]});
+Ext.define('LHCb.view.operationwindow.TaskSetsTable', {extend:Ext.grid.Panel, xtype:'tasksetstable', id:'tasksetstablegrid', controller:'main', scrollable:true, bind:'{tasksets}', columnLines:true, selType:'checkboxmodel', viewModel:{stores:{tasksets:{model:'LHCb.model.TaskSetsTableModel', autoLoad:true}}}, columns:[{xtype:'rownumberer'}, {text:'Unique name', dataIndex:'task_set', flex:1}, {text:'Description', dataIndex:'description', flex:1}], viewConfig:{emptyText:'No task sets in the database or database API offline...', 
+deferEmptyText:false}});
+Ext.define('LHCb.view.operationwindow.TasksTable', {extend:Ext.grid.Panel, xtype:'taskstable', id:'taskstablegrid', itemId:'taskstable', controller:'main', scrollable:true, bind:'{tasks}', columnLines:true, selType:'checkboxmodel', viewModel:{stores:{tasks:{model:'LHCb.model.TasksTableModel', autoLoad:true}}}, columns:[{xtype:'rownumberer'}, {text:'Unique name', dataIndex:'task', flex:1}, {text:'Script name', dataIndex:'command', flex:1}, {text:'Script parameters', dataIndex:'task_parameters', flex:1}, 
+{text:'Process identifier', dataIndex:'utgid', flex:1}, {text:'PcAdd parameters', dataIndex:'command_parameters', flex:1}], viewConfig:{emptyText:'No tasks in the database or database API offline...', deferEmptyText:false}});
+Ext.define('LHCb.view.tabpanel.TabPanel', {extend:Ext.tab.Panel, xtype:'tabpanel', controller:'main', itemId:'tabpanel', shadow:true, frame:true, cls:'demo-solid-background', tabBar:{layout:{pack:'center'}}, activeTab:0, defaults:{scrollable:true}, items:[{title:'Tasks', id:'tasktreeID', tabname:'tasks', cls:'card', items:[{xtype:'taskexplorer'}]}, {title:'Task Sets', cls:'card', tabname:'task sets', items:[{xtype:'tasksetsexplorer'}]}, {title:'Node Classes', tabname:'node classes', html:'Node Classes tree from DB via REST.', 
+cls:'card'}, {title:'Nodes', tabname:'nodes', html:'Node names or regular expressions from DB via REST.', cls:'card'}]});
+Ext.define('LHCb.view.tabpanel.taskexplorer.TaskExplorer', {extend:Ext.Container, itemId:'taskexplorer', xtype:'taskexplorer', controller:'main', viewModel:{stores:{tasks:{model:'LHCb.model.TasksTableModel', autoLoad:true}}}, layout:{type:'vbox', pack:'start', align:'stretch'}, items:[{xtype:'grid', id:'taskexplorergrid', bind:'{tasks}', columns:[{text:'Select a task:', dataIndex:'task', flex:1, listeners:{click:function(grid, cellElement, rowIndex, cellIndex) {
   var gridstore = grid.getStore();
   var rowdata = gridstore.data.items[rowIndex];
   LHCb.store.SelectedItemData.task = rowdata.data['task'];
@@ -72889,7 +73293,10 @@ flex:1, listeners:{click:function(grid, cellElement, rowIndex, cellIndex) {
   LHCb.store.SelectedItemData.command = rowdata.data['command'];
   var operationwindow = Ext.ComponentQuery.query('panel[itemId\x3dmainoperationwindow]')[0];
   operationwindow.setActiveItem(1);
-  Ext.ComponentQuery.query('panel[itemId\x3ddescriptionwindow]')[0].body.update('\x3cbr\x3e\x3ccenter\x3e' + LHCb.store.SelectedItemData.description + '\x3c/center\x3e');
+  Ext.ComponentQuery.query('panel[itemId\x3dsingleoperationwindowtoolbar]')[0].setVisible(true);
+  Ext.ComponentQuery.query('panel[itemId\x3dmainoperationwindowtoolbar]')[0].setVisible(false);
+  Ext.ComponentQuery.query('panel[itemId\x3dsingleoperationwindowtoolbar]')[0].header.items.items[2].setVisible(false);
+  Ext.ComponentQuery.query('panel[itemId\x3ddescriptionwindow]')[0].body.update('\x3cbr\x3e\x3ccenter\x3e' + LHCb.store.SelectedItemData.task + ': ' + LHCb.store.SelectedItemData.description + '\x3c/center\x3e');
   Ext.ComponentQuery.query('panel[itemId\x3dsingletaskwindow]')[0].items.items[0].setValue(LHCb.store.SelectedItemData.task);
   Ext.ComponentQuery.query('panel[itemId\x3dsingletaskwindow]')[0].items.items[1].setValue(LHCb.store.SelectedItemData.command);
   Ext.ComponentQuery.query('panel[itemId\x3dsingletaskwindow]')[0].items.items[2].setValue(LHCb.store.SelectedItemData.task_parameters);
@@ -72897,9 +73304,75 @@ flex:1, listeners:{click:function(grid, cellElement, rowIndex, cellIndex) {
   Ext.ComponentQuery.query('panel[itemId\x3dsingletaskwindow]')[0].items.items[4].setValue(LHCb.store.SelectedItemData.command_parameters);
   Ext.ComponentQuery.query('panel[itemId\x3dsingletaskwindow]')[0].items.items[5].setValue(LHCb.store.SelectedItemData.description);
 }}}], viewConfig:{emptyText:'No tasks in the database or database API offline...', deferEmptyText:false}}]});
-Ext.define('LHCb.view.main.Main', {extend:Ext.Container, xtype:'app-main', controller:'main', viewModel:'main', defaults:{margin:'3px 3px 3px 3px'}, layout:{type:'fit'}, items:[{layout:{type:'vbox', pack:'start', align:'stretch'}, frame:true, items:[{layout:{type:'hbox'}, items:[{title:'\x3ccenter\x3e\x3cstrong\x3eLHCb Online Farm Process Explorer\x3c/strong\x3e\x3c/center\x3e', flex:1, header:{titlePosition:1, items:[{glyph:'f129@FontAwesome', handler:function() {
+Ext.define('LHCb.view.tabpanel.tasksetsexplorer.TaskSetsExplorer', {extend:Ext.Container, itemId:'tasksetsexplorer', xtype:'tasksetsexplorer', controller:'main', viewModel:{stores:{task_sets:{model:'LHCb.model.TaskSetsTableModel', autoLoad:true}}}, layout:{type:'vbox', pack:'start', align:'stretch'}, items:[{xtype:'grid', id:'tasksetsexplorergrid', bind:'{task_sets}', columns:[{text:'Select a task set:', dataIndex:'task_set', flex:1, listeners:{click:function(grid, cellElement, rowIndex, cellIndex) {
+  var gridstore = grid.getStore();
+  var rowdata = gridstore.data.items[rowIndex];
+  LHCb.store.SelectedItemData.task_set = rowdata.data['task_set'];
+  LHCb.store.SelectedItemData.description = rowdata.data['description'];
+  var operationwindow = Ext.ComponentQuery.query('panel[itemId\x3dmainoperationwindow]')[0];
+  operationwindow.setActiveItem(3);
+  Ext.ComponentQuery.query('panel[itemId\x3dsingleoperationwindowtoolbar]')[0].setVisible(true);
+  Ext.ComponentQuery.query('panel[itemId\x3dmainoperationwindowtoolbar]')[0].setVisible(false);
+  Ext.ComponentQuery.query('panel[itemId\x3dsingleoperationwindowtoolbar]')[0].header.items.items[2].setVisible(true);
+  Ext.ComponentQuery.query('panel[itemId\x3ddescriptionwindow]')[0].body.update('\x3cbr\x3e\x3ccenter\x3e' + LHCb.store.SelectedItemData.task_set + ': ' + LHCb.store.SelectedItemData.description + '\x3c/center\x3e');
+  Ext.ComponentQuery.query('panel[itemId\x3dsingletasksetwindow]')[0].items.items[0].items.items[0].setValue(LHCb.store.SelectedItemData.task_set);
+  Ext.ComponentQuery.query('panel[itemId\x3dsingletasksetwindow]')[0].items.items[0].items.items[1].setValue(LHCb.store.SelectedItemData.description);
+  Ext.ComponentQuery.query('panel[itemId\x3dsingletasksetwindow]')[0].items.items[1].store.proxy.jsonData.params[0]['task_set'] = rowdata.data['task_set'];
+  Ext.ComponentQuery.query('panel[itemId\x3dsingletasksetwindow]')[0].items.items[1].store.reload();
+}}}], viewConfig:{emptyText:'No tasks in the database or database API offline...', deferEmptyText:false}}]});
+Ext.define('LHCb.view.main.Main', {extend:Ext.Container, xtype:'app-main', controller:'main', viewModel:'main', defaults:{margin:'3px 3px 3px 3px'}, layout:{type:'fit'}, items:[{layout:{type:'vbox', pack:'start', align:'stretch'}, frame:true, items:[{layout:{type:'hbox'}, items:[{title:'\x3ccenter\x3e\x3cstrong\x3eLHCb Online Farm Process Explorer\x3c/strong\x3e\x3c/center\x3e', flex:1, header:{titlePosition:1, items:[{glyph:'f129@FontAwesome', tooltip:'About', handler:function() {
   Ext.MessageBox.alert('About', '\x3ccenter\x3e\x3cb\x3eLHCb Online Farm Process Explorer\x3c/b\x3e\x3cbr\x3e\x3cbr\x3eAuthor: Krzysztof Wilczynski\x3cul list-style-position: inside; margin-top: 0;\x3e\x3cli\x3e\x3ca href\x3d"mailto:krzysztofwilczynski@mail.com"\x3ekrzysztofwilczynski@mail.com\x3c/a\x3e\x3c/li\x3e\x3cli\x3e\x3ca href\x3d"https://www.linkedin.com/in/3sztof"\x3ewww.linkedin.com/in/3sztof/\x3c/a\x3e\x3c/li\x3e\x3cli\x3e\x3ca href\x3d"tel:+48668876202"\x3e+48 669 876 202\x3c/a\x3e\x3c/li\x3e\x3c/ul\x3eSupervisor: Markus Frank\x3cul list-style-position: inside; margin-top: 0;\x3e\x3cli\x3e\x3ca href\x3d"mailto:markus.frank@cern.ch"\x3emarkus.frank@cern.ch\x3c/a\x3e\x3c/li\x3e\x3c/ul\x3e\x3c/center\x3e', 
   this.showResult, this);
-}}]}}, {xtype:'image', src:'resources/LHCb_mod.png', flex:0.12, height:88}]}, {layout:{type:'hbox', pack:'start', align:'stretch'}, flex:1, items:[{layout:{type:'vbox', pack:'start', align:'stretch'}, items:[{xtype:'tabpanel', flex:1, width:350, title:'\x3ccenter\x3eNavigation\x3c/center\x3e', margin:'0 0 5 0'}, {xtype:'panel', title:"\x3ccenter\x3eSelected item's description\x3c/center\x3e", itemId:'descriptionwindow', frame:true, scrollable:true, collapsible:true, height:150}]}, {flex:1, layout:{type:'vbox', 
-pack:'start', align:'stretch'}, items:[{title:'\x3ccenter\x3eOperation\x3c/center\x3e'}, {autoScroll:true, flex:1, items:[{xtype:'mainoperationwindow', itemId:'mainoperationwindow'}]}]}]}]}]});
+}}]}}, {xtype:'image', src:'resources/LHCb_mod.png', flex:0.12, height:88}]}, {layout:{type:'hbox', pack:'start', align:'stretch'}, flex:1, items:[{layout:{type:'vbox', pack:'start', align:'stretch'}, items:[{xtype:'tabpanel', flex:1, width:350, title:'Navigation', margin:'0 0 5 0', header:{items:[{xtype:'button', text:'Show all ', tooltip:'Show a table containing all items of selected type', glyph:'f0ce@FontAwesome', handler:function() {
+  var rpcController = LHCb.app.getController('LHCb.controller.RPCController');
+  var tabName = Ext.ComponentQuery.query('tabpanel[itemId\x3dtabpanel]')[0].activeTab.tabname;
+  if (tabName == 'tasks') {
+    rpcController.showFullTasksTable();
+  }
+  if (tabName == 'task sets') {
+    rpcController.showFullTaskSetsTable();
+  }
+}}]}}, {xtype:'panel', title:"\x3ccenter\x3eSelected item's description\x3c/center\x3e", itemId:'descriptionwindow', frame:true, scrollable:true, collapsible:true, height:150}]}, {flex:1, layout:{type:'vbox', pack:'start', align:'stretch'}, items:[{itemId:'mainoperationwindowtoolbar', title:'Operation', header:{items:[{xtype:'button', text:'Create', glyph:'f055@FontAwesome', tooltip:'Create a new item', handler:function() {
+  var rpcController = LHCb.app.getController('LHCb.controller.RPCController');
+  var activeWindow = Ext.ComponentQuery.query('panel[itemId\x3dmainoperationwindow]')[0].getLayout().getActiveItem().toolbaridentifier;
+  if (activeWindow == 'taskstable') {
+    rpcController.onAddTask();
+  }
+  if (activeWindow == 'setstable') {
+    rpcController.onAddTaskSet();
+  }
+}}, {xtype:'button', glyph:'f056@FontAwesome', tooltip:'Delete the selected item(s)', text:'Delete', handler:function() {
+  var rpcController = LHCb.app.getController('LHCb.controller.RPCController');
+  var activeWindow = Ext.ComponentQuery.query('panel[itemId\x3dmainoperationwindow]')[0].getLayout().getActiveItem().toolbaridentifier;
+  if (activeWindow == 'taskstable') {
+    rpcController.onDeleteTasks();
+  }
+  if (activeWindow == 'setstable') {
+    rpcController.onDeleteTaskSets();
+  }
+}}]}}, {itemId:'singleoperationwindowtoolbar', title:'Operation', hidden:true, header:{items:[{xtype:'button', text:'Modify', glyph:'f044@FontAwesome', tooltip:'Modify the selected item', handler:function() {
+  var rpcController = LHCb.app.getController('LHCb.controller.RPCController');
+  var activeWindow = Ext.ComponentQuery.query('panel[itemId\x3dmainoperationwindow]')[0].getLayout().getActiveItem().toolbaridentifier;
+  if (activeWindow == 'singletask') {
+    rpcController.onModifyTask();
+  }
+  if (activeWindow == 'singleset') {
+    rpcController.onModifyTaskSet();
+  }
+}}, {xtype:'button', text:'Assign / unassign items', iconCls:'x-fa fa-sign-in', tooltip:'Assign items to the selected set', handler:function() {
+  var rpcController = LHCb.app.getController('LHCb.controller.RPCController');
+  var activeWindow = Ext.ComponentQuery.query('panel[itemId\x3dmainoperationwindow]')[0].getLayout().getActiveItem().toolbaridentifier;
+  if (activeWindow == 'singleset') {
+    rpcController.onAssignToTaskSet();
+  }
+}}, {xtype:'button', glyph:'f056@FontAwesome', tooltip:'Delete the selected item', text:'Delete', handler:function() {
+  var rpcController = LHCb.app.getController('LHCb.controller.RPCController');
+  var activeWindow = Ext.ComponentQuery.query('panel[itemId\x3dmainoperationwindow]')[0].getLayout().getActiveItem().toolbaridentifier;
+  if (activeWindow == 'singletask') {
+    rpcController.onDeleteTask();
+  }
+  if (activeWindow == 'singleset') {
+    rpcController.onDeleteTaskSet();
+  }
+}}]}}, {autoScroll:true, flex:1, items:[{xtype:'mainoperationwindow', itemId:'mainoperationwindow'}]}]}]}]}]});
 Ext.application({name:'LHCb', extend:LHCb.Application, toolkit:'classic', mainView:'LHCb.view.main.Main'});

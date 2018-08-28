@@ -217,8 +217,13 @@
             {
                 "path": "${framework.dir}/build/ext-all-debug.js"
             }
+            //{
+            //    "path": "./json-rpc.js",
+            //    "bundle": true
+            //}
         ]
     },
+
 
     /**
      * Settings specific to modern toolkit builds.

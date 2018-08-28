@@ -90,6 +90,7 @@ Ext.define('LHCb.view.main.Main', {
                                             {
                                                 xtype: 'button',
                                                 text: 'Show all ',
+                                                tooltip: 'Show a table containing all items of selected type',
                                                 glyph: 'f0ce@FontAwesome',
                                                 handler: function() {
                                                     var rpcController = LHCb.app.getController("LHCb.controller.RPCController");
@@ -99,6 +100,12 @@ Ext.define('LHCb.view.main.Main', {
                                                     }
                                                     if(tabName == 'task sets'){
                                                         rpcController.showFullTaskSetsTable();
+                                                    }
+                                                    if(tabName == 'node classes'){
+                                                        rpcController.showFullClassesTable();
+                                                    }
+                                                    if(tabName == 'nodes'){
+                                                        rpcController.showFullNodesTable();
                                                     }
                                                 }
                                             }

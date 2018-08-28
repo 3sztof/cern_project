@@ -11,6 +11,7 @@ Ext.application({
     requires: [
         'LHCb.view.main.Main',
         //'json-rpc',
+        'LHCb.controller.RPCController',
         'Ext.plugin.Viewport',
         'LHCb.view.operationwindow.TasksTable',
         'LHCb.model.TasksTableModel',
@@ -32,3 +33,7 @@ Ext.application({
     // of merge conflicts when upgrading to new versions of Sencha Cmd.
     //-------------------------------------------------------------------------
 });
+
+// Global namespace for global variable _request_path - didnt really work...
+// Ext.ns('LHCb.Application.Globals');
+// LHCb.Application.Globals._request_path = "http://localhost:8081/TDBDATA/JSONRPC";

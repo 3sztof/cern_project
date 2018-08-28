@@ -63,7 +63,7 @@ Ext.define('LHCb.model.TasksTableModel', {
         pageParam: undefined,
         startParam: undefined,
         //url: 'http://localhost:8080/tasks'
-        url: 'http://localhost:8081/TDBDATA/JSONRPC'
+        url: "http://pclhcb153:8081/TDBDATA/JSONRPC"
     },
 
 });

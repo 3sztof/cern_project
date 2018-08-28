@@ -3,13 +3,14 @@ Ext.define('LHCb.controller.RPCController', {
 
 
 
-    // d8888b. d88888b db      d88888b d888888b d88888b 
-    // 88  `8D 88'     88      88'     `~~88~~' 88'     
-    // 88   88 88ooooo 88      88ooooo    88    88ooooo 
-    // 88   88 88~~~~~ 88      88~~~~~    88    88~~~~~ 
-    // 88  .8D 88.     88booo. 88.        88    88.     
-    // Y8888D' Y88888P Y88888P Y88888P    YP    Y88888P 
-
+    
+    // db    db d888888b d88888b db   d8b   db .d8888. 
+    // 88    88   `88'   88'     88   I8I   88 88'  YP 
+    // Y8    8P    88    88ooooo 88   I8I   88 `8bo.   
+    // `8b  d8'    88    88~~~~~ Y8   I8I   88   `Y8b. 
+    //  `8bd8'    .88.   88.     `8b d8'8b d8' db   8D 
+    //    YP    Y888888P Y88888P  `8b8' `8d8'  `8888Y' 
+    
 
     showFullTasksTable: function() {
         var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
@@ -24,6 +25,29 @@ Ext.define('LHCb.controller.RPCController', {
         Ext.ComponentQuery.query('panel[itemId=mainoperationwindowtoolbar]')[0].setVisible(true);
         Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].setVisible(false);
     },
+
+    showFullClassesTable: function() {
+        var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
+        operationwindow.setActiveItem(4);
+        Ext.ComponentQuery.query('panel[itemId=mainoperationwindowtoolbar]')[0].setVisible(true);
+        Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].setVisible(false);
+    },
+
+    showFullNodesTable: function() {
+        var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
+        operationwindow.setActiveItem(6);
+        Ext.ComponentQuery.query('panel[itemId=mainoperationwindowtoolbar]')[0].setVisible(true);
+        Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].setVisible(false);
+    },
+
+
+    // d8888b. d88888b db      d88888b d888888b d88888b 
+    // 88  `8D 88'     88      88'     `~~88~~' 88'     
+    // 88   88 88ooooo 88      88ooooo    88    88ooooo 
+    // 88   88 88~~~~~ 88      88~~~~~    88    88~~~~~ 
+    // 88  .8D 88.     88booo. 88.        88    88.     
+    // Y8888D' Y88888P Y88888P Y88888P    YP    Y88888P 
+
 
     onDeleteTask: function() {
         Ext.Msg.confirm('Confirm', 'Are you sure?', function(btnText) {
@@ -43,7 +67,7 @@ Ext.define('LHCb.controller.RPCController', {
             // Send a JSONRPC request to the server (delete selected item)
             jsonData: new JSON_RPC.Request('deleteTask', [{'task':LHCb.store.SelectedItemData.task}]),
             dataType: 'json',
-            url: 'http://localhost:8081/TDBDATA/JSONRPC',
+            url: "http://pclhcb153:8081/TDBDATA/JSONRPC",
             
             success: function(response) {
                 // Switch to single task view
@@ -80,7 +104,7 @@ Ext.define('LHCb.controller.RPCController', {
             // Send a JSONRPC request to the server (delete selected item)
             jsonData: new JSON_RPC.Request('deleteSet', [{'task_set':LHCb.store.SelectedItemData.task_set}]),
             dataType: 'json',
-            url: 'http://localhost:8081/TDBDATA/JSONRPC',
+            url: "http://pclhcb153:8081/TDBDATA/JSONRPC",
             
             success: function(response) {
                 // Switch to single task view
@@ -180,7 +204,7 @@ Ext.define('LHCb.controller.RPCController', {
                                     'description': formFields.items[5].value
                                 }]),
                             dataType: 'json',
-                            url: 'http://localhost:8081/TDBDATA/JSONRPC',
+                            url: "http://pclhcb153:8081/TDBDATA/JSONRPC",
                             
                             success: function(response) {
                                 // Switch to single task view
@@ -258,7 +282,7 @@ Ext.define('LHCb.controller.RPCController', {
                                     'description': formFields.items[1].value,
                                 }]),
                             dataType: 'json',
-                            url: 'http://localhost:8081/TDBDATA/JSONRPC',
+                            url: "http://pclhcb153:8081/TDBDATA/JSONRPC",
                             
                             success: function(response) {
                                 // Switch to single task set view
@@ -361,7 +385,7 @@ Ext.define('LHCb.controller.RPCController', {
                                     'description': formFields.items[5].value
                                 }]),
                             dataType: 'json',
-                            url: 'http://localhost:8081/TDBDATA/JSONRPC',
+                            url: "http://pclhcb153:8081/TDBDATA/JSONRPC",
                             
                             success: function(response) {
                                 // Alert that the task has been added
@@ -424,7 +448,7 @@ Ext.define('LHCb.controller.RPCController', {
                                     'description': formFields.items[1].value
                                 }]),
                             dataType: 'json',
-                            url: 'http://localhost:8081/TDBDATA/JSONRPC',
+                            url: "http://pclhcb153:8081/TDBDATA/JSONRPC",
                             
                             success: function(response) {
                                 // Alert that the task has been added
@@ -466,7 +490,7 @@ Ext.define('LHCb.controller.RPCController', {
                             'task': selectedItems[i].data["task"]
                         }]),
                     dataType: 'json',
-                    url: 'http://localhost:8081/TDBDATA/JSONRPC',     
+                    url: "http://pclhcb153:8081/TDBDATA/JSONRPC",     
                     });
             }
 
@@ -496,7 +520,7 @@ Ext.define('LHCb.controller.RPCController', {
                             'task_set': selectedItems[i].data["task_set"]
                         }]),
                     dataType: 'json',
-                    url: 'http://localhost:8081/TDBDATA/JSONRPC',     
+                    url: "http://pclhcb153:8081/TDBDATA/JSONRPC",     
                     });
             }
 
@@ -513,7 +537,7 @@ Ext.define('LHCb.controller.RPCController', {
 
     },
 
-    // .d8b.  .d8888. .d8888. d888888b  d888b  d8b   db 
+    //  .d8b.  .d8888. .d8888. d888888b  d888b  d8b   db 
     // d8' `8b 88'  YP 88'  YP   `88'   88' Y8b 888o  88 
     // 88ooo88 `8bo.   `8bo.      88    88      88V8o 88 
     // 88~~~88   `Y8b.   `Y8b.    88    88  ooo 88 V8o88 
@@ -632,8 +656,6 @@ Ext.define('LHCb.controller.RPCController', {
                 multiSelect: false,
                 margin: '0 5 0 0',
 
-                
-
                 viewConfig: {
                     plugins: {
                         ptype: 'gridviewdragdrop',
@@ -655,7 +677,6 @@ Ext.define('LHCb.controller.RPCController', {
                     flex: 1,
                     sortable: true
                 }]
-
                 
             },
             {
@@ -718,7 +739,7 @@ Ext.define('LHCb.controller.RPCController', {
                                 'task_set': LHCb.store.SelectedItemData.task_set
                             }]),
                         dataType: 'json',
-                        url: 'http://localhost:8081/TDBDATA/JSONRPC',     
+                        url: "http://pclhcb153:8081/TDBDATA/JSONRPC",     
                         });
                 }
 
@@ -733,7 +754,7 @@ Ext.define('LHCb.controller.RPCController', {
                                 'task_set': LHCb.store.SelectedItemData.task_set
                             }]),
                         dataType: 'json',
-                        url: 'http://localhost:8081/TDBDATA/JSONRPC',     
+                        url: "http://pclhcb153:8081/TDBDATA/JSONRPC",     
                         });
                 }
 

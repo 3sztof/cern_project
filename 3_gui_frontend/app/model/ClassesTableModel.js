@@ -1,11 +1,13 @@
-Ext.define('LHCb.model.TaskSetsTableModel', {
+Ext.define('LHCb.model.ClassesTableModel', {
     extend: 'Ext.data.Model',
 
-    alias: 'viewmodel.tasksetstable',
+    itemId: 'classestablemodel',
+
+    alias: 'viewmodel.classestable',
 
     fields: [
-        {name: 'task_set', type: 'string'},
-        {name: 'description', type: 'string'}, 
+        {name: 'node_class', type: 'string'},
+        {name: 'description', type: 'string'}, // There is more (lookup DB table) but these descriptions are only for formatting which always is string in our case...
     ],
 
     proxy: {
@@ -14,7 +16,7 @@ Ext.define('LHCb.model.TaskSetsTableModel', {
         type: 'myproxy',
         dataType: 'json',
         actionMethods : {create: "POST", read: "POST", update: "POST", destroy: "POST"},
-        jsonData: new JSON_RPC.Request("getSet", [{"task_set":"*"}]),
+        jsonData: new JSON_RPC.Request("getClass", [{"node_class":"*"}]),
         reader: {
             type: 'json',
             rootProperty: 'result'
@@ -29,6 +31,7 @@ Ext.define('LHCb.model.TaskSetsTableModel', {
         limitParam: undefined,
         pageParam: undefined,
         startParam: undefined,
+        //url: 'http://localhost:8080/tasks'
         url: "http://pclhcb153:8081/TDBDATA/JSONRPC"
     },
 

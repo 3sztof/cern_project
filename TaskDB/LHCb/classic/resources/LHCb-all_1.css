@@ -8922,6 +8922,33 @@ body > .x-mask {
     width: 1px;
     background-color: #0f0f0f;
 }
+/* /home/leon/cern/3_gui_frontend/ext/classic/theme-neutral/sass/src/view/DropZone.scss:1 */
+.x-grid-drop-indicator {
+    position: absolute;
+    height: 1px;
+    line-height: 0px;
+    background-color: #77bc71;
+    overflow: visible;
+    pointer-events: none;
+}
+/* /home/leon/cern/3_gui_frontend/ext/classic/theme-neutral/sass/src/view/DropZone.scss:9 */
+.x-grid-drop-indicator .x-grid-drop-indicator-left {
+    position: absolute;
+    top: -8px;
+    left: -12px;
+    background-image: url(images/grid/dd-insert-arrow-right.png);
+    height: 16px;
+    width: 16px;
+}
+/* /home/leon/cern/3_gui_frontend/ext/classic/theme-neutral/sass/src/view/DropZone.scss:18 */
+.x-grid-drop-indicator .x-grid-drop-indicator-right {
+    position: absolute;
+    top: -8px;
+    right: -11px;
+    background-image: url(images/grid/dd-insert-arrow-left.png);
+    height: 16px;
+    width: 16px;
+}
 /* /home/leon/cern/3_gui_frontend/ext/classic/theme-neutral/sass/src/grid/header/DropZone.scss:1 */
 .x-col-move-top,
 .x-col-move-bottom {
@@ -15202,16 +15229,4 @@ body > .x-mask {
 /* /home/leon/cern/3_gui_frontend/ext/packages/font-awesome/sass/etc/_icons.scss:175 */
 .fa-hand-o-down:before {
     content: "\f0a7" !important;
-}
-/* /home/leon/cern/3_gui_frontend/ext/packages/font-awesome/sass/etc/_icons.scss:176 */
-.fa-arrow-circle-left:before {
-    content: "\f0a8" !important;
-}
-/* /home/leon/cern/3_gui_frontend/ext/packages/font-awesome/sass/etc/_icons.scss:177 */
-.fa-arrow-circle-right:before {
-    content: "\f0a9" !important;
-}
-/* /home/leon/cern/3_gui_frontend/ext/packages/font-awesome/sass/etc/_icons.scss:178 */
-.fa-arrow-circle-up:before {
-    content: "\f0aa" !important;
 }

@@ -1,3 +1,15 @@
+/* /home/leon/cern/3_gui_frontend/ext/packages/font-awesome/sass/etc/_icons.scss:176 */
+.fa-arrow-circle-left:before {
+    content: "\f0a8" !important;
+}
+/* /home/leon/cern/3_gui_frontend/ext/packages/font-awesome/sass/etc/_icons.scss:177 */
+.fa-arrow-circle-right:before {
+    content: "\f0a9" !important;
+}
+/* /home/leon/cern/3_gui_frontend/ext/packages/font-awesome/sass/etc/_icons.scss:178 */
+.fa-arrow-circle-up:before {
+    content: "\f0aa" !important;
+}
 /* /home/leon/cern/3_gui_frontend/ext/packages/font-awesome/sass/etc/_icons.scss:179 */
 .fa-arrow-circle-down:before {
     content: "\f0ab" !important;

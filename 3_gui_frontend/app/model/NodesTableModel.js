@@ -1,10 +1,12 @@
-Ext.define('LHCb.model.TaskSetsTableModel', {
+Ext.define('LHCb.model.NodesTableModel', {
     extend: 'Ext.data.Model',
 
-    alias: 'viewmodel.tasksetstable',
+    itemId: 'nodestablemodel',
+
+    alias: 'viewmodel.nodestable',
 
     fields: [
-        {name: 'task_set', type: 'string'},
+        {name: 'regex', type: 'string'},
         {name: 'description', type: 'string'}, 
     ],
 
@@ -14,7 +16,7 @@ Ext.define('LHCb.model.TaskSetsTableModel', {
         type: 'myproxy',
         dataType: 'json',
         actionMethods : {create: "POST", read: "POST", update: "POST", destroy: "POST"},
-        jsonData: new JSON_RPC.Request("getSet", [{"task_set":"*"}]),
+        jsonData: new JSON_RPC.Request("getNode", [{"regex":"*"}]),
         reader: {
             type: 'json',
             rootProperty: 'result'
@@ -29,6 +31,7 @@ Ext.define('LHCb.model.TaskSetsTableModel', {
         limitParam: undefined,
         pageParam: undefined,
         startParam: undefined,
+        //url: 'http://localhost:8080/tasks'
         url: "http://pclhcb153:8081/TDBDATA/JSONRPC"
     },
 

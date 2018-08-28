@@ -80,7 +80,6 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
                 type: 'vbox',
                 align: 'stretch'
             },
-
             items: [
                 {
                     layout: {
@@ -89,6 +88,46 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
                     items: [
                         {
                             xtype: 'singletaskset',
+                            flex: 1
+                        }
+                    ]
+                }
+            ]
+        },
+        // View 4 - Node classes full table
+        {
+            toolbaridentifier: 'classestable',
+
+            layout: {
+                type: 'vbox',
+                pack: 'start',
+                align: 'stretch'
+            },
+            
+            items: [
+                {
+                    autoScroll: true,
+                    xtype: 'classestable'
+                }
+                
+            ]
+        },
+        // View 5 - clicked (navigation) node class details
+        {
+            toolbaridentifier: 'singleclass',
+         
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            items: [
+                {
+                    layout: {
+                        type: 'fit',
+                    },
+                    items: [
+                        {
+                            xtype: 'singleclass',
                             flex: 1
                         }
                     ]
