@@ -22,15 +22,6 @@ Ext.define('LHCb.view.tabpanel.nodesexplorer.NodesExplorer', {
         align: 'stretch'
     },
     items: [
-        // {
-        //     xtype: 'panel',
-        //     tbar: [{
-        //         flex: 1,
-        //         text: 'Show all task sets',
-        //         glyph: 'f0ce@FontAwesome',
-        //         handler: 'showFullTaskSetsTable'
-        //     }]
-        // },
         {   
             xtype: 'grid',
             id: 'nodesexplorergrid',
@@ -49,7 +40,7 @@ Ext.define('LHCb.view.tabpanel.nodesexplorer.NodesExplorer', {
                             // Switch to single task set view and reassure that the assignment button is visible
                             var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                             operationwindow.setActiveItem(7);
-      // Break!                      Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].setVisible(true);
+                            Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].setVisible(true);
                             Ext.ComponentQuery.query('panel[itemId=mainoperationwindowtoolbar]')[0].setVisible(false);
                             Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].header.items.items[2].setVisible(true);
                             // Update the description window with the singleton store record
@@ -57,14 +48,14 @@ Ext.define('LHCb.view.tabpanel.nodesexplorer.NodesExplorer', {
                             // Update the default fields in the task sets overview window and the assigned items table
                             Ext.ComponentQuery.query('panel[itemId=singletasksetwindow]')[0].items.items[0].items.items[0].setValue(LHCb.store.SelectedItemData.task_set);
                             Ext.ComponentQuery.query('panel[itemId=singletasksetwindow]')[0].items.items[0].items.items[1].setValue(LHCb.store.SelectedItemData.description);
-                            Ext.ComponentQuery.query('panel[itemId=singletasksetwindow]')[0].items.items[1].store.proxy.jsonData.params[0]["task_set"] = rowdata.data['task_set'];
+                            Ext.ComponentQuery.query('panel[itemId=singletasksetwindow]')[0].items.items[1].store.proxy.jsonData.params[0]["regex"] = rowdata.data['regex'];
                             Ext.ComponentQuery.query('panel[itemId=singletasksetwindow]')[0].items.items[1].store.reload()
                         }
                     }
                 }       
             ],
             viewConfig: {
-                emptyText: 'No tasks in the database or database API offline...',
+                emptyText: 'No nodes in the database or database API offline...',
                 deferEmptyText: false
             }
         }

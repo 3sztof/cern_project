@@ -154,6 +154,12 @@ Ext.define('LHCb.view.main.Main', {
                                                     if(activeWindow == 'setstable'){
                                                         rpcController.onAddTaskSet();
                                                     }
+                                                    if(activeWindow == 'classestable'){
+                                                        rpcController.onAddClass();
+                                                    }
+                                                    if(activeWindow == 'nodestable'){
+                                                        rpcController.onAddNode();
+                                                    }
                                                 }
                                             },
                                             {
@@ -169,6 +175,12 @@ Ext.define('LHCb.view.main.Main', {
                                                     }
                                                     if(activeWindow == 'setstable'){
                                                         rpcController.onDeleteTaskSets();
+                                                    }
+                                                    if(activeWindow == 'classestable'){
+                                                        rpcController.onDeleteClasses();
+                                                    }
+                                                    if(activeWindow == 'nodestable'){
+                                                        rpcController.onDeleteNodes();
                                                     }
                                                 }
                                             }
@@ -197,6 +209,12 @@ Ext.define('LHCb.view.main.Main', {
                                                     if(activeWindow == 'singleset'){
                                                         rpcController.onModifyTaskSet();
                                                     }
+                                                    if(activeWindow == 'singleclass'){
+                                                        rpcController.onModifyClass();
+                                                    }
+                                                    if(activeWindow == 'singlenode'){
+                                                        rpcController.onModifyNode();
+                                                    }
                                                 }
                                             },
                                             {
@@ -209,6 +227,12 @@ Ext.define('LHCb.view.main.Main', {
                                                     var activeWindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0].getLayout().getActiveItem().toolbaridentifier;
                                                     if(activeWindow == 'singleset'){
                                                         rpcController.onAssignToTaskSet();
+                                                    }
+                                                    if(activeWindow == 'singleclass'){
+                                                        rpcController.onAssignToClass();
+                                                    }
+                                                    if(activeWindow == 'singlenode'){
+                                                        rpcController.onAssignToNode();
                                                     }
                                                 }
                                             },
