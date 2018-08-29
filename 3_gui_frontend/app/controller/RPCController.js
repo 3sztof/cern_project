@@ -1457,7 +1457,7 @@ Ext.define('LHCb.controller.RPCController', {
                                     
                                     // Thats a crazy query! Come on!
                                     var notInSetRows = this.data.items[0].store.data.items; //working
-                                    var inSetRows = Ext.ComponentQuery.query('panel[itemId=assignclastonode]')[0].viewModel.storeInfo.assigned_items.data.items[0].store.data.items;                
+                                    var inSetRows = Ext.ComponentQuery.query('panel[itemId=assignclasstonode]')[0].viewModel.storeInfo.assigned_items.data.items[0].store.data.items;                
 
         
                                     for(var i = 0; i < notInSetRows.length; i++){
