@@ -67,7 +67,7 @@ Ext.define('LHCb.controller.RPCController', {
             // Send a JSONRPC request to the server (delete selected item)
             jsonData: new JSON_RPC.Request('deleteTask', [{'task':LHCb.store.SelectedItemData.task}]),
             dataType: 'json',
-            url: "http://pclhcb153:8081/TDBDATA/JSONRPC",
+            url: "http://localhost:8081/TDBDATA/JSONRPC",
             
             success: function(response) {
                 // Switch to single task view
@@ -104,7 +104,7 @@ Ext.define('LHCb.controller.RPCController', {
             // Send a JSONRPC request to the server (delete selected item)
             jsonData: new JSON_RPC.Request('deleteSet', [{'task_set':LHCb.store.SelectedItemData.task_set}]),
             dataType: 'json',
-            url: "http://pclhcb153:8081/TDBDATA/JSONRPC",
+            url: "http://localhost:8081/TDBDATA/JSONRPC",
             
             success: function(response) {
                 // Switch to single task view
@@ -118,7 +118,81 @@ Ext.define('LHCb.controller.RPCController', {
                 // console.log(response.responseText);
             },
             failure: function(response) {
-                Ext.MessageBox.alert('Status', 'Request failed: the task has not been deleted from the database. Details: ' + response.responseText, this.showResult, this);
+                Ext.MessageBox.alert('Status', 'Request failed: the task set has not been deleted from the database. Details: ' + response.responseText, this.showResult, this);
+            }         
+            }); 
+    },
+
+    onDeleteClass: function() {
+        Ext.Msg.confirm('Confirm', 'Are you sure?', function(btnText) {
+            // console.log(btnText);
+            if(btnText === "no"){
+                this.destroy();
+            }
+            else if(btnText === "yes"){
+                this.onConfirmDeleteClass();
+            }
+        }, this);
+    },
+
+    onConfirmDeleteClass: function() {
+        Ext.Ajax.request({
+            method: 'POST',
+            // Send a JSONRPC request to the server (delete selected item)
+            jsonData: new JSON_RPC.Request('deleteClass', [{'node_class':LHCb.store.SelectedItemData.node_class}]),
+            dataType: 'json',
+            url: "http://localhost:8081/TDBDATA/JSONRPC",
+            
+            success: function(response) {
+                // Switch to single task view
+                var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
+                operationwindow.setActiveItem(4);
+                // Alert that the task set has been deleted
+                Ext.MessageBox.alert('Status', 'The node class has been deleted from the database.', this.showResult, this);
+                // Reload store to refresh tables
+                Ext.getCmp('nodesexplorergrid').getStore().reload();
+                Ext.getCmp('nodestablegrid').getStore().reload();
+                // console.log(response.responseText);
+            },
+            failure: function(response) {
+                Ext.MessageBox.alert('Status', 'Request failed: the node class has not been deleted from the database. Details: ' + response.responseText, this.showResult, this);
+            }         
+            }); 
+    },
+
+    onDeleteNode: function() {
+        Ext.Msg.confirm('Confirm', 'Are you sure?', function(btnText) {
+            // console.log(btnText);
+            if(btnText === "no"){
+                this.destroy();
+            }
+            else if(btnText === "yes"){
+                this.onConfirmDeleteNode();
+            }
+        }, this);
+    },
+
+    onConfirmDeleteTaskSet: function() {
+        Ext.Ajax.request({
+            method: 'POST',
+            // Send a JSONRPC request to the server (delete selected item)
+            jsonData: new JSON_RPC.Request('deleteNode', [{'regex':LHCb.store.SelectedItemData.regex}]),
+            dataType: 'json',
+            url: "http://localhost:8081/TDBDATA/JSONRPC",
+            
+            success: function(response) {
+                // Switch to single task view
+                var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
+                operationwindow.setActiveItem(6);
+                // Alert that the task set has been deleted
+                Ext.MessageBox.alert('Status', 'The node definition has been deleted from the database.', this.showResult, this);
+                // Reload store to refresh tables
+                Ext.getCmp('nodesexplorergrid').getStore().reload();
+                Ext.getCmp('nodestablegrid').getStore().reload();
+                // console.log(response.responseText);
+            },
+            failure: function(response) {
+                Ext.MessageBox.alert('Status', 'Request failed: node definition has not been deleted from the database. Details: ' + response.responseText, this.showResult, this);
             }         
             }); 
     },
@@ -204,7 +278,7 @@ Ext.define('LHCb.controller.RPCController', {
                                     'description': formFields.items[5].value
                                 }]),
                             dataType: 'json',
-                            url: "http://pclhcb153:8081/TDBDATA/JSONRPC",
+                            url: "http://localhost:8081/TDBDATA/JSONRPC",
                             
                             success: function(response) {
                                 // Switch to single task view
@@ -282,7 +356,7 @@ Ext.define('LHCb.controller.RPCController', {
                                     'description': formFields.items[1].value,
                                 }]),
                             dataType: 'json',
-                            url: "http://pclhcb153:8081/TDBDATA/JSONRPC",
+                            url: "http://localhost:8081/TDBDATA/JSONRPC",
                             
                             success: function(response) {
                                 // Switch to single task set view
@@ -311,7 +385,153 @@ Ext.define('LHCb.controller.RPCController', {
         form.items[1].setValue(LHCb.store.SelectedItemData.description);
     },
 
-    // .d8b.  d8888b. d8888b. 
+    onModifyClass: function() {
+        var classModifyWindow = Ext.create('Ext.window.Window', {
+            title: 'Modify the selected node class',
+            itemId: 'modifyclassform',
+            closable: true,
+            closeAction: 'destroy',
+            width: 350,
+            minWidth: 250,
+            border: false,
+            modal: true,
+            items: [{
+                xtype: 'form',
+                layout: {
+                    type: 'vbox',
+                    align: 'center',
+                    pack: 'center'
+                },
+                items: [{
+                        xtype: 'textfield',
+                        name: 'task_mod',
+                        fieldLabel: 'Node class unique name:',
+                        value: '', // value property is filled in by the listener in OperationWindow.js (on card activate)
+                    },
+                    {
+                        xtype: 'textareafield',
+                        name: 'description_mod',
+                        fieldLabel: 'Node class description',
+                        value: ''
+                }],
+            fbar: [{
+                    text: 'Save',
+                    formBind: true,
+                    //itemId: 'submit',
+                    handler: function() {
+                        var form = this.up('form'); // get the form panel
+                        var formFields = form.items;
+                        Ext.Ajax.request({
+                            method: 'POST',
+                            // Send a JSONRPC request to the server (delete selected item)
+                            jsonData: new JSON_RPC.Request('modifyClass', [{
+                                    'original_node_class': LHCb.store.SelectedItemData.node_class,
+                                    'node_class': formFields.items[0].value,
+                                    'description': formFields.items[1].value,
+                                }]),
+                            dataType: 'json',
+                            url: "http://localhost:8081/TDBDATA/JSONRPC",
+                            
+                            success: function(response) {
+                                // Switch to single task set view
+                                var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
+                                operationwindow.setActiveItem(4);
+                                // Alert that the task set has been modified
+                                Ext.MessageBox.alert('Status', 'The node class has been modified.', this.showResult, this);
+                                // Reload store to refresh tables
+                                Ext.getCmp('classesexplorergrid').getStore().reload();
+                                Ext.getCmp('classestablegrid').getStore().reload();
+                            },
+                            failure: function(response) {
+                                Ext.MessageBox.alert('Status', 'Request failed: the node class has not been modified in the database. Details: ' + response.responseText, this.showResult, this);
+                            }         
+                            }); 
+                        Ext.ComponentQuery.query('panel[itemId=modifyclassform]')[0].destroy();
+                    }
+                }]
+            }]
+                    }).show();
+        
+        // Fill the form with default data - selected item data store
+        var form = classModifyWindow.items.items[0].items;
+        form.items[0].setValue(LHCb.store.SelectedItemData.node_class);
+        form.items[1].setValue(LHCb.store.SelectedItemData.description);
+    },
+
+    onModifyNode: function() {
+        var nodeModifyWindow = Ext.create('Ext.window.Window', {
+            title: 'Modify the selected node definition',
+            itemId: 'modifynodeform',
+            closable: true,
+            closeAction: 'destroy',
+            width: 350,
+            minWidth: 250,
+            border: false,
+            modal: true,
+            items: [{
+                xtype: 'form',
+                layout: {
+                    type: 'vbox',
+                    align: 'center',
+                    pack: 'center'
+                },
+                items: [{
+                        xtype: 'textfield',
+                        name: 'task_mod',
+                        fieldLabel: 'Node\'s unique name:',
+                        value: '',
+                    },
+                    {
+                        xtype: 'textareafield',
+                        name: 'description_mod',
+                        fieldLabel: 'Node\'s description',
+                        value: ''
+                }],
+            fbar: [{
+                    text: 'Save',
+                    formBind: true,
+                    //itemId: 'submit',
+                    handler: function() {
+                        var form = this.up('form'); // get the form panel
+                        var formFields = form.items;
+                        Ext.Ajax.request({
+                            method: 'POST',
+                            // Send a JSONRPC request to the server (delete selected item)
+                            jsonData: new JSON_RPC.Request('modifyNode', [{
+                                    'original_regex': LHCb.store.SelectedItemData.regex,
+                                    'regex': formFields.items[0].value,
+                                    'description': formFields.items[1].value,
+                                }]),
+                            dataType: 'json',
+                            url: "http://localhost:8081/TDBDATA/JSONRPC",
+                            
+                            success: function(response) {
+                                // Switch to single task set view
+                                var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
+                                operationwindow.setActiveItem(6);
+                                // Alert that the task set has been modified
+                                Ext.MessageBox.alert('Status', 'The node definition has been modified.', this.showResult, this);
+                                // Reload store to refresh tables
+                                Ext.getCmp('nodesexplorergrid').getStore().reload();
+                                Ext.getCmp('nodestablegrid').getStore().reload();
+                            },
+                            failure: function(response) {
+                                Ext.MessageBox.alert('Status', 'Request failed: the node definition has not been modified in the database. Details: ' + response.responseText, this.showResult, this);
+                            }         
+                            }); 
+                        Ext.ComponentQuery.query('panel[itemId=modifynodeform]')[0].destroy();
+                    }
+                }]
+            }]
+                    }).show();
+        
+        // Fill the form with default data - selected item data store
+        var form = nodeModifyWindow.items.items[0].items;
+        form.items[0].setValue(LHCb.store.SelectedItemData.regex);
+        form.items[1].setValue(LHCb.store.SelectedItemData.description);
+    },
+
+    //  .d8b.  d8888b. d8888b. 
     // d8' `8b 88  `8D 88  `8D 
     // 88ooo88 88   88 88   88 
     // 88~~~88 88   88 88   88 
@@ -385,7 +605,7 @@ Ext.define('LHCb.controller.RPCController', {
                                     'description': formFields.items[5].value
                                 }]),
                             dataType: 'json',
-                            url: "http://pclhcb153:8081/TDBDATA/JSONRPC",
+                            url: "http://localhost:8081/TDBDATA/JSONRPC",
                             
                             success: function(response) {
                                 // Alert that the task has been added
@@ -448,7 +668,7 @@ Ext.define('LHCb.controller.RPCController', {
                                     'description': formFields.items[1].value
                                 }]),
                             dataType: 'json',
-                            url: "http://pclhcb153:8081/TDBDATA/JSONRPC",
+                            url: "http://localhost:8081/TDBDATA/JSONRPC",
                             
                             success: function(response) {
                                 // Alert that the task has been added
@@ -463,6 +683,131 @@ Ext.define('LHCb.controller.RPCController', {
                             }         
                             }); 
                         Ext.ComponentQuery.query('panel[itemId=addtasksetform]')[0].destroy();
+                    }
+                }]
+            }]
+                    }).show();
+    },
+
+    onAddClass: function() {
+        var classAddWindow = Ext.create('Ext.window.Window', {
+            title: 'Add a new node class to the database',
+            itemId: 'addclassform',
+            closable: true,
+            closeAction: 'destroy',
+            width: 350,
+            minWidth: 250,
+            border: false,
+            modal: true,
+            items: [{
+                xtype: 'form',
+                layout: {
+                    type: 'vbox',
+                    align: 'center',
+                    pack: 'center'
+                },
+                items: [{
+                        xtype: 'textfield',
+                        name: 'task',
+                        fieldLabel: 'Node class unique name:',
+                    },
+                    {
+                        xtype: 'textareafield',
+                        name: 'description',
+                        fieldLabel: 'Node class description',
+                }],
+            fbar: [{
+                    text: 'Save',
+                    formBind: true,
+                    handler: function() {
+                        var form = this.up('form'); // get the form panel
+                        var formFields = form.items;
+                        Ext.Ajax.request({
+                            method: 'POST',
+                            // Send a JSONRPC request to the server (delete selected item)
+                            jsonData: new JSON_RPC.Request('addClass', [{
+                                    'node_class': formFields.items[0].value,
+                                    'description': formFields.items[1].value
+                                }]),
+                            dataType: 'json',
+                            url: "http://localhost:8081/TDBDATA/JSONRPC",
+                            
+                            success: function(response) {
+                                // Alert that the task has been added
+                                Ext.MessageBox.alert('Status', 'The node class has been added to the database.', this.showResult, this);
+                                // Reload store to refresh tables
+                                Ext.getCmp('classesexplorergrid').getStore().reload();
+                                Ext.getCmp('classestablegrid').getStore().reload();
+                                // console.log(response.responseText);
+                            },
+                            failure: function(response) {
+                                Ext.MessageBox.alert('Status', 'Request failed: the node class has not been added to the the database. Details: ' + response.responseText, this.showResult, this);
+                            }         
+                            }); 
+                        Ext.ComponentQuery.query('panel[itemId=addclassform]')[0].destroy();
+                    }
+                }]
+            }]
+                    }).show();
+    },
+
+    onAddNode: function() {
+        var nodeAddWindow = Ext.create('Ext.window.Window', {
+            title: 'Add a new node definition to the database',
+            itemId: 'addnodeform',
+            closable: true,
+            closeAction: 'destroy',
+            width: 350,
+            minWidth: 250,
+            border: false,
+            modal: true,
+            items: [{
+                xtype: 'form',
+                layout: {
+                    type: 'vbox',
+                    align: 'center',
+                    pack: 'center'
+                },
+                items: [{
+                        xtype: 'textfield',
+                        name: 'task',
+                        fieldLabel: 'Node\'s unique name:',
+                    },
+                    {
+                        xtype: 'textareafield',
+                        name: 'description',
+                        fieldLabel: 'Node\'s description',
+                }],
+            fbar: [{
+                    text: 'Save',
+                    formBind: true,
+                    // itemId: 'submit',
+                    handler: function() {
+                        var form = this.up('form'); // get the form panel
+                        var formFields = form.items;
+                        Ext.Ajax.request({
+                            method: 'POST',
+                            // Send a JSONRPC request to the server (delete selected item)
+                            jsonData: new JSON_RPC.Request('addNode', [{
+                                    'regex': formFields.items[0].value,
+                                    'description': formFields.items[1].value
+                                }]),
+                            dataType: 'json',
+                            url: "http://localhost:8081/TDBDATA/JSONRPC",
+                            
+                            success: function(response) {
+                                // Alert that the task has been added
+                                Ext.MessageBox.alert('Status', 'The node definition has been added to the database.', this.showResult, this);
+                                // Reload store to refresh tables
+                                Ext.getCmp('nodesexplorergrid').getStore().reload();
+                                Ext.getCmp('nodestablegrid').getStore().reload();
+                                // console.log(response.responseText);
+                            },
+                            failure: function(response) {
+                                Ext.MessageBox.alert('Status', 'Request failed: the node definition has not been added to the the database. Details: ' + response.responseText, this.showResult, this);
+                            }         
+                            }); 
+                        Ext.ComponentQuery.query('panel[itemId=addnodeform]')[0].destroy();
                     }
                 }]
             }]
@@ -490,7 +835,7 @@ Ext.define('LHCb.controller.RPCController', {
                             'task': selectedItems[i].data["task"]
                         }]),
                     dataType: 'json',
-                    url: "http://pclhcb153:8081/TDBDATA/JSONRPC",     
+                    url: "http://localhost:8081/TDBDATA/JSONRPC",     
                     });
             }
 
@@ -520,7 +865,7 @@ Ext.define('LHCb.controller.RPCController', {
                             'task_set': selectedItems[i].data["task_set"]
                         }]),
                     dataType: 'json',
-                    url: "http://pclhcb153:8081/TDBDATA/JSONRPC",     
+                    url: "http://localhost:8081/TDBDATA/JSONRPC",     
                     });
             }
 
@@ -533,6 +878,66 @@ Ext.define('LHCb.controller.RPCController', {
         }
         else{
             Ext.MessageBox.alert('Status', 'Error: no task sets were selected in the table, no action was taken.');
+        }
+
+    },
+
+    onDeleteClasses: function() {
+        var classesGrid = Ext.getCmp('classestablegrid')
+        var selectionModel = classesGrid.getSelectionModel()
+        if (selectionModel.hasSelection()) {
+            var selectedItems = selectionModel.getSelection()
+            for (var i in selectedItems){
+                Ext.Ajax.request({
+                    method: 'POST',
+                    // Send a JSONRPC request to the server (delete selected item)
+                    jsonData: new JSON_RPC.Request('deleteClass', [{
+                            'node_class': selectedItems[i].data["node_class"]
+                        }]),
+                    dataType: 'json',
+                    url: "http://localhost:8081/TDBDATA/JSONRPC",     
+                    });
+            }
+
+            // Alert that the task has been added
+            Ext.MessageBox.alert('Status', 'The selected node classes have been deleted from the database.', this.showResult, this);
+            // Reload store to refresh tables
+            Ext.getCmp('classesexplorergrid').getStore().reload();
+            Ext.getCmp('classestablegrid').getStore().reload();
+            // console.log(response.responseText);
+        }
+        else{
+            Ext.MessageBox.alert('Status', 'Error: no node classes were selected in the table, no action was taken.');
+        }
+
+    },
+
+    onDeleteNodes: function() {
+        var nodesGrid = Ext.getCmp('nodestablegrid')
+        var selectionModel = nodesGrid.getSelectionModel()
+        if (selectionModel.hasSelection()) {
+            var selectedItems = selectionModel.getSelection()
+            for (var i in selectedItems){
+                Ext.Ajax.request({
+                    method: 'POST',
+                    // Send a JSONRPC request to the server (delete selected item)
+                    jsonData: new JSON_RPC.Request('deleteNode', [{
+                            'regex': selectedItems[i].data["regex"]
+                        }]),
+                    dataType: 'json',
+                    url: "http://localhost:8081/TDBDATA/JSONRPC",     
+                    });
+            }
+
+            // Alert that the task has been added
+            Ext.MessageBox.alert('Status', 'The selected node definitions have been deleted from the database.', this.showResult, this);
+            // Reload store to refresh tables
+            Ext.getCmp('nodesexplorergrid').getStore().reload();
+            Ext.getCmp('nodestablegrid').getStore().reload();
+            // console.log(response.responseText);
+        }
+        else{
+            Ext.MessageBox.alert('Status', 'Error: no node definitions were selected in the table, no action was taken.');
         }
 
     },
@@ -739,7 +1144,7 @@ Ext.define('LHCb.controller.RPCController', {
                                 'task_set': LHCb.store.SelectedItemData.task_set
                             }]),
                         dataType: 'json',
-                        url: "http://pclhcb153:8081/TDBDATA/JSONRPC",     
+                        url: "http://localhost:8081/TDBDATA/JSONRPC",     
                         });
                 }
 
@@ -754,11 +1159,448 @@ Ext.define('LHCb.controller.RPCController', {
                                 'task_set': LHCb.store.SelectedItemData.task_set
                             }]),
                         dataType: 'json',
-                        url: "http://pclhcb153:8081/TDBDATA/JSONRPC",     
+                        url: "http://localhost:8081/TDBDATA/JSONRPC",     
                         });
                 }
 
                 Ext.MessageBox.alert('Status', 'The tasks have been assigned to (and unassigned from) the task set.', this.showResult, this);
+                assignTaskWindow.destroy();
+            }
+        }]
+                    }).show();
+    },
+
+    onAssignToClass: function() {
+        // http://examples.sencha.com/extjs/6.2.0/examples/kitchensink/?classic#dd-grid-to-grid
+        var assignToClassWindow = Ext.create('Ext.window.Window', {
+
+            title: 'Assign task sets to a node class',
+            controller: 'dd-grid-to-grid',
+            
+            itemId: 'assigntasksettoclass',
+
+            closable: true,
+            closeAction: 'destroy',
+            minWidth: 250,
+            border: false,
+            modal: true,
+            width: 650,
+            height: 420,
+            viewModel: {
+                stores: {
+                    
+                    assigned_items: {
+                        autoLoad: true,
+                        fields: [
+                            {name: 'task_set', type: 'string'} 
+                        ],
+                    
+                    
+                        proxy: {
+                            disableCache: false,
+                            method: 'POST',
+                            type: 'myproxy',
+                            dataType: 'json',
+                            actionMethods : {create: "POST", read: "POST", update: "POST", destroy: "POST"},
+                            jsonData: new JSON_RPC.Request("taskSetsInClass", [{"node_class":LHCb.store.SelectedItemData.node_class}]),
+                            reader: {
+                                type: 'json',
+                                rootProperty: 'result'
+                            }
+                        },
+                        
+                    },
+                    task_sets: {
+                        //model: 'LHCb.model.TasksTableModel',
+                        autoLoad: true,
+
+                        fields: [
+                            {name: 'task_set', type: 'string'} 
+                        ],
+                                        
+                        proxy: {
+                            disableCache: false,
+                            method: 'POST',
+                            type: 'myproxy',
+                            dataType: 'json',
+                            actionMethods : {create: "POST", read: "POST", update: "POST", destroy: "POST"},
+                            jsonData: new JSON_RPC.Request("getSet", [{"task_set":"*"}]),
+                            reader: {
+                                type: 'json',
+                                rootProperty: 'result'
+                            }
+                        },
+                        listeners: { 
+                            load: function() {
+                                console.log(this.data.items[0]);
+                                console.log(Ext.ComponentQuery.query('panel[itemId=assigntasksettoclass]')[0].viewModel.storeInfo.assigned_items.data.items[0]);
+                                // Only overwrite the tasks table (remove tasks that are assigned) if both tables are not empty - otherwise the algorithm will crash badly! :D
+                                if(typeof this.data.items[0] !== "undefined" &&  typeof Ext.ComponentQuery.query('panel[itemId=assigntasksettoclass]')[0].viewModel.storeInfo.assigned_items.data.items[0] !== "undefined"){
+                                    
+                                    // Thats a crazy query! Come on!
+                                    var notInSetRows = this.data.items[0].store.data.items; //working
+                                    var inSetRows = Ext.ComponentQuery.query('panel[itemId=assigntasksettoclass]')[0].viewModel.storeInfo.assigned_items.data.items[0].store.data.items;                
+
+        
+                                    for(var i = 0; i < notInSetRows.length; i++){
+                                        //console.log("Scanning notInSetRows")
+                                        for(var k = 0; k < inSetRows.length; k++){
+                                            //console.log("Scanning inSetRows")
+                                            if(inSetRows[k].data["task_set"] == notInSetRows[i].data["task_set"]){
+                                                this.removeAt(this.find('task_set', inSetRows[k].data["task_set"]))
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                            }
+                            }
+                        
+                    }
+                }
+            },
+            tools: [{
+                type: 'refresh',
+                tooltip: 'Reset assignment',
+                handler: 'onResetClick'
+            }],
+            layout: {
+                type: 'hbox',
+                pack: 'center',
+                align: 'stretch'
+            },  
+            items: [{
+                xtype: 'grid',
+                reference: 'grid1',
+
+                itemId: 'notassignedtasksetsgrid',
+
+                flex: 1,
+
+                multiSelect: false,
+                margin: '0 5 0 0',
+
+                viewConfig: {
+                    plugins: {
+                        ptype: 'gridviewdragdrop',
+                        containerScroll: true,
+                        dragGroup: 'dd-grid-to-grid-group1',
+                        dropGroup: 'dd-grid-to-grid-group2'
+                    },
+                    listeners: {
+                        drop: 'onDropGrid1'
+                    }
+                },
+
+                bind: '{task_sets}',
+
+                columns: [{
+                    text: 'Task sets',
+                    dataIndex: 'task_set',
+
+                    flex: 1,
+                    sortable: true
+                }]
+                
+            },
+            {
+                xtype: 'grid',
+                reference: 'grid2',
+
+                itemId: 'assigntasksetsgrid',
+
+                flex: 1,
+                stripeRows: true,
+
+                viewConfig: {
+                    plugins: {
+                        ptype: 'gridviewdragdrop',
+                        containerScroll: true,
+                        dragGroup: 'dd-grid-to-grid-group2',
+                        dropGroup: 'dd-grid-to-grid-group1',
+
+                        // The right hand drop zone gets special styling when dragging over it.
+                        dropZone: {
+                            overClass: 'dd-over-gridview'
+                        }
+                    },
+
+                    listeners: {
+                        drop: 'onDropGrid2'
+                    }
+                },
+
+                bind: '{assigned_items}',
+        
+                columns: [{
+                    text: 'Assigned task sets',
+                    dataIndex: 'task_set',
+        
+                    flex: 1,
+                    sortable: true
+                }]
+            }
+        ],
+
+        fbar: [{
+            text: 'Save',
+            handler: function() {
+                var assignTaskWindow = Ext.ComponentQuery.query('panel[itemId=assigntasksettoclass]')[0];
+
+                // Note that those for loops are not as stupid as they seem to be (if there is multiple movement of one item in
+                // the tables, the Assign/Unassign stores will contain doubled invalid entries - thanks to the for loops, the DB API
+                // will throw errors only for those single items and no invalid assignment / unassignment will be made - while keeping
+                // the correct ones... I know, that's not elegant... but it is way less coding than checking stores in every drag & drop handler...)
+
+                var task_sets_to_assign = LHCb.store.AssignItemsStore.tasks;
+
+                for (var i in task_sets_to_assign){
+                    Ext.Ajax.request({
+                        method: 'POST',
+                        // Send a JSONRPC request to the server (delete selected item)
+                        jsonData: new JSON_RPC.Request('assignSet', [{
+                                'task_set': task_sets_to_assign[i],
+                                'node_class': LHCb.store.SelectedItemData.node_class
+                            }]),
+                        dataType: 'json',
+                        url: "http://localhost:8081/TDBDATA/JSONRPC",     
+                        });
+                }
+
+                var task_sets_to_unassign = LHCb.store.UnassignItemsStore.tasks;
+
+                for (var i in task_sets_to_unassign){
+                    Ext.Ajax.request({
+                        method: 'POST',
+                        // Send a JSONRPC request to the server (delete selected item)
+                        jsonData: new JSON_RPC.Request('unassignSet', [{
+                                'task_set': task_sets_to_unassign[i],
+                                'node_class': LHCb.store.SelectedItemData.node_class
+                            }]),
+                        dataType: 'json',
+                        url: "http://localhost:8081/TDBDATA/JSONRPC",     
+                        });
+                }
+
+                Ext.MessageBox.alert('Status', 'The task sets have been assigned to (and unassigned from) the node class.', this.showResult, this);
+                assignTaskWindow.destroy();
+            }
+        }]
+                    }).show();
+    },
+
+    onAssignToNode: function() {
+        // http://examples.sencha.com/extjs/6.2.0/examples/kitchensink/?classic#dd-grid-to-grid
+        var assignToNodeWindow = Ext.create('Ext.window.Window', {
+
+            title: 'Assign node classes to a node definition',
+            controller: 'dd-grid-to-grid',
+            
+            itemId: 'assignclasstonode',
+
+            closable: true,
+            closeAction: 'destroy',
+            minWidth: 250,
+            border: false,
+            modal: true,
+            width: 650,
+            height: 420,
+            viewModel: {
+                stores: {
+                    
+                    assigned_items: {
+                        autoLoad: true,
+                        fields: [
+                            {name: 'node_class', type: 'string'} 
+                        ],
+                    
+                    
+                        proxy: {
+                            disableCache: false,
+                            method: 'POST',
+                            type: 'myproxy',
+                            dataType: 'json',
+                            actionMethods : {create: "POST", read: "POST", update: "POST", destroy: "POST"},
+                            jsonData: new JSON_RPC.Request("classesInNode", [{"regex":LHCb.store.SelectedItemData.regex}]),
+                            reader: {
+                                type: 'json',
+                                rootProperty: 'result'
+                            }
+                        },
+                        
+                    },
+                    node_classes: {
+                        autoLoad: true,
+
+                        fields: [
+                            {name: 'node_class', type: 'string'} 
+                        ],
+                                        
+                        proxy: {
+                            disableCache: false,
+                            method: 'POST',
+                            type: 'myproxy',
+                            dataType: 'json',
+                            actionMethods : {create: "POST", read: "POST", update: "POST", destroy: "POST"},
+                            jsonData: new JSON_RPC.Request("getClass", [{"node_class":"*"}]),
+                            reader: {
+                                type: 'json',
+                                rootProperty: 'result'
+                            }
+                        },
+                        listeners: { 
+                            load: function() {
+                                console.log(this.data.items[0]);
+                                console.log(Ext.ComponentQuery.query('panel[itemId=assignclasstonode]')[0].viewModel.storeInfo.assigned_items.data.items[0]);
+                                // Only overwrite the tasks table (remove tasks that are assigned) if both tables are not empty - otherwise the algorithm will crash badly! :D
+                                if(typeof this.data.items[0] !== "undefined" &&  typeof Ext.ComponentQuery.query('panel[itemId=assignclasstonode]')[0].viewModel.storeInfo.assigned_items.data.items[0] !== "undefined"){
+                                    
+                                    // Thats a crazy query! Come on!
+                                    var notInSetRows = this.data.items[0].store.data.items; //working
+                                    var inSetRows = Ext.ComponentQuery.query('panel[itemId=assignclastonode]')[0].viewModel.storeInfo.assigned_items.data.items[0].store.data.items;                
+
+        
+                                    for(var i = 0; i < notInSetRows.length; i++){
+                                        //console.log("Scanning notInSetRows")
+                                        for(var k = 0; k < inSetRows.length; k++){
+                                            //console.log("Scanning inSetRows")
+                                            if(inSetRows[k].data["node_class"] == notInSetRows[i].data["node_class"]){
+                                                this.removeAt(this.find('node_class', inSetRows[k].data["node_class"]))
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                            }
+                            }
+                        
+                    }
+                }
+            },
+            tools: [{
+                type: 'refresh',
+                tooltip: 'Reset assignment',
+                handler: 'onResetClick'
+            }],
+            layout: {
+                type: 'hbox',
+                pack: 'center',
+                align: 'stretch'
+            },  
+            items: [{
+                xtype: 'grid',
+                reference: 'grid1',
+
+                itemId: 'notassignedclassesgrid',
+
+                flex: 1,
+
+                multiSelect: false,
+                margin: '0 5 0 0',
+
+                viewConfig: {
+                    plugins: {
+                        ptype: 'gridviewdragdrop',
+                        containerScroll: true,
+                        dragGroup: 'dd-grid-to-grid-group1',
+                        dropGroup: 'dd-grid-to-grid-group2'
+                    },
+                    listeners: {
+                        drop: 'onDropGrid1'
+                    }
+                },
+
+                bind: '{node_classes}',
+
+                columns: [{
+                    text: 'Node classes',
+                    dataIndex: 'node_class',
+
+                    flex: 1,
+                    sortable: true
+                }]
+                
+            },
+            {
+                xtype: 'grid',
+                reference: 'grid2',
+
+                itemId: 'assignclassesgrid',
+
+                flex: 1,
+                stripeRows: true,
+
+                viewConfig: {
+                    plugins: {
+                        ptype: 'gridviewdragdrop',
+                        containerScroll: true,
+                        dragGroup: 'dd-grid-to-grid-group2',
+                        dropGroup: 'dd-grid-to-grid-group1',
+
+                        // The right hand drop zone gets special styling when dragging over it.
+                        dropZone: {
+                            overClass: 'dd-over-gridview'
+                        }
+                    },
+
+                    listeners: {
+                        drop: 'onDropGrid2'
+                    }
+                },
+
+                bind: '{assigned_items}',
+        
+                columns: [{
+                    text: 'Assigned node classes',
+                    dataIndex: 'node_class',
+        
+                    flex: 1,
+                    sortable: true
+                }]
+            }
+        ],
+
+        fbar: [{
+            text: 'Save',
+            handler: function() {
+                var assignTaskWindow = Ext.ComponentQuery.query('panel[itemId=assignclasstonode]')[0];
+
+                // Note that those for loops are not as stupid as they seem to be (if there is multiple movement of one item in
+                // the tables, the Assign/Unassign stores will contain doubled invalid entries - thanks to the for loops, the DB API
+                // will throw errors only for those single items and no invalid assignment / unassignment will be made - while keeping
+                // the correct ones... I know, that's not elegant... but it is way less coding than checking stores in every drag & drop handler...)
+
+                var node_classes_to_assign = LHCb.store.AssignItemsStore.tasks;
+
+                for (var i in node_classes_to_assign){
+                    Ext.Ajax.request({
+                        method: 'POST',
+                        // Send a JSONRPC request to the server (delete selected item)
+                        jsonData: new JSON_RPC.Request('assignClass', [{
+                                'node_class': node_classes_to_assign[i],
+                                'regex': LHCb.store.SelectedItemData.regex
+                            }]),
+                        dataType: 'json',
+                        url: "http://localhost:8081/TDBDATA/JSONRPC",     
+                        });
+                }
+
+                var node_classes_to_unassign = LHCb.store.UnassignItemsStore.tasks;
+
+                for (var i in node_classes_to_unassign){
+                    Ext.Ajax.request({
+                        method: 'POST',
+                        // Send a JSONRPC request to the server (delete selected item)
+                        jsonData: new JSON_RPC.Request('unassignClass', [{
+                                'node_class': node_classes_to_unassign[i],
+                                'regex': LHCb.store.SelectedItemData.regex
+                            }]),
+                        dataType: 'json',
+                        url: "http://localhost:8081/TDBDATA/JSONRPC",     
+                        });
+                }
+
+                Ext.MessageBox.alert('Status', 'The node classes have been assigned to (and unassigned from) the node definition.', this.showResult, this);
                 assignTaskWindow.destroy();
             }
         }]

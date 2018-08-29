@@ -31,11 +31,12 @@ Ext.define('LHCb.view.tabpanel.classesexplorer.ClassesExplorer', {
                     text: 'Select a node class:', dataIndex: 'node_class', flex: 1,
                     listeners: {
                         click: function(grid, cellElement, rowIndex, cellIndex){
+                            //console.log(Ext.ComponentQuery.query('panel[itemId=singleclasswindow]')[0].items.items[1].store.proxy.jsonData.params[0]["node_class"]);
                             // Sweep trough the table objects
                             var gridstore = grid.getStore();
                             var rowdata = gridstore.data.items[rowIndex];
                             // Set selected item data in common singleton to be accessed by other windows
-                            LHCb.store.SelectedItemData.task_set = rowdata.data['node_class'];
+                            LHCb.store.SelectedItemData.node_class = rowdata.data['node_class'];
                             LHCb.store.SelectedItemData.description = rowdata.data['description'];
                             // Switch to single task set view and reassure that the assignment button is visible
                             var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
@@ -44,12 +45,14 @@ Ext.define('LHCb.view.tabpanel.classesexplorer.ClassesExplorer', {
                             Ext.ComponentQuery.query('panel[itemId=mainoperationwindowtoolbar]')[0].setVisible(false);
                             Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].header.items.items[2].setVisible(true);
                             // Update the description window with the singleton store record
-                            Ext.ComponentQuery.query('panel[itemId=descriptionwindow]')[0].body.update('<br><center>' + LHCb.store.SelectedItemData.task_set + ': ' + LHCb.store.SelectedItemData.description + '</center>');
+                            Ext.ComponentQuery.query('panel[itemId=descriptionwindow]')[0].body.update('<br><center>' + LHCb.store.SelectedItemData.node_class + ': ' + LHCb.store.SelectedItemData.description + '</center>');
                             // Update the default fields in the task sets overview window and the assigned items table
-                            Ext.ComponentQuery.query('panel[itemId=singleclasswindow]')[0].items.items[0].items.items[0].setValue(LHCb.store.SelectedItemData.task_set);
-                            Ext.ComponentQuery.query('panel[itemId=singleclasswindow]')[0].items.items[0].items.items[1].setValue(LHCb.store.SelectedItemData.description);
-                            Ext.ComponentQuery.query('panel[itemId=singleclasswindow]')[0].items.items[1].store.proxy.jsonData.params[0]["node_class"] = rowdata.data['node_class'];
+                            Ext.ComponentQuery.query('panel[itemId=singleclasswindow]')[0].items.items[1].store.proxy.jsonData = new JSON_RPC.Request("taskSetsInClass", [{"node_class": rowdata.data['node_class']}]);
                             Ext.ComponentQuery.query('panel[itemId=singleclasswindow]')[0].items.items[1].store.reload()
+                            Ext.ComponentQuery.query('panel[itemId=singleclasswindow]')[0].items.items[0].items.items[0].setValue(LHCb.store.SelectedItemData.node_class);
+                            Ext.ComponentQuery.query('panel[itemId=singleclasswindow]')[0].items.items[0].items.items[1].setValue(LHCb.store.SelectedItemData.description);
+                            //console.log(Ext.ComponentQuery.query('panel[itemId=singleclasswindow]')[0].items.items[1].store.proxy.jsonData.params[0]["node_class"]);
+                            
                         }
                     }
                 }       

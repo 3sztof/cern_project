@@ -133,7 +133,47 @@ Ext.define('LHCb.view.operationwindow.OperationWindow', {
                     ]
                 }
             ]
-        }  
+        },
+        // View 6 - Nodes full table
+        {
+            toolbaridentifier: 'nodestable',
+
+            layout: {
+                type: 'vbox',
+                pack: 'start',
+                align: 'stretch'
+            },
+            
+            items: [
+                {
+                    autoScroll: true,
+                    xtype: 'nodestable'
+                }
+                
+            ]
+        },
+        // View 7 - clicked (navigation) node details
+        {
+            toolbaridentifier: 'singlenode',
+         
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            items: [
+                {
+                    layout: {
+                        type: 'fit',
+                    },
+                    items: [
+                        {
+                            xtype: 'singlenode',
+                            flex: 1
+                        }
+                    ]
+                }
+            ]
+        }
     ]
 
 })

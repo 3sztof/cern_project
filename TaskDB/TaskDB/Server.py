@@ -194,6 +194,13 @@ class CombiHandler(SimpleJSONRPCServer.SimpleJSONRPCRequestHandler,
     except Exception,X:
       print 'POST: Exception:',str(X)
 
+
+  # ====================================================================================
+  # Execute POST request (RPC/REST)
+  #
+  # \author  K.Wilczynski
+  # \version 1.0
+  # ------------------------------------------------------------------------------------
   def do_OPTIONS(self):
         self.send_response(200, "ok")
         self.send_header('Access-Control-Allow-Origin', '*')

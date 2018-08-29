@@ -11,6 +11,8 @@ Ext.define('LHCb.store.SelectedItemData', {
 
     task: '',
     task_set: '',
+    node_class: '',
+    regex: '',
     description: '',
     utgid: '',
     command: '',

@@ -44,12 +44,12 @@ Ext.define('LHCb.view.tabpanel.nodesexplorer.NodesExplorer', {
                             Ext.ComponentQuery.query('panel[itemId=mainoperationwindowtoolbar]')[0].setVisible(false);
                             Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].header.items.items[2].setVisible(true);
                             // Update the description window with the singleton store record
-                            Ext.ComponentQuery.query('panel[itemId=descriptionwindow]')[0].body.update('<br><center>' + LHCb.store.SelectedItemData.task_set + ': ' + LHCb.store.SelectedItemData.description + '</center>');
+                            Ext.ComponentQuery.query('panel[itemId=descriptionwindow]')[0].body.update('<br><center>' + LHCb.store.SelectedItemData.regex + ': ' + LHCb.store.SelectedItemData.description + '</center>');
                             // Update the default fields in the task sets overview window and the assigned items table
-                            Ext.ComponentQuery.query('panel[itemId=singletasksetwindow]')[0].items.items[0].items.items[0].setValue(LHCb.store.SelectedItemData.task_set);
-                            Ext.ComponentQuery.query('panel[itemId=singletasksetwindow]')[0].items.items[0].items.items[1].setValue(LHCb.store.SelectedItemData.description);
-                            Ext.ComponentQuery.query('panel[itemId=singletasksetwindow]')[0].items.items[1].store.proxy.jsonData.params[0]["regex"] = rowdata.data['regex'];
-                            Ext.ComponentQuery.query('panel[itemId=singletasksetwindow]')[0].items.items[1].store.reload()
+                            Ext.ComponentQuery.query('panel[itemId=singlenodewindow]')[0].items.items[0].items.items[0].setValue(LHCb.store.SelectedItemData.regex);
+                            Ext.ComponentQuery.query('panel[itemId=singlenodewindow]')[0].items.items[0].items.items[1].setValue(LHCb.store.SelectedItemData.description);
+                            Ext.ComponentQuery.query('panel[itemId=singlenodewindow]')[0].items.items[1].store.proxy.jsonData = new JSON_RPC.Request("classesInNode", [{"regex": rowdata.data['regex']}]);
+                            Ext.ComponentQuery.query('panel[itemId=singlenodewindow]')[0].items.items[1].store.reload()
                         }
                     }
                 }       

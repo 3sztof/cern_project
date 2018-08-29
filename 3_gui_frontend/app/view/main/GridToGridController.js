@@ -41,7 +41,7 @@ Ext.define('LHCb.view.main.GridToGridController', {
         key = data.event.item.innerText;
         value = data.event.item.innerText;
         LHCb.store.UnassignItemsStore.tasks[key] = value;
-        this.onDrop();
+        //this.onDrop();
     },
 
     onDropGrid2: function (node, data, dropRec, dropPosition) {
@@ -61,6 +61,10 @@ Ext.define('LHCb.view.main.GridToGridController', {
     onResetClick: function () {
         LHCb.store.AssignItemsStore.tasks = [];
         LHCb.store.UnassignItemsStore.tasks = [];
+        // LHCb.store.AssignItemsStore.task_sets = [];
+        // LHCb.store.UnassignItemsStore.task_sets = [];
+        // LHCb.store.AssignItemsStore.classes = [];
+        // LHCb.store.UnassignItemsStore.classes = [];
         this.lookup('grid1').getStore().reload();
         //console.log(this.lookup('grid1').getStore())
         this.lookup('grid2').getStore().reload();

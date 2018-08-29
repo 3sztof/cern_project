@@ -12,7 +12,7 @@ Ext.define('LHCb.view.operationwindow.SingleClass', {
     viewModel: {
         stores: {          
             assigned_items: {
-                autoLoad: true,
+                autoLoad: false,
                 fields: [
                     {name: 'task', type: 'string'} 
                 ],
@@ -22,7 +22,7 @@ Ext.define('LHCb.view.operationwindow.SingleClass', {
                     type: 'myproxy',
                     dataType: 'json',
                     actionMethods : {create: "POST", read: "POST", update: "POST", destroy: "POST"},
-                    jsonData: new JSON_RPC.Request("taskSetsInClass", [{"node_class":LHCb.store.SelectedItemData.node_class}]),
+                    jsonData: new JSON_RPC.Request("taskSetsInClass", [{"node_class":"Error on purpose: cant stop SingleClass store autoload"}]),
                     reader: {
                         type: 'json',
                         rootProperty: 'result'

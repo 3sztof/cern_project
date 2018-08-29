@@ -412,6 +412,55 @@ class TaskDB:
             raise Exception(message)
 
     # =====================================================================================================================
+    # Query the task sets assigned to a given node class
+    # 
+    # \param  node_class         [REQUIRED]  Name of the node class the task set should be queried
+    # \return                                Statuscode indicating success or failure / Exception
+    #
+    # \author  K.Wilczynski
+    # \version 1.0
+    # ---------------------------------------------------------------------------------------------------------------------
+    def taskSetsInClass(self, node_class):
+        message = None
+        try:
+            query = self.execStatement("SELECT task_set FROM Task_Sets_to_Classes WHERE node_class='{0}'".format(node_class))
+            result = [dict(zip(tuple(query.keys()), i)) for i in query.cursor]
+            if len(result) > 0:
+                return result
+            if self.inDb('Classes',node_class=node_class):
+                return result
+            message = 'The node class "%s" does not exist!'%(node_class,)
+        except Exception, e:
+            return self.handleException(e,'Failed to retrieve task sets for node class "%s"'%(node_class,))
+        if message:
+            raise Exception(message)
+
+    # =====================================================================================================================
+    # Query the node classes assigned to a given node
+    # 
+    # \param  regex              [REQUIRED]  Name of the node the node classes should be queried
+    # \return                                Statuscode indicating success or failure / Exception
+    #
+    # \author  K.Wilczynski
+    # \version 1.0
+    # ---------------------------------------------------------------------------------------------------------------------
+    def classesInNode(self, regex):
+        message = None
+        try:
+            query = self.execStatement("SELECT node_class FROM Classes_to_Nodes WHERE regex='{0}'".format(regex))
+            result = [dict(zip(tuple(query.keys()), i)) for i in query.cursor]
+            if len(result) > 0:
+                return result
+            if self.inDb('Nodes',regex=regex):
+                return result
+            message = 'The node "%s" does not exist!'%(regex,)
+        except Exception, e:
+            return self.handleException(e,'Failed to retrieve node classes for node "%s"'%(regex,))
+        if message:
+            raise Exception(message)
+
+
+    # =====================================================================================================================
     # Create a new TaskSet instance to the Task_Sets table
     # A Task set is an associative object grouping a number of task instances together
     #

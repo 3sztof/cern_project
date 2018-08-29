@@ -14,8 +14,19 @@ Ext.application({
         'LHCb.controller.RPCController',
         'Ext.plugin.Viewport',
         'LHCb.view.operationwindow.TasksTable',
+        'LHCb.view.operationwindow.TaskSetsTable',
+        'LHCb.view.operationwindow.ClassesTable',
+        'LHCb.view.operationwindow.NodesTable',
         'LHCb.model.TasksTableModel',
-        'LHCb.view.operationwindow.SingleTask'
+        'LHCb.model.TaskSetsTableModel',
+        'LHCb.model.ClassesTableModel',
+        'LHCb.model.NodesTableModel',
+        'LHCb.view.operationwindow.SingleTask',
+        'LHCb.view.operationwindow.SingleTaskSet',
+        'LHCb.view.operationwindow.SingleClass',
+        'LHCb.view.operationwindow.SingleNode'
+
+
     ],
 
 

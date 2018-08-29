@@ -30,7 +30,7 @@ Ext.define('LHCb.view.operationwindow.NodesTable', {
             xtype: 'rownumberer'
         },
         {
-            text: 'Unique name', dataIndex: 'task_set', flex: 1
+            text: 'Unique name', dataIndex: 'regex', flex: 1
         }, 
         {
             text: 'Description', dataIndex: 'description', flex: 1

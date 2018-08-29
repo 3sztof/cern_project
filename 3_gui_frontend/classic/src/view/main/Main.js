@@ -250,6 +250,12 @@ Ext.define('LHCb.view.main.Main', {
                                                     if(activeWindow == 'singleset'){
                                                         rpcController.onDeleteTaskSet();
                                                     }
+                                                    if(activeWindow == 'singleclass'){
+                                                        rpcController.onDeleteClass();
+                                                    }
+                                                    if(activeWindow == 'singlenode'){
+                                                        rpcController.onDeleteNode();
+                                                    }
                                                 }
                                             }
                                         ]
