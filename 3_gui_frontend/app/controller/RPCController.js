@@ -1450,8 +1450,8 @@ Ext.define('LHCb.controller.RPCController', {
                         },
                         listeners: { 
                             load: function() {
-                                console.log(this.data.items[0]);
-                                console.log(Ext.ComponentQuery.query('panel[itemId=assignclasstonode]')[0].viewModel.storeInfo.assigned_items.data.items[0]);
+                                //console.log(this.data.items[0]);
+                                //console.log(Ext.ComponentQuery.query('panel[itemId=assignclasstonode]')[0].viewModel.storeInfo.assigned_items.data.items[0]);
                                 // Only overwrite the tasks table (remove tasks that are assigned) if both tables are not empty - otherwise the algorithm will crash badly! :D
                                 if(typeof this.data.items[0] !== "undefined" &&  typeof Ext.ComponentQuery.query('panel[itemId=assignclasstonode]')[0].viewModel.storeInfo.assigned_items.data.items[0] !== "undefined"){
                                     
