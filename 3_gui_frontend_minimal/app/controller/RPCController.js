@@ -67,7 +67,7 @@ Ext.define('LHCb.controller.RPCController', {
             // Send a JSONRPC request to the server (delete selected item)
             jsonData: new JSON_RPC.Request('deleteTask', [{'task':LHCb.store.SelectedItemData.task}]),
             dataType: 'json',
-            url: "http://localhost:8081/TDBDATA/JSONRPC",
+            url: LHCb.variables.GlobalVariables.request_path,
             
             success: function(response) {
                 // Switch to single task view
@@ -104,7 +104,7 @@ Ext.define('LHCb.controller.RPCController', {
             // Send a JSONRPC request to the server (delete selected item)
             jsonData: new JSON_RPC.Request('deleteSet', [{'task_set':LHCb.store.SelectedItemData.task_set}]),
             dataType: 'json',
-            url: "http://localhost:8081/TDBDATA/JSONRPC",
+            url: LHCb.variables.GlobalVariables.request_path,
             
             success: function(response) {
                 // Switch to single task view
@@ -141,7 +141,7 @@ Ext.define('LHCb.controller.RPCController', {
             // Send a JSONRPC request to the server (delete selected item)
             jsonData: new JSON_RPC.Request('deleteClass', [{'node_class':LHCb.store.SelectedItemData.node_class}]),
             dataType: 'json',
-            url: "http://localhost:8081/TDBDATA/JSONRPC",
+            url: LHCb.variables.GlobalVariables.request_path,
             
             success: function(response) {
                 // Switch to single task view
@@ -178,7 +178,7 @@ Ext.define('LHCb.controller.RPCController', {
             // Send a JSONRPC request to the server (delete selected item)
             jsonData: new JSON_RPC.Request('deleteNode', [{'regex':LHCb.store.SelectedItemData.regex}]),
             dataType: 'json',
-            url: "http://localhost:8081/TDBDATA/JSONRPC",
+            url: LHCb.variables.GlobalVariables.request_path,
             
             success: function(response) {
                 // Switch to single task view
@@ -278,7 +278,7 @@ Ext.define('LHCb.controller.RPCController', {
                                     'description': formFields.items[5].value
                                 }]),
                             dataType: 'json',
-                            url: "http://localhost:8081/TDBDATA/JSONRPC",
+                            url: LHCb.variables.GlobalVariables.request_path,
                             
                             success: function(response) {
                                 // Switch to single task view
@@ -356,7 +356,7 @@ Ext.define('LHCb.controller.RPCController', {
                                     'description': formFields.items[1].value,
                                 }]),
                             dataType: 'json',
-                            url: "http://localhost:8081/TDBDATA/JSONRPC",
+                            url: LHCb.variables.GlobalVariables.request_path,
                             
                             success: function(response) {
                                 // Switch to single task set view
@@ -430,7 +430,7 @@ Ext.define('LHCb.controller.RPCController', {
                                     'description': formFields.items[1].value,
                                 }]),
                             dataType: 'json',
-                            url: "http://localhost:8081/TDBDATA/JSONRPC",
+                            url: LHCb.variables.GlobalVariables.request_path,
                             
                             success: function(response) {
                                 // Switch to single task set view
@@ -503,7 +503,7 @@ Ext.define('LHCb.controller.RPCController', {
                                     'description': formFields.items[1].value,
                                 }]),
                             dataType: 'json',
-                            url: "http://localhost:8081/TDBDATA/JSONRPC",
+                            url: LHCb.variables.GlobalVariables.request_path,
                             
                             success: function(response) {
                                 // Switch to single task set view
@@ -605,7 +605,7 @@ Ext.define('LHCb.controller.RPCController', {
                                     'description': formFields.items[5].value
                                 }]),
                             dataType: 'json',
-                            url: "http://localhost:8081/TDBDATA/JSONRPC",
+                            url: LHCb.variables.GlobalVariables.request_path,
                             
                             success: function(response) {
                                 // Alert that the task has been added
@@ -668,7 +668,7 @@ Ext.define('LHCb.controller.RPCController', {
                                     'description': formFields.items[1].value
                                 }]),
                             dataType: 'json',
-                            url: "http://localhost:8081/TDBDATA/JSONRPC",
+                            url: LHCb.variables.GlobalVariables.request_path,
                             
                             success: function(response) {
                                 // Alert that the task has been added
@@ -730,7 +730,7 @@ Ext.define('LHCb.controller.RPCController', {
                                     'description': formFields.items[1].value
                                 }]),
                             dataType: 'json',
-                            url: "http://localhost:8081/TDBDATA/JSONRPC",
+                            url: LHCb.variables.GlobalVariables.request_path,
                             
                             success: function(response) {
                                 // Alert that the task has been added
@@ -793,7 +793,7 @@ Ext.define('LHCb.controller.RPCController', {
                                     'description': formFields.items[1].value
                                 }]),
                             dataType: 'json',
-                            url: "http://localhost:8081/TDBDATA/JSONRPC",
+                            url: LHCb.variables.GlobalVariables.request_path,
                             
                             success: function(response) {
                                 // Alert that the task has been added
@@ -835,7 +835,7 @@ Ext.define('LHCb.controller.RPCController', {
                             'task': selectedItems[i].data["task"]
                         }]),
                     dataType: 'json',
-                    url: "http://localhost:8081/TDBDATA/JSONRPC",     
+                    url: LHCb.variables.GlobalVariables.request_path,     
                     });
             }
 
@@ -865,7 +865,7 @@ Ext.define('LHCb.controller.RPCController', {
                             'task_set': selectedItems[i].data["task_set"]
                         }]),
                     dataType: 'json',
-                    url: "http://localhost:8081/TDBDATA/JSONRPC",     
+                    url: LHCb.variables.GlobalVariables.request_path,     
                     });
             }
 
@@ -895,7 +895,7 @@ Ext.define('LHCb.controller.RPCController', {
                             'node_class': selectedItems[i].data["node_class"]
                         }]),
                     dataType: 'json',
-                    url: "http://localhost:8081/TDBDATA/JSONRPC",     
+                    url: LHCb.variables.GlobalVariables.request_path,     
                     });
             }
 
@@ -925,7 +925,7 @@ Ext.define('LHCb.controller.RPCController', {
                             'regex': selectedItems[i].data["regex"]
                         }]),
                     dataType: 'json',
-                    url: "http://localhost:8081/TDBDATA/JSONRPC",     
+                    url: LHCb.variables.GlobalVariables.request_path,     
                     });
             }
 
@@ -1144,7 +1144,7 @@ Ext.define('LHCb.controller.RPCController', {
                                 'task_set': LHCb.store.SelectedItemData.task_set
                             }]),
                         dataType: 'json',
-                        url: "http://localhost:8081/TDBDATA/JSONRPC",     
+                        url: LHCb.variables.GlobalVariables.request_path,     
                         });
                 }
 
@@ -1159,7 +1159,7 @@ Ext.define('LHCb.controller.RPCController', {
                                 'task_set': LHCb.store.SelectedItemData.task_set
                             }]),
                         dataType: 'json',
-                        url: "http://localhost:8081/TDBDATA/JSONRPC",     
+                        url: LHCb.variables.GlobalVariables.request_path,     
                         });
                 }
 
@@ -1363,7 +1363,7 @@ Ext.define('LHCb.controller.RPCController', {
                                 'node_class': LHCb.store.SelectedItemData.node_class
                             }]),
                         dataType: 'json',
-                        url: "http://localhost:8081/TDBDATA/JSONRPC",     
+                        url: LHCb.variables.GlobalVariables.request_path,     
                         });
                 }
 
@@ -1378,7 +1378,7 @@ Ext.define('LHCb.controller.RPCController', {
                                 'node_class': LHCb.store.SelectedItemData.node_class
                             }]),
                         dataType: 'json',
-                        url: "http://localhost:8081/TDBDATA/JSONRPC",     
+                        url: LHCb.variables.GlobalVariables.request_path,     
                         });
                 }
 
@@ -1581,7 +1581,7 @@ Ext.define('LHCb.controller.RPCController', {
                                 'regex': LHCb.store.SelectedItemData.regex
                             }]),
                         dataType: 'json',
-                        url: "http://localhost:8081/TDBDATA/JSONRPC",     
+                        url: LHCb.variables.GlobalVariables.request_path,     
                         });
                 }
 
@@ -1596,7 +1596,7 @@ Ext.define('LHCb.controller.RPCController', {
                                 'regex': LHCb.store.SelectedItemData.regex
                             }]),
                         dataType: 'json',
-                        url: "http://localhost:8081/TDBDATA/JSONRPC",     
+                        url: LHCb.variables.GlobalVariables.request_path,     
                         });
                 }
 

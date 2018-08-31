@@ -32,7 +32,7 @@ Ext.define('LHCb.model.ClassesTableModel', {
         pageParam: undefined,
         startParam: undefined,
         //url: 'http://localhost:8080/tasks'
-        url: "http://localhost:8081/TDBDATA/JSONRPC"
+        url: LHCb.variables.GlobalVariables.request_path
     },
 
 });

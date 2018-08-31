@@ -10,6 +10,7 @@ Ext.application({
 
     requires: [
         'LHCb.view.main.Main',
+        'LHCb.variables.GlobalVariables',
         //'json-rpc',
         'LHCb.controller.RPCController',
         'Ext.plugin.Viewport',
@@ -25,8 +26,6 @@ Ext.application({
         'LHCb.view.operationwindow.SingleTaskSet',
         'LHCb.view.operationwindow.SingleClass',
         'LHCb.view.operationwindow.SingleNode'
-
-
     ],
 
 
@@ -45,6 +44,3 @@ Ext.application({
     //-------------------------------------------------------------------------
 });
 
-// Global namespace for global variable _request_path - didnt really work...
-// Ext.ns('LHCb.Application.Globals');
-// LHCb.Application.Globals._request_path = "http://localhost:8081/TDBDATA/JSONRPC";

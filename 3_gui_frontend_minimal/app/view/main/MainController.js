@@ -12,6 +12,9 @@ Ext.define('LHCb.view.main.MainController', {
     itemId: 'maincontroller',
     id: 'maincontroller',
 
+
+    // THIS IS A VIEWCONTROLLER! MAIN APP LOGIC RESIDES IN LHCb.controller.RPCController
+
     alias: 'controller.main',
 });
 

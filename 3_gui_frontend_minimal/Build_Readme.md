@@ -1,5 +1,47 @@
 To build the app, you need to:
 
-0) Do we delete workspace.json too? we actually may... then just generate it with 'sencha generate workspace /path/to/LHCb'
-1) Wichtig: link the sdk: either specify the path to the SDK in workspace.json or generate ./ext folder by initializing workspace with sdk flag
-2) Wichtig: generate a blank app with 'sencha -sdk /path/to/ext6 generate app MyApp /path/to/my-app', then copy .sencha folder from its directory to the root of LHCb app - .sencha is required and this is the way Sencha reccomands to generate it... see: https://docs.sencha.com/cmd/guides/extjs/cmd_app.html
+----------------------------------------------------------------------
+
+1) Link the sdk: modify the workspace.json file specifying a path to 
+   Sencha Ext JS SKD as follows:
+
+	"frameworks": {
+		"ext": {
+		    "path":"path to SDK",
+		    "version":"full version number of the SDK"
+		}
+        
+        
+    	}
+
+----------------------------------------------------------------------
+
+2) Generate the .sencha folder by executing the following commands
+   (consult https://docs.sencha.com/cmd/guides/extjs/cmd_app.html 
+   for details):
+
+   Note that you need to update the SKD path to yours!
+   Execute the commands outside of the app directory!
+   Version of sencha cmd used when building this way: 6.6.0.13
+
+
+	mkdir temp
+	sencha -sdk /home/leon/.Sencha_Ext_JS/ext-6.2.0 generate app Temp temp
+	cp -r temp/.sencha/ <Sencha app folder from the repo>
+	rm -r temp
+ 
+
+----------------------------------------------------------------------
+
+3) Build the app by running (in the app folder):
+
+	sencha app build (production / testing - defaults to production)
+
+   Or start the app in debug mode on port 1841:
+
+	sencha app watch
+
+----------------------------------------------------------------------
+
+4) The built app can be found under ./build/(production / testing)/LHCb/
+   Build path can be also modified in workspace.json file.

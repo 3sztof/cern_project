@@ -21,6 +21,7 @@ Ext.define('LHCb.Application', {
 
     launch: function () {
         // TODO - Launch the application
+        
     },
 
     onAppUpdate: function () {
