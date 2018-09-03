@@ -65,6 +65,7 @@ Ext.define('LHCb.view.operationwindow.SingleNode', {
         },
         {
             xtype: 'grid',
+            id: 'singlenodeassingeditemsgrid',
             flex: 1,
             bind: '{assigned_items}',
             columns: [{

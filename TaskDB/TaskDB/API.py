@@ -707,12 +707,12 @@ class TaskDB:
     # \author  K.Wilczynski
     # \version 1.0
     # ---------------------------------------------------------------------------------------------------------------------
-    def assignClass(self, node_class, node_regex):
+    def assignClass(self, node_class, regex):
         try:
-            self.execStatement("insert into Classes_to_Nodes values ('{0}', '{1}')".format(node_class, node_regex))
+            self.execStatement("insert into Classes_to_Nodes values ('{0}', '{1}')".format(node_class, regex))
             return SUCCESS        
         except Exception,e:
-            return self.handleException(e,'Failed to assign node class "%s" to node type "%s"'%(node_class, node_regex,))
+            return self.handleException(e,'Failed to assign node class "%s" to node type "%s"'%(node_class, regex,))
 
     # =====================================================================================================================
     # De-Assign an existing node class instance in the Classes table from a given node type
@@ -724,15 +724,15 @@ class TaskDB:
     # \author  K.Wilczynski
     # \version 1.0
     # ---------------------------------------------------------------------------------------------------------------------
-    def unassignClass(self, node_class, node_regex):
+    def unassignClass(self, node_class, regex):
         try:
-            cmd = "delete from Classes_to_Nodes where node_class='{0}' and regex='{1}'".format(node_class, node_regex)
+            cmd = "delete from Classes_to_Nodes where node_class='{0}' and regex='{1}'".format(node_class, regex)
             query = self.execStatement(cmd)
             if(query.rowcount >= 1):
                 return SUCCESS
-            raise Exception('unassignClass: The specified assignment pair does not exist in the database: ' + node_class + ' <-> ' + node_regex)
+            raise Exception('unassignClass: The specified assignment pair does not exist in the database: ' + node_class + ' <-> ' + regex)
         except Exception,e:
-            return self.handleException(e,'Failed to un-assign node class "%s" from node type "%s"'%(node_class, node_regex,))
+            return self.handleException(e,'Failed to un-assign node class "%s" from node type "%s"'%(node_class, regex,))
 
     # =====================================================================================================================
     # Query the node classes assigned to a given node type

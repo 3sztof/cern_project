@@ -1367,6 +1367,9 @@ Ext.define('LHCb.controller.RPCController', {
                     maxWidth: 600
                 });
                 assignTaskWindow.destroy();
+
+                // Reload store to refresh tables
+                Ext.getCmp('singletasksetassingeditemsgrid').getStore().reload();
             }
         }]
                     }).show();
@@ -1595,6 +1598,9 @@ Ext.define('LHCb.controller.RPCController', {
                     maxWidth: 600
                 });
                 assignTaskWindow.destroy();
+
+                // Reload store to refresh tables
+                Ext.getCmp('singleclassassingeditemsgrid').getStore().reload();
             }
         }]
                     }).show();
@@ -1822,6 +1828,9 @@ Ext.define('LHCb.controller.RPCController', {
                     maxWidth: 600
                 });
                 assignTaskWindow.destroy();
+
+                // Reload store to refresh tables
+                Ext.getCmp('singlenodeassingeditemsgrid').getStore().reload();
             }
         }]
                     }).show();

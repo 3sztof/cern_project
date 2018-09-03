@@ -67,6 +67,7 @@ Ext.define('LHCb.view.operationwindow.SingleTaskSet', {
         },
         {
             xtype: 'grid',
+            id: 'singletasksetassingeditemsgrid',
             flex: 1,
             bind: '{assigned_items}',
             columns: [{
