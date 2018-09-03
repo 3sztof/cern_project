@@ -15,6 +15,13 @@ Ext.define('LHCb.view.operationwindow.SingleTaskSet', {
         stores: {          
             assigned_items: {
                 autoLoad: false,
+                sorters: [{
+                    property: 'task',
+                    direction: 'ASC'
+                }],
+                sortRoot: 'task',
+                sortOnLoad: true,
+                remoteSort: false,
                 fields: [
                     {name: 'task', type: 'string'} 
                 ],

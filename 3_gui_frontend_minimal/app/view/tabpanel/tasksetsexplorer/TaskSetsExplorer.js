@@ -11,7 +11,14 @@ Ext.define('LHCb.view.tabpanel.tasksetsexplorer.TaskSetsExplorer', {
         stores: {
             task_sets: {
                 model: 'LHCb.model.TaskSetsTableModel',
-                autoLoad: true
+                autoLoad: true,
+                sorters: [{
+                    property: 'task_set',
+                    direction: 'ASC'
+                }],
+                sortRoot: 'task_set',
+                sortOnLoad: true,
+                remoteSort: false,
             }
         }
     },   

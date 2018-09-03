@@ -64,6 +64,6 @@ Ext.define('LHCb.model.TasksTableModel', {
         startParam: undefined,
         //url: 'http://localhost:8080/tasks'
         url: LHCb.variables.GlobalVariables.request_path
-    },
+    }
 
 });

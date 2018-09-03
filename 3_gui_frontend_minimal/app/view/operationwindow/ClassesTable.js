@@ -18,7 +18,14 @@ Ext.define('LHCb.view.operationwindow.ClassesTable', {
         stores: {
             node_classes: {
                 model: 'LHCb.model.ClassesTableModel',
-                autoLoad: true
+                autoLoad: true,
+                sorters: [{
+                    property: 'node_class',
+                    direction: 'ASC'
+                }],
+                sortRoot: 'node_class',
+                sortOnLoad: true,
+                remoteSort: false,
             }
         }
     },

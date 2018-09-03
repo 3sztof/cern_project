@@ -16,6 +16,13 @@ Ext.define('LHCb.view.operationwindow.SingleNode', {
                 fields: [
                     {name: 'task', type: 'string'} 
                 ],
+                sorters: [{
+                    property: 'node_class',
+                    direction: 'ASC'
+                }],
+                sortRoot: 'node_class',
+                sortOnLoad: true,
+                remoteSort: false,
                 proxy: {
                     disableCache: false,
                     method: 'POST',

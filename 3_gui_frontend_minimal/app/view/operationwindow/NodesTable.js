@@ -19,7 +19,14 @@ Ext.define('LHCb.view.operationwindow.NodesTable', {
         stores: {
             nodes: {
                 model: 'LHCb.model.NodesTableModel',
-                autoLoad: true
+                autoLoad: true,
+                sorters: [{
+                    property: 'regex',
+                    direction: 'ASC'
+                }],
+                sortRoot: 'regex',
+                sortOnLoad: true,
+                remoteSort: false,
             }
         }
     },
