@@ -19,7 +19,8 @@
      */
     "frameworks": {
         "ext": {
-            "path":"/home/leon/.Sencha_Ext_JS/ext-6.2.0",
+            "path":"ext",
+			//"path":"/home/leon/.Sencha_Ext_JS/ext-6.2.0",
             "version":"6.2.0.981"
         }
         

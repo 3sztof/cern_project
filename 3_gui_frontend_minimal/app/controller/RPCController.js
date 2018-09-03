@@ -823,6 +823,18 @@ Ext.define('LHCb.controller.RPCController', {
 
 
     onDeleteTasks: function() {
+        Ext.Msg.confirm('Confirm', 'Are you sure?', function(btnText) {
+            // console.log(btnText);
+            if(btnText === "no"){
+                this.destroy();
+            }
+            else if(btnText === "yes"){
+                this.onConfirmDeleteTasks();
+            }
+        }, this);
+    },
+
+    onConfirmDeleteTasks: function() {
         var tasksGrid = Ext.getCmp('taskstablegrid')
         var selectionModel = tasksGrid.getSelectionModel()
         if (selectionModel.hasSelection()) {
@@ -853,6 +865,18 @@ Ext.define('LHCb.controller.RPCController', {
     },
 
     onDeleteTaskSets: function() {
+        Ext.Msg.confirm('Confirm', 'Are you sure?', function(btnText) {
+            // console.log(btnText);
+            if(btnText === "no"){
+                this.destroy();
+            }
+            else if(btnText === "yes"){
+                this.onConfirmDeleteTaskSets();
+            }
+        }, this);
+    },
+
+    onConfirmDeleteTaskSets: function() {
         var tasksGrid = Ext.getCmp('tasksetstablegrid')
         var selectionModel = tasksGrid.getSelectionModel()
         if (selectionModel.hasSelection()) {
@@ -883,6 +907,18 @@ Ext.define('LHCb.controller.RPCController', {
     },
 
     onDeleteClasses: function() {
+        Ext.Msg.confirm('Confirm', 'Are you sure?', function(btnText) {
+            // console.log(btnText);
+            if(btnText === "no"){
+                this.destroy();
+            }
+            else if(btnText === "yes"){
+                this.onConfirmDeleteClasses();
+            }
+        }, this);
+    },
+
+    onConfirmDeleteClasses: function() {
         var classesGrid = Ext.getCmp('classestablegrid')
         var selectionModel = classesGrid.getSelectionModel()
         if (selectionModel.hasSelection()) {
@@ -913,6 +949,18 @@ Ext.define('LHCb.controller.RPCController', {
     },
 
     onDeleteNodes: function() {
+        Ext.Msg.confirm('Confirm', 'Are you sure?', function(btnText) {
+            // console.log(btnText);
+            if(btnText === "no"){
+                this.destroy();
+            }
+            else if(btnText === "yes"){
+                this.onConfirmDeleteNodes();
+            }
+        }, this);
+    },
+
+    onConfirmDeleteNodes: function() {
         var nodesGrid = Ext.getCmp('nodestablegrid')
         var selectionModel = nodesGrid.getSelectionModel()
         if (selectionModel.hasSelection()) {

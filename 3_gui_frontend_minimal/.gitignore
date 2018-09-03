@@ -1,1 +1,5 @@
 .sencha/
+ext/
+build/
+bootstrap.*
+classic.*
