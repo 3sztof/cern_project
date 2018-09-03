@@ -74,7 +74,16 @@ Ext.define('LHCb.controller.RPCController', {
                 var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                 operationwindow.setActiveItem(0);
                 // Alert that the task has been deleted
-                Ext.MessageBox.alert('Status', 'The task has been deleted from the database.', this.showResult, this);
+                Ext.toast({
+                    title: 'Success:',
+                    html: 'The task has been deleted from the database.',
+                    closable: false,
+                    glyph: 'f00c@FontAwesome', // success
+                    // glyph: 'f00d@FontAwesome', //failure
+                    align: 'b',
+                    slideDUration: 400,
+                    maxWidth: 600
+                });
                 // Reload store to refresh tables
                 Ext.getCmp('taskexplorergrid').getStore().reload();
                 Ext.getCmp('taskstablegrid').getStore().reload();
@@ -111,7 +120,16 @@ Ext.define('LHCb.controller.RPCController', {
                 var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                 operationwindow.setActiveItem(2);
                 // Alert that the task set has been deleted
-                Ext.MessageBox.alert('Status', 'The task set has been deleted from the database.', this.showResult, this);
+                Ext.toast({
+                    title: 'Success:',
+                    html: 'The task set has been deleted from the database.',
+                    closable: false,
+                    glyph: 'f00c@FontAwesome', // success
+                    // glyph: 'f00d@FontAwesome', //failure
+                    align: 'b',
+                    slideDUration: 400,
+                    maxWidth: 600
+                });
                 // Reload store to refresh tables
                 Ext.getCmp('tasksetsexplorergrid').getStore().reload();
                 Ext.getCmp('tasksetstablegrid').getStore().reload();
@@ -148,7 +166,16 @@ Ext.define('LHCb.controller.RPCController', {
                 var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                 operationwindow.setActiveItem(4);
                 // Alert that the task set has been deleted
-                Ext.MessageBox.alert('Status', 'The node class has been deleted from the database.', this.showResult, this);
+                Ext.toast({
+                    title: 'Success:',
+                    html: 'The node class has been deleted from the database.',
+                    closable: false,
+                    glyph: 'f00c@FontAwesome', // success
+                    // glyph: 'f00d@FontAwesome', //failure
+                    align: 'b',
+                    slideDUration: 400,
+                    maxWidth: 600
+                });
                 // Reload store to refresh tables
                 Ext.getCmp('nodesexplorergrid').getStore().reload();
                 Ext.getCmp('nodestablegrid').getStore().reload();
@@ -185,7 +212,16 @@ Ext.define('LHCb.controller.RPCController', {
                 var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                 operationwindow.setActiveItem(6);
                 // Alert that the task set has been deleted
-                Ext.MessageBox.alert('Status', 'The node definition has been deleted from the database.', this.showResult, this);
+                Ext.toast({
+                    title: 'Success:',
+                    html: 'The node definition has been deleted from the database.',
+                    closable: false,
+                    glyph: 'f00c@FontAwesome', // success
+                    // glyph: 'f00d@FontAwesome', //failure
+                    align: 'b',
+                    slideDUration: 400,
+                    maxWidth: 600
+                });
                 // Reload store to refresh tables
                 Ext.getCmp('nodesexplorergrid').getStore().reload();
                 Ext.getCmp('nodestablegrid').getStore().reload();
@@ -285,7 +321,16 @@ Ext.define('LHCb.controller.RPCController', {
                                 var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                                 operationwindow.setActiveItem(0);
                                 // Alert that the task has been modified
-                                Ext.MessageBox.alert('Status', 'The task has been modified.', this.showResult, this);
+                                Ext.toast({
+                                    title: 'Success:',
+                                    html: 'The task has been modified.',
+                                    closable: false,
+                                    glyph: 'f00c@FontAwesome', // success
+                                    // glyph: 'f00d@FontAwesome', //failure
+                                    align: 'b',
+                                    slideDUration: 400,
+                                    maxWidth: 600
+                                });
                                 // Reload store to refresh tables
                                 Ext.getCmp('taskexplorergrid').getStore().reload();
                                 Ext.getCmp('taskstablegrid').getStore().reload();
@@ -363,7 +408,16 @@ Ext.define('LHCb.controller.RPCController', {
                                 var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                                 operationwindow.setActiveItem(2);
                                 // Alert that the task set has been modified
-                                Ext.MessageBox.alert('Status', 'The task set has been modified.', this.showResult, this);
+                                Ext.toast({
+                                    title: 'Success:',
+                                    html: 'The task set has been modified.',
+                                    closable: false,
+                                    glyph: 'f00c@FontAwesome', // success
+                                    // glyph: 'f00d@FontAwesome', //failure
+                                    align: 'b',
+                                    slideDUration: 400,
+                                    maxWidth: 600
+                                });
                                 // Reload store to refresh tables
                                 Ext.getCmp('tasksetsexplorergrid').getStore().reload();
                                 Ext.getCmp('tasksetstablegrid').getStore().reload();
@@ -437,7 +491,16 @@ Ext.define('LHCb.controller.RPCController', {
                                 var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                                 operationwindow.setActiveItem(4);
                                 // Alert that the task set has been modified
-                                Ext.MessageBox.alert('Status', 'The node class has been modified.', this.showResult, this);
+                                Ext.toast({
+                                    title: 'Success:',
+                                    html: 'The node class has been modified.',
+                                    closable: false,
+                                    glyph: 'f00c@FontAwesome', // success
+                                    // glyph: 'f00d@FontAwesome', //failure
+                                    align: 'b',
+                                    slideDUration: 400,
+                                    maxWidth: 600
+                                });
                                 // Reload store to refresh tables
                                 Ext.getCmp('classesexplorergrid').getStore().reload();
                                 Ext.getCmp('classestablegrid').getStore().reload();
@@ -510,7 +573,16 @@ Ext.define('LHCb.controller.RPCController', {
                                 var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                                 operationwindow.setActiveItem(6);
                                 // Alert that the task set has been modified
-                                Ext.MessageBox.alert('Status', 'The node definition has been modified.', this.showResult, this);
+                                Ext.toast({
+                                    title: 'Success:',
+                                    html: 'The node definition has been modified.',
+                                    closable: false,
+                                    glyph: 'f00c@FontAwesome', // success
+                                    // glyph: 'f00d@FontAwesome', //failure
+                                    align: 'b',
+                                    slideDUration: 400,
+                                    maxWidth: 600
+                                });
                                 // Reload store to refresh tables
                                 Ext.getCmp('nodesexplorergrid').getStore().reload();
                                 Ext.getCmp('nodestablegrid').getStore().reload();
@@ -609,7 +681,17 @@ Ext.define('LHCb.controller.RPCController', {
                             
                             success: function(response) {
                                 // Alert that the task has been added
-                                Ext.MessageBox.alert('Status', 'The task has been added to the database.', this.showResult, this);
+                                Ext.toast({
+                                    title: 'Success:',
+                                    html: 'The task has been added to the database.',
+                                    closable: false,
+                                    glyph: 'f00c@FontAwesome', // success
+                                    // glyph: 'f00d@FontAwesome', //failure
+                                    align: 'b',
+                                    slideDUration: 400,
+                                    maxWidth: 600
+                                });
+                                
                                 // Reload store to refresh tables
                                 Ext.getCmp('taskexplorergrid').getStore().reload();
                                 Ext.getCmp('taskstablegrid').getStore().reload();
@@ -672,7 +754,16 @@ Ext.define('LHCb.controller.RPCController', {
                             
                             success: function(response) {
                                 // Alert that the task has been added
-                                Ext.MessageBox.alert('Status', 'The task set has been added to the database.', this.showResult, this);
+                                Ext.toast({
+                                    title: 'Success:',
+                                    html: 'The task set has been added to the database.',
+                                    closable: false,
+                                    glyph: 'f00c@FontAwesome', // success
+                                    // glyph: 'f00d@FontAwesome', //failure
+                                    align: 'b',
+                                    slideDUration: 400,
+                                    maxWidth: 600
+                                });                                
                                 // Reload store to refresh tables
                                 Ext.getCmp('tasksetsexplorergrid').getStore().reload();
                                 Ext.getCmp('tasksetstablegrid').getStore().reload();
@@ -734,7 +825,16 @@ Ext.define('LHCb.controller.RPCController', {
                             
                             success: function(response) {
                                 // Alert that the task has been added
-                                Ext.MessageBox.alert('Status', 'The node class has been added to the database.', this.showResult, this);
+                                Ext.toast({
+                                    title: 'Success:',
+                                    html: 'The node class has been added to the database.',
+                                    closable: false,
+                                    glyph: 'f00c@FontAwesome', // success
+                                    // glyph: 'f00d@FontAwesome', //failure
+                                    align: 'b',
+                                    slideDUration: 400,
+                                    maxWidth: 600
+                                });
                                 // Reload store to refresh tables
                                 Ext.getCmp('classesexplorergrid').getStore().reload();
                                 Ext.getCmp('classestablegrid').getStore().reload();
@@ -797,7 +897,16 @@ Ext.define('LHCb.controller.RPCController', {
                             
                             success: function(response) {
                                 // Alert that the task has been added
-                                Ext.MessageBox.alert('Status', 'The node definition has been added to the database.', this.showResult, this);
+                                Ext.toast({
+                                    title: 'Success:',
+                                    html: 'The node definition has been added to the database.',
+                                    closable: false,
+                                    glyph: 'f00c@FontAwesome', // success
+                                    // glyph: 'f00d@FontAwesome', //failure
+                                    align: 'b',
+                                    slideDUration: 400,
+                                    maxWidth: 600
+                                });
                                 // Reload store to refresh tables
                                 Ext.getCmp('nodesexplorergrid').getStore().reload();
                                 Ext.getCmp('nodestablegrid').getStore().reload();
@@ -852,7 +961,16 @@ Ext.define('LHCb.controller.RPCController', {
             }
 
             // Alert that the task has been added
-            Ext.MessageBox.alert('Status', 'The selected tasks have been deleted from the database.', this.showResult, this);
+            Ext.toast({
+                title: 'Success:',
+                html: 'The selected tasks have been deleted from the database.',
+                closable: false,
+                glyph: 'f00c@FontAwesome', // success
+                // glyph: 'f00d@FontAwesome', //failure
+                align: 'b',
+                slideDUration: 400,
+                maxWidth: 600
+            });
             // Reload store to refresh tables
             Ext.getCmp('taskexplorergrid').getStore().reload();
             Ext.getCmp('taskstablegrid').getStore().reload();
@@ -894,7 +1012,16 @@ Ext.define('LHCb.controller.RPCController', {
             }
 
             // Alert that the task has been added
-            Ext.MessageBox.alert('Status', 'The selected task sets have been deleted from the database.', this.showResult, this);
+            Ext.toast({
+                title: 'Success:',
+                html: 'The selected task sets have been deleted from the database.',
+                closable: false,
+                glyph: 'f00c@FontAwesome', // success
+                // glyph: 'f00d@FontAwesome', //failure
+                align: 'b',
+                slideDUration: 400,
+                maxWidth: 600
+            });
             // Reload store to refresh tables
             Ext.getCmp('tasksetsexplorergrid').getStore().reload();
             Ext.getCmp('tasksetstablegrid').getStore().reload();
@@ -936,7 +1063,16 @@ Ext.define('LHCb.controller.RPCController', {
             }
 
             // Alert that the task has been added
-            Ext.MessageBox.alert('Status', 'The selected node classes have been deleted from the database.', this.showResult, this);
+            Ext.toast({
+                title: 'Success:',
+                html: 'The selected node classes have been deleted from the database.',
+                closable: false,
+                glyph: 'f00c@FontAwesome', // success
+                // glyph: 'f00d@FontAwesome', //failure
+                align: 'b',
+                slideDUration: 400,
+                maxWidth: 600
+            });
             // Reload store to refresh tables
             Ext.getCmp('classesexplorergrid').getStore().reload();
             Ext.getCmp('classestablegrid').getStore().reload();
@@ -977,8 +1113,17 @@ Ext.define('LHCb.controller.RPCController', {
                     });
             }
 
-            // Alert that the task has been added
-            Ext.MessageBox.alert('Status', 'The selected node definitions have been deleted from the database.', this.showResult, this);
+            // Alert that the nodes have been deleted
+            Ext.toast({
+                title: 'Success:',
+                html: 'The selected node definitions have been deleted from the database.',
+                closable: false,
+                glyph: 'f00c@FontAwesome', // success
+                // glyph: 'f00d@FontAwesome', //failure
+                align: 'b',
+                slideDUration: 400,
+                maxWidth: 600
+            });
             // Reload store to refresh tables
             Ext.getCmp('nodesexplorergrid').getStore().reload();
             Ext.getCmp('nodestablegrid').getStore().reload();
@@ -1211,7 +1356,16 @@ Ext.define('LHCb.controller.RPCController', {
                         });
                 }
 
-                Ext.MessageBox.alert('Status', 'The tasks have been assigned to (and unassigned from) the task set.', this.showResult, this);
+                Ext.toast({
+                    title: 'Success:',
+                    html: 'The tasks have been assigned to (and unassigned from) the task set.',
+                    closable: false,
+                    glyph: 'f00c@FontAwesome', // success
+                    // glyph: 'f00d@FontAwesome', //failure
+                    align: 'b',
+                    slideDUration: 400,
+                    maxWidth: 600
+                });
                 assignTaskWindow.destroy();
             }
         }]
@@ -1430,7 +1584,16 @@ Ext.define('LHCb.controller.RPCController', {
                         });
                 }
 
-                Ext.MessageBox.alert('Status', 'The task sets have been assigned to (and unassigned from) the node class.', this.showResult, this);
+                Ext.toast({
+                    title: 'Success:',
+                    html: 'The task sets have been assigned to (and unassigned from) the node class.',
+                    closable: false,
+                    glyph: 'f00c@FontAwesome', // success
+                    // glyph: 'f00d@FontAwesome', //failure
+                    align: 'b',
+                    slideDUration: 400,
+                    maxWidth: 600
+                });
                 assignTaskWindow.destroy();
             }
         }]
@@ -1648,7 +1811,16 @@ Ext.define('LHCb.controller.RPCController', {
                         });
                 }
 
-                Ext.MessageBox.alert('Status', 'The node classes have been assigned to (and unassigned from) the node definition.', this.showResult, this);
+                Ext.toast({
+                    title: 'Success:',
+                    html: 'The node classes have been assigned to (and unassigned from) the node definition.',
+                    closable: false,
+                    glyph: 'f00c@FontAwesome', // success
+                    // glyph: 'f00d@FontAwesome', //failure
+                    align: 'b',
+                    slideDUration: 400,
+                    maxWidth: 600
+                });
                 assignTaskWindow.destroy();
             }
         }]
