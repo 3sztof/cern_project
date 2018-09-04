@@ -11,6 +11,7 @@ Ext.application({
     requires: [
         'LHCb.view.main.Main',
         'LHCb.variables.GlobalVariables',
+        'Ext.window.Toast',
         //'json-rpc',
         'LHCb.controller.RPCController',
         'Ext.plugin.Viewport',

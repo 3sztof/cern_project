@@ -26,7 +26,7 @@ To build the app, you need to:
 
 
 	mkdir temp
-	sencha -sdk /home/leon/.Sencha_Ext_JS/ext-6.2.0 generate app Temp temp
+	sencha -sdk /home/leon/.Sencha_Ext_JS/ext-6.2.0 generate app MyApp temp
 	cp -r temp/.sencha/ <Sencha app folder from the repo>
 	rm -r temp
  
@@ -39,7 +39,9 @@ To build the app, you need to:
 
    Or start the app in debug mode on port 1841:
 
-	sencha app watch
+	sencha app watch (also needs ext/ folder which can be generated
+			 using the existing SDK and placed in root of 
+			 the app)
 
 ----------------------------------------------------------------------
 
