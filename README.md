@@ -11,7 +11,7 @@ Sencha: 	Root for sencha app development, then LHCb/ (a built dir) is meant to b
 			same port as APIs.
 ```
 ```
-Libs: 		Ready to copy to Sencha root ext/ and .sencha dirs needed to build sencha app with 'sencha app watch' and 'sencha app
+Libs: 		Ready to copy to Sencha root ext and .sencha dirs needed to build sencha app with 'sencha app watch' and 'sencha app
 			build' (for SDK ver. 6.2.0).
 ```
 ```
