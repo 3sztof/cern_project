@@ -70,9 +70,11 @@ Ext.define('LHCb.controller.RPCController', {
             url: LHCb.variables.GlobalVariables.request_path,
             
             success: function(response) {
-                // Switch to single task view
+                // Switch to full tasks table
                 var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                 operationwindow.setActiveItem(0);
+                Ext.ComponentQuery.query('panel[itemId=mainoperationwindowtoolbar]')[0].setVisible(true);
+                Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].setVisible(false);
                 // Alert that the task has been deleted
                 Ext.toast({
                     title: 'Success:',
@@ -317,9 +319,11 @@ Ext.define('LHCb.controller.RPCController', {
                             url: LHCb.variables.GlobalVariables.request_path,
                             
                             success: function(response) {
-                                // Switch to single task view
+                                // Switch to tasks table view
                                 var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                                 operationwindow.setActiveItem(0);
+                                Ext.ComponentQuery.query('panel[itemId=mainoperationwindowtoolbar]')[0].setVisible(true);
+                                Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].setVisible(false);
                                 // Alert that the task has been modified
                                 Ext.toast({
                                     title: 'Success:',
@@ -335,6 +339,7 @@ Ext.define('LHCb.controller.RPCController', {
                                 Ext.getCmp('taskexplorergrid').getStore().reload();
                                 Ext.getCmp('taskstablegrid').getStore().reload();
                                 // console.log(response.responseText);
+                                
                             },
                             failure: function(response) {
                                 Ext.MessageBox.alert('Status', 'Request failed: the task has not been modified in the database. Details: ' + response.responseText, this.showResult, this);
@@ -404,9 +409,11 @@ Ext.define('LHCb.controller.RPCController', {
                             url: LHCb.variables.GlobalVariables.request_path,
                             
                             success: function(response) {
-                                // Switch to single task set view
+                                // Switch to single task sets table view
                                 var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                                 operationwindow.setActiveItem(2);
+                                Ext.ComponentQuery.query('panel[itemId=mainoperationwindowtoolbar]')[0].setVisible(true);
+                                Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].setVisible(false);
                                 // Alert that the task set has been modified
                                 Ext.toast({
                                     title: 'Success:',
@@ -487,9 +494,11 @@ Ext.define('LHCb.controller.RPCController', {
                             url: LHCb.variables.GlobalVariables.request_path,
                             
                             success: function(response) {
-                                // Switch to single task set view
+                                // Switch to full classes table
                                 var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                                 operationwindow.setActiveItem(4);
+                                Ext.ComponentQuery.query('panel[itemId=mainoperationwindowtoolbar]')[0].setVisible(true);
+                                Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].setVisible(false);
                                 // Alert that the task set has been modified
                                 Ext.toast({
                                     title: 'Success:',
@@ -569,9 +578,11 @@ Ext.define('LHCb.controller.RPCController', {
                             url: LHCb.variables.GlobalVariables.request_path,
                             
                             success: function(response) {
-                                // Switch to single task set view
+                                // Switch to full nodes table
                                 var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                                 operationwindow.setActiveItem(6);
+                                Ext.ComponentQuery.query('panel[itemId=mainoperationwindowtoolbar]')[0].setVisible(true);
+                                Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].setVisible(false);
                                 // Alert that the task set has been modified
                                 Ext.toast({
                                     title: 'Success:',

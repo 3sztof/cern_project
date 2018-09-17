@@ -60,6 +60,16 @@ Ext.define('LHCb.view.tabpanel.TabPanel', {
                     xtype: 'nodesexplorer'
                 }
             ]
-        }
+        },
+        // {
+        //     title: 'Extra',
+        //     tabname: 'extra',
+        //     cls: 'card',
+        //     items: [
+        //         {                
+        //             //xtype: 'extra'
+        //         }
+        //     ]
+        // }
     ]
 });
