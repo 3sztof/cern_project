@@ -118,9 +118,11 @@ Ext.define('LHCb.controller.RPCController', {
             url: LHCb.variables.GlobalVariables.request_path,
             
             success: function(response) {
-                // Switch to single task view
+                // Switch to full task sets view
                 var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                 operationwindow.setActiveItem(2);
+                Ext.ComponentQuery.query('panel[itemId=mainoperationwindowtoolbar]')[0].setVisible(true);
+                Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].setVisible(false);
                 // Alert that the task set has been deleted
                 Ext.toast({
                     title: 'Success:',
@@ -164,9 +166,11 @@ Ext.define('LHCb.controller.RPCController', {
             url: LHCb.variables.GlobalVariables.request_path,
             
             success: function(response) {
-                // Switch to single task view
+                // Switch to full clssses view
                 var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                 operationwindow.setActiveItem(4);
+                Ext.ComponentQuery.query('panel[itemId=mainoperationwindowtoolbar]')[0].setVisible(true);
+                Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].setVisible(false);
                 // Alert that the task set has been deleted
                 Ext.toast({
                     title: 'Success:',
@@ -201,7 +205,7 @@ Ext.define('LHCb.controller.RPCController', {
         }, this);
     },
 
-    onConfirmDeleteTaskSet: function() {
+    onConfirmDeleteNode: function() {
         Ext.Ajax.request({
             method: 'POST',
             // Send a JSONRPC request to the server (delete selected item)
@@ -210,9 +214,11 @@ Ext.define('LHCb.controller.RPCController', {
             url: LHCb.variables.GlobalVariables.request_path,
             
             success: function(response) {
-                // Switch to single task view
+                // Switch to full nodes view
                 var operationwindow = Ext.ComponentQuery.query('panel[itemId=mainoperationwindow]')[0];
                 operationwindow.setActiveItem(6);
+                Ext.ComponentQuery.query('panel[itemId=mainoperationwindowtoolbar]')[0].setVisible(true);
+                Ext.ComponentQuery.query('panel[itemId=singleoperationwindowtoolbar]')[0].setVisible(false);
                 // Alert that the task set has been deleted
                 Ext.toast({
                     title: 'Success:',
