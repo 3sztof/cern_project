@@ -29,7 +29,7 @@ Ext.define('LHCb.view.operationwindow.SingleNode', {
                     type: 'myproxy',
                     dataType: 'json',
                     actionMethods : {create: "POST", read: "POST", update: "POST", destroy: "POST"},
-                    jsonData: new JSON_RPC.Request("classesInNode", [{"regex":LHCb.store.SelectedItemData.regex}]),
+                    jsonData: new JSON_RPC.Request("nodeclassInNode", [{"regex":LHCb.store.SelectedItemData.regex}]),
                     reader: {
                         type: 'json',
                         rootProperty: 'result'

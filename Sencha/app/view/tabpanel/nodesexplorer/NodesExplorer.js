@@ -55,7 +55,7 @@ Ext.define('LHCb.view.tabpanel.nodesexplorer.NodesExplorer', {
                             // Update the default fields in the task sets overview window and the assigned items table
                             Ext.ComponentQuery.query('panel[itemId=singlenodewindow]')[0].items.items[0].items.items[0].setValue(LHCb.store.SelectedItemData.regex);
                             Ext.ComponentQuery.query('panel[itemId=singlenodewindow]')[0].items.items[0].items.items[1].setValue(LHCb.store.SelectedItemData.description);
-                            Ext.ComponentQuery.query('panel[itemId=singlenodewindow]')[0].items.items[1].store.proxy.jsonData = new JSON_RPC.Request("classesInNode", [{"regex": rowdata.data['regex']}]);
+                            Ext.ComponentQuery.query('panel[itemId=singlenodewindow]')[0].items.items[1].store.proxy.jsonData = new JSON_RPC.Request("nodeclassInNode", [{"regex": rowdata.data['regex']}]);
                             Ext.ComponentQuery.query('panel[itemId=singlenodewindow]')[0].items.items[1].store.reload()
                         }
                     }

@@ -1424,7 +1424,7 @@ Ext.define('LHCb.controller.RPCController', {
                             type: 'myproxy',
                             dataType: 'json',
                             actionMethods : {create: "POST", read: "POST", update: "POST", destroy: "POST"},
-                            jsonData: new JSON_RPC.Request("taskSetsInClass", [{"node_class":LHCb.store.SelectedItemData.node_class}]),
+                            jsonData: new JSON_RPC.Request("tasksetsInClass", [{"node_class":LHCb.store.SelectedItemData.node_class}]),
                             reader: {
                                 type: 'json',
                                 rootProperty: 'result'
@@ -1655,7 +1655,7 @@ Ext.define('LHCb.controller.RPCController', {
                             type: 'myproxy',
                             dataType: 'json',
                             actionMethods : {create: "POST", read: "POST", update: "POST", destroy: "POST"},
-                            jsonData: new JSON_RPC.Request("classesInNode", [{"regex":LHCb.store.SelectedItemData.regex}]),
+                            jsonData: new JSON_RPC.Request("nodeclassInNode", [{"regex":LHCb.store.SelectedItemData.regex}]),
                             reader: {
                                 type: 'json',
                                 rootProperty: 'result'

@@ -420,7 +420,7 @@ class TaskDB:
     # \author  K.Wilczynski
     # \version 1.0
     # ---------------------------------------------------------------------------------------------------------------------
-    def taskSetsInClass(self, node_class):
+    def tasksetsInClass(self, node_class):
         message = None
         try:
             query = self.execStatement("SELECT task_set FROM Task_Sets_to_Classes WHERE node_class='{0}'".format(node_class))
@@ -444,7 +444,7 @@ class TaskDB:
     # \author  K.Wilczynski
     # \version 1.0
     # ---------------------------------------------------------------------------------------------------------------------
-    def classesInNode(self, regex):
+    def nodeclassInNode(self, regex):
         message = None
         try:
             query = self.execStatement("SELECT node_class FROM Classes_to_Nodes WHERE regex='{0}'".format(regex))

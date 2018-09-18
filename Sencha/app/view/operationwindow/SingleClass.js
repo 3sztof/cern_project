@@ -29,7 +29,7 @@ Ext.define('LHCb.view.operationwindow.SingleClass', {
                     type: 'myproxy',
                     dataType: 'json',
                     actionMethods : {create: "POST", read: "POST", update: "POST", destroy: "POST"},
-                    jsonData: new JSON_RPC.Request("taskSetsInClass", [{"node_class":"Error on purpose: cant stop SingleClass store autoload"}]),
+                    jsonData: new JSON_RPC.Request("tasksetsInClass", [{"node_class":"Error on purpose: cant stop SingleClass store autoload"}]),
                     reader: {
                         type: 'json',
                         rootProperty: 'result'

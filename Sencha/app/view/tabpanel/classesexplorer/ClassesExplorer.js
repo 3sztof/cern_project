@@ -54,7 +54,7 @@ Ext.define('LHCb.view.tabpanel.classesexplorer.ClassesExplorer', {
                             // Update the description window with the singleton store record
                             Ext.ComponentQuery.query('panel[itemId=descriptionwindow]')[0].body.update('<br><center>' + LHCb.store.SelectedItemData.node_class + ': ' + LHCb.store.SelectedItemData.description + '</center>');
                             // Update the default fields in the task sets overview window and the assigned items table
-                            Ext.ComponentQuery.query('panel[itemId=singleclasswindow]')[0].items.items[1].store.proxy.jsonData = new JSON_RPC.Request("taskSetsInClass", [{"node_class": rowdata.data['node_class']}]);
+                            Ext.ComponentQuery.query('panel[itemId=singleclasswindow]')[0].items.items[1].store.proxy.jsonData = new JSON_RPC.Request("tasksetsInClass", [{"node_class": rowdata.data['node_class']}]);
                             Ext.ComponentQuery.query('panel[itemId=singleclasswindow]')[0].items.items[1].store.reload()
                             Ext.ComponentQuery.query('panel[itemId=singleclasswindow]')[0].items.items[0].items.items[0].setValue(LHCb.store.SelectedItemData.node_class);
                             Ext.ComponentQuery.query('panel[itemId=singleclasswindow]')[0].items.items[0].items.items[1].setValue(LHCb.store.SelectedItemData.description);
