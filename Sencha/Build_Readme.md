@@ -48,5 +48,8 @@ To build the app, you need to:
 4) The built app can be found under ./build/(production / testing)/LHCb/
    Build path can be also modified in workspace.json file.
 
+----------------------------------------------------------------------
 
-gitk
+5) To change the URL to which all of the GUI JSONRPC requests are sent,
+   modify the app/variables/GlobalVariables.js file (request_path).
+

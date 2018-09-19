@@ -15,18 +15,28 @@ Ext.define('LHCb.view.tabpanel.extra.Extra', {
 
     items   : [
         {
+            xtype: 'textfield',
+            id: 'regextextfield',
+            allowBlank: false,
+            name: 'regex',
+            emptyText: 'Node regular expression',
+            autoComplete: true
+        },
+        {
             xtype: 'button',
             text : 'Show assigned tasks',
             listeners: {
                 click: function() {
-                    if(LHCb.store.SelectedItemData.regex == ""){return}
+                    var regex = Ext.getCmp('regextextfield').getValue();
+                    if(regex == ""){return}
                     var showAssignedTasksWindow = Ext.create('Ext.window.Window', {
-                        title: 'Tasks started on ' + LHCb.store.SelectedItemData.regex,
+                        title: 'Tasks started on ' + regex,
                         itemId: 'addtaskform',
                         closable: true,
+                        scrollable: true,
                         closeAction: 'destroy',
                         width: 350,
-                        minWidth: 250,
+                        height: 450,
                         border: false,
                         modal: true,
                         
@@ -47,7 +57,7 @@ Ext.define('LHCb.view.tabpanel.extra.Extra', {
                                         type: 'myproxy',
                                         dataType: 'json',
                                         actionMethods : {create: "POST", read: "POST", update: "POST", destroy: "POST"},
-                                        jsonData: new JSON_RPC.Request("getTasksByNode", [{"node":LHCb.store.SelectedItemData.regex}]),
+                                        jsonData: new JSON_RPC.Request("getTasksByNode", [{"node":regex}]),
                                         reader: {
                                             type: 'json',
                                             rootProperty: 'result'
@@ -59,30 +69,34 @@ Ext.define('LHCb.view.tabpanel.extra.Extra', {
                             }
                         },
             
-                        items: [{
-                            xtype: 'grid',
-                            // title: 'First Grid',
-            
-                            itemId: 'notassignedtasksgrid',
-            
-                            flex: 1,
-            
-                            multiSelect: false,
-                            margin: '0 5 0 0',
-
-            
-                            bind: '{assigned_items}',
-            
-                            columns: [{
-                                text: 'Tasks',
-                                dataIndex: 'task',
-            
+                        items: 
+                        [
+                            {
+                                xtype: 'grid',
+                                // title: 'First Grid',
+                
+                                scrollable: true,
+                                itemId: 'notassignedtasksgrid',
+                
                                 flex: 1,
-                                sortable: true
-                            }]
+                
+                                multiSelect: false,
+                                margin: '0 5 0 0',
+
+                
+                                bind: '{assigned_items}',
+                
+                                columns: [{
+                                    text: 'Tasks',
+                                    dataIndex: 'task',
+                
+                                    flex: 1,
+                                    sortable: true
+                                    }
+                                ]
                             
-                        }
-                    ]
+                            }
+                        ]
 
                         
                     }).show();
