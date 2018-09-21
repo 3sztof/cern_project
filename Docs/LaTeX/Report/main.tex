@@ -1,0 +1,534 @@
+\documentclass{customization}
+
+\usepackage{multicol}
+\usepackage{comment}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{calc}
+
+\usepackage{listings}
+\usepackage[most]{tcolorbox}
+\usepackage{inconsolata}
+
+% Code listing setup
+\lstset{showstringspaces=false}
+\definecolor{logocolor}{rgb}{0.11, 0.19, 0.33}
+\newtcblisting[auto counter]{sexylisting}[2][]{sharp corners,
+    fonttitle=\bfseries, colframe=logocolor, listing only,
+    listing options={basicstyle=\ttfamily,language=java},
+    title=Code example \thetcbcounter: #2, #1}
+
+
+\title{Summer Student Project Report}
+
+\begin{document}
+
+
+%------------ Information ---------------------
+
+\titre{A data-driven approach \\ to configure permanent tasks
+\\ in LHCb Online farm}
+\UE{LHCb Online}
+\sujet{\LaTeX Blabla}
+
+\enseignant{\underline{Markus \textsc{Frank}}\\
+			\underline{Beat \textsc{Jost}}}
+
+\eleves{\href{https://www.linkedin.com/in/3sztof/}{\underline{Krzysztof \textsc{Wilczyński}}}}
+
+%----------- Initialization -------------------
+
+\fairemarges
+\fairepagedegarde
+
+\begin{Large}
+\centerline{\textbf{Abstract}}
+\end{Large}
+\vspace{0.5cm}
+
+%==============================================
+%               Abstract
+%==============================================
+
+
+During the boot sequence, the LHCb Online system consisting of about 1700 CPUs needs to configure roughly 2 dozen different types of standard, off the shelf processor units, each running a dedicated set of permanent processes. In this report, a data driven approach is presented where these node types and the corresponding processes are modeled using a relational database.
+\newline
+
+\noindent
+Starting from the database model, a set of utility applications were derived. These include a command line interface, a web based graphical user interface and a program to verify the existence of the processes on a given node. Future extensions can easily be implemented using the provided application programming interface.
+
+
+
+% Old abstract (before the edit by Markus)
+\begin{comment}
+In the current LHCb Online farm process controller, all of the permanent task configurations are formed by a single, large and increasingly difficult to maintain Python script. Therefore, any change to the configuration or expansion of the system is made by labor-intensive edits of the code. The configuration is currently fairly complex and it would only get more confusing with the expansion of the farm in the future.
+\newline
+
+\noindent
+To overcome the deficiencies of the present solution and to have a single source of information about the processes that should execute on a given node, the idea of developing a database-driven, flexible and expandable system emerged.
+\end{comment}
+
+
+\tabledematieres  % Contents
+
+%---------------- Body ------------------------
+
+
+%==============================================
+%               Introduction
+%==============================================
+
+\section{Introduction}
+\hspace{0.6cm}
+
+As a part of LHCb Online group activities, the project had purely applied nature. It could be classified as full-stack IT development, from database back-end, trough application programming interface and unit testing, to command line and graphical user interfaces. There was some time scheduled for experiments and technology / protocol comparison that was very enriching for the author - a Summer Student.
+\newline
+
+\noindent
+This document aims to give a brief description of the project, without going into technicalities. Implementation details allowing to recreate, explore and diagnose the solution's source code were described in the Appendix section of this document, should the reader be interested in more in-depth information.
+
+\begin{comment}
+\newline
+\noindent\fcolorbox{logocolor}{white}{%
+    \parbox{\textwidth}{%
+        \centering
+        \href{https://bitbucket.org/3sztof/lhcb_online/src/master/Docs/Project_Report/Summer_Student_Project_Technical_Report.pdf}{Summer Student Project Technical Report (LINK)}
+    }%
+}
+\end{comment}
+
+
+%==============================================
+
+\subsection{Online farm nodes and permanent tasks}
+\hspace{0.6cm}
+
+An online farm is a cluster of multipurpose computing machines (also referred to as: CPUs, nodes) that are grouped according to their purpose: high level triggering, online analysis of data, storage, logging, monitoring et cetera. An outlook of LHCb Online farm architecture is shown in figure \ref{fig:farm}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{images/farm.png}
+    \caption{The LHCb Online farm architecture}
+    \label{fig:farm}
+\end{figure}
+
+%==============================================
+
+\noindent
+The node groups such as "High Level Trigger" or "Reconstruction Cluster" shown in figure \ref{fig:farm} are defined by sets of permanent tasks (processes) running on each node in the given group. Those processes are started on the nodes at system boot and continue to run during the entire operation time (unlike special tasks that may be started and stopped anytime).
+\newline
+
+\noindent
+An artificial hierarchy of tasks, task sets, node classes and nodes (top level regular expressions) emerged as a way of imagining and documenting the complex relations between the purpose of node groups and the tasks running on them. A diagram shown in figure \ref{fig:hierarchy} describes the parent-child relation between those groups. This hierarchical structure proved itself to be useful in the current solution and was not changed during the project. The main goal was to make the access to the underlying configuration data easier (more details on the aims of the project can be found in section 2).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.45]{images/hierarchy.png}
+    \caption{The task hierarchy in the farm}
+    \label{fig:hierarchy}
+\end{figure}
+
+%==============================================
+
+\subsection{Online farm process controller}
+\hspace{0.6cm}
+
+The process controller is a part of LHCb FMC (Farm Monitoring and Control System) that is responsible for starting, stopping and maintaining the processes running on worker nodes in the online farm.
+\newline
+
+\noindent
+Special nodes - "control PCs" are hosts of "pcSrv" process that allows them to supervise processes running on worker nodes assigned to them (each control PC in the current system oversees up to 32 nodes).
+\newline
+
+\noindent
+The above description can be perceived as over-simplified. To find more details about the process controller and underlying DIM (Distributed Information Management system) services, please consult the Researchgate article by Federico Bonifazi, Daniela Bortolotti, Angelo Carbone, Domenico Galli, Daniele Gregori, Umberto Marconi, Gianluca Peco and Vincenzo M. Vagnoni linked below.
+\newline
+
+\noindent\fcolorbox{logocolor}{white}{%
+    \parbox{\textwidth}{%
+        \centering
+        \href{https://www.researchgate.net/publication/268357086_The_Process_Controller_for_the_LHCb_On-Line_Farm_Prepared_by}{The Process Controller for the LHCb Online Farm (LINK)}.
+    }%
+}
+
+%==============================================
+%               Motivation
+%==============================================
+
+\newpage
+\section{Motivation}
+\hspace{0.6cm}
+
+This section clarifies (hopefully) the reasons behind the development of a new system for permanent tasks configuration in LHCb online farm.
+
+%==============================================
+
+\subsection{Farm boot script}
+\hspace{0.6cm}
+
+Up to this point, all processes started on the farm nodes and their configuration data (parameters) were grouped in a single, large (and increasingly difficult to maintain) python script that prints out ready to execute "pcAdd" commands for a given node name. Those commands are then executed by the control PCs - the tasks are started on the nodes specified by their name (or a regular expression pointing to a group of nodes).
+\newline
+
+\noindent
+Here is a simplified structure of a pcAdd command (pseudocode):
+\newline
+
+\begin{sexylisting}[colback=white]{pcAdd command essential parameters}
+pcAdd(NodeName(regular expression), ScriptToStart.sh,
+      ScriptParameters, pcAddParameters (execution))
+\end{sexylisting}
+
+\noindent
+This method of defining and executing the boot sequence had many clear disadvantages, most importantly:
+
+\begin{itemize}
+    \item modifications of task parameters were difficult (one had to browse the script to find the "hardcoded" configuration and understand the script's structure very well)
+    \item it was relatively easy to break dependencies between items in the hierarchy - they were not clearly visible in the large text file
+    \item there was no single source of information about tasks that run on a given node as the script contained duplicated entries - there was no transparent one-to-one relation between running processes and their configuration data
+\end{itemize}
+
+\noindent
+The boot script in this form was born as a "quick hack" about ten years ago, when the LHCb Online Farm Monitoring and Control system was installed.
+\newline
+
+\noindent
+The time has come for an improvement!
+
+%==============================================
+
+\subsection{Aims of the project}
+\hspace{0.6cm}
+
+The main goal of the summer student project was to create a cleverly designed database-driven system that would replace the old solution, bringing aid to all of its major problems.
+\newline
+
+\newpage
+\noindent
+Trough the usage of database back-end, it was possible to achieve the following goals:
+
+\begin{itemize}
+    \item the modifications of hierarchical task structure (shown in figure \ref{fig:hierarchy}) are now easier - database tables are clearer than plain text notation
+    \item thanks to special constraints on the data entries, the system prevents human errors that could lead to breaking dependencies in the hierarchy and the integrity of the system
+    \item a single data access point with one-to-one relation between the running tasks and the configuration data has been created - it is easier to find errors and make improvements to the permanent task parameters
+    \item it was possible to create a future-proof and reliable API (application programming interface) for further developments
+\end{itemize}
+
+%==============================================
+%           Development
+%==============================================
+
+\section{Development}
+\hspace{0.6cm}
+
+The core concepts and solutions developed during the summer student project can be classified as one of the three following categories:
+
+\begin{itemize}
+    \item Back-end
+        \begin{itemize}
+            \item Database schema architecture
+            \item Main database API
+            \item Front-end connectors: JSONRPC, (REST, XMLRPC)
+        \end{itemize}
+    \item Front-end
+        \begin{itemize}
+            \item Command line user interface
+            \item Graphical user interface (web application)
+        \end{itemize}
+    \item Derived applications
+        \begin{itemize}
+            \item New boot script
+            \item Unit testing script (internal error prevention)
+        \end{itemize}
+\end{itemize}
+
+\vspace{1cm}
+\noindent
+The role of each of the elements listed above is described in further sections of the report (section 4: Back-end, section 5: Front-end and section 6: Derived applications).
+
+%==============================================
+%           Back-end
+%==============================================
+
+\newpage
+\section{Back-end}
+\hspace{0.6cm}
+
+The back-end programs are the parts of the solution that are not visible for the user. In fact, the operator does not have to (and sometimes even should not) be aware of the underlying database and API at all.
+
+\subsection{Database schema architecture}
+\hspace{0.6cm}
+
+The database schema - organization of data in tables and creation of associations between them is truly the heart of the whole system. This is why it deserved special attention - a lot of work has been put into creating optimal architecture that will support any possible usage of the data and to prevent breaking the integrity of the data structure by the requests.
+\newline
+
+\noindent
+Many technologies have been considered - from classic SQL (Structured Querying Language) databases to unconventional non-relational solutions such as MongoDB. As a result of LHCb Online's policy of keeping the foreign dependencies as low as possible, SQLite database engine (an integral part of Python) has been chosen in the end. It is, however relatively simple to change the database back-end's engine to Oracle or any other mainstream SQL solution, should it be needed in the future.
+
+%==============================================
+
+\subsection{Main API}
+\hspace{0.6cm}
+
+The Main API is a Python class that offers high-level methods (simple functions) for other applications to access the advanced database operations in a safe way. Thanks to this script, it is very simple to use the database to its full potential without knowing the details of its inner structure. All low-level database operations (SQL queries) are executed only by the API script when a simple API request containing valid parameters is made by any client application.
+\newline
+
+\noindent
+The API offers the following functions for any of its data elements (tasks, task sets, node classes and nodes):
+
+\begin{multicols}{2}
+    \begin{enumerate}
+        \item add
+        \item delete
+        \item modify
+        \item get
+        \item assign
+        \item unassign
+        \item inSet
+    \end{enumerate}
+\end{multicols}
+
+\noindent
+The first four methods allow the client applications to influence the data entries directly, the rest is responsible for creating many-to-many connections in the database by assigning, unassigning and displaying items assigned to a given set (tasks in task set, task sets in node class and node classes in nodes).
+
+%==============================================
+
+\subsection{Front-end connectors}
+\hspace{0.6cm}
+
+In order to allow web based applications to use the Main API, it was required to create a "bridge" between server side Python and client side JavaScript. The previous LHCb Online solutions using the same front-end framework (Sencha Ext JS) adopted XMLRPC as the communication protocol.
+\newline
+
+\noindent
+An important part of the summer student project was to experiment and find the optimal technologies for the system. Therefore, many front-end connector possibilities were considered, most notably:
+
+\begin{itemize}
+    \item REST (REpresentational State Transfer)
+    \item JSONRPC (JavaScript Object Notation Remote Procedure Call)
+    \item XMLRPC (eXtensible Markup Language Remote Procedure Call)
+\end{itemize}
+
+\noindent
+All of the listed solutions were implemented as Python web servers and then tested.
+\newline
+
+\noindent
+REST is a unified way of navigating trough data based on URL routing. For instance, if one would like to delete task called Task\_1, a DELETE HTTP request should be sent to http://server/tasks/Task\_1 (URL routed to the data point). In short, the Main API methods are mapped onto regular HTTP methods and the data affected is chosen by the URL respecting REST standard.
+\newline
+
+\noindent
+The two later protocols are based on the same principle - RPC: remote procedure call. The client - graphical user interface (GUI) only needs to send a request containing the called method and its parameters in a specific form (XML or JSON file in the body of the request), using POST HTTP method. The RPC web server then calls the requested Main API method directly and returns its response.
+\newline
+
+\noindent
+In the end, JSONRPC has been chosen over XMLRPC and REST. It was the optimal solution as:
+
+\begin{itemize}
+    \item The connector does not need any changes when new method is added to the Main API - it will still call it when requested (unlike REST)
+    \item JSON file format is often considered the successor of XML as it does not contain as many text tags. In the end, the data size transferred in XML requests was mostly these tags. JSON formatting provides the server with the same data without unnecessary text while using way less network bandwidth.
+    \item Sencha Ext JS framework used in the previous solutions needed a special, external library to be able to talk to the XMLRPC back-end connector servers. As LHCb Online aims to reduce the usage of foreign libraries to guarantee stability after system upgrades, it was decided to use Sencha Ext JS native communication tool: Ajax requests which happen to use JSON data encoding by default.
+\end{itemize}
+
+%==============================================
+
+\begin{comment}
+
+    \subsection{Merge of the back-end solutions}
+    \hspace{0.6cm}
+
+    When all of the back-end prototype solutions have been finished and tested, the time has come to merge them into a system that would be easy to start and configure (to run on a given port, use given database, run in debug mode et cetera). This integration took a lot of work from Markus Frank's side as he will be the main user and maintainer of the solution.
+    \newline
+
+    \noindent
+    All of the front-end connectors have been merged into a single, elegant web server hosting all of the services at once (as well as file hosting for the main HTML of the graphical user interface). Therefore the system can be fully started and configured with a single command.
+
+\end{comment}
+
+%==============================================
+%           Front-end
+%==============================================
+
+\newpage
+\section{Front-end}
+\hspace{0.6cm}
+
+The front-end programs are designed with a purpose to make the usage of the system as easy and intuitive as possible. Those are the visible elements that the user interacts with.
+
+%==============================================
+
+\subsection{Command line interface (CLI)}
+\hspace{0.6cm}
+
+The first user interface to be developed was naturally a command line interface. It was relatively easy and fast to create it, moreover it is still preferred over GUI applications by many users (as it can be automated and debugged much easier than the graphical solution).
+\newline
+
+\noindent
+The CLI script is a set of commands that utilize Main API but are easier to operate for humans. Executing each command is assisted by guidance - questions (yes/no) to make sure that the user knows what is happening to the data. After execution of each command, there are also easy to understand status communicates that inform the user about success or give an explanation of an error that has been commited.
+
+%==============================================
+
+\subsection{Graphical user interface (GUI)}
+\hspace{0.6cm}
+
+When all of the required parts of the project were working properly, the time has come to develop the graphical user interface. The main aim of this part of the project was to make the visualization of task configurations easier and allow the user to reconfigure assignments in task hierarchy using intuitional "drag and drop" technique. All the tasks, task sets, node classes and nodes were grouped in reconfigurable and sortable grids and all of the API methods have their graphical representation - popup windows that simplify modification, creation, deletion and rearranging assignments of the task configuration data that is then processed by front-end connector and by the Main database API.
+\newline
+
+\noindent
+The GUI has been developed using Sencha Ext JS ver. 6.2.0, a JavaScript framework which makes the creation of unified, similarly looking interfaces across the whole Online system possible. It is basically a library of widgets that is used widely in the industry and thus it has a big community of programmers that exchange experiences in online forums.
+\newline
+
+\noindent
+Figure \ref{fig:gui} shows the current visual form of the interface (one of numerous views). It will surely be changed and improved further in the future.
+
+\begin{figure}[H]
+\centering
+    \includegraphics[scale=0.35]{images/gui.png}
+    \caption{An outlook of the graphical user interface}
+    \label{fig:gui}
+\end{figure}
+
+\noindent
+By no means was the development easy. It was a great opportunity for a summer student to improve programming skills and get to know a new development framework relatively well.
+
+%==============================================
+%           Derived applications
+%==============================================
+
+\section{Derived applications}
+\hspace{0.6cm}
+
+The derived applications are all of the programs that do not qualify as back-end (server side) or front-end (client side) solutions but still utilize the data provided by the database, through the Main API.
+
+%==============================================
+
+\subsection{New boot script}
+\hspace{0.6cm}
+
+To fully recreate the functionality of the previous solution, a new boot script had been written. As a modular structure of the system has been introduced, the boot script is no longer responsible for both storage and execution of the configuration data - it is just an optional client application for the Main API. The inner structure of the script is thus very simple - it just uses Main API's methods to find all tasks that belong to a specific node regular expression (input).
+
+%==============================================
+
+\subsection{Unit testing script}
+\hspace{0.6cm}
+
+In the IT world, unit testing is a name for validation of the program's functionality. In the designed system, the most critical part that needed testing in order to go into production (replace the old solution) was naturally the Main API. This subsystem is used to check if the changes made to the API do not harm its functionality.
+\newline
+
+\noindent
+Unit testing was surely not the most exciting part of the project. In principle, the script had to execute all possible API methods and verify if they work properly. To achieve that, the script first verifies the API's response to the method call and then checks if the requested action had modified the underlying database in the right way.
+\newline  \newline
+This description applies not only to the correctly called methods (all of the parameters provided, no logical errors). The unit testing script also needs to verify if all of the possible errors are handled correctly - right error code is returned and no modifications are made to the database.
+\newline  \newline
+After each test method call, the script prompts the result in the command line using unified formatting and font colouring - it is easy to spot an error and find its source. It also returns the number of errors found - it is possible to integrate the script in a larger production unit testing system.
+
+%==============================================
+%           Prize
+%==============================================
+
+\section{Moritz Karbach summer student prize 2018 winner}
+\hspace{0.6cm}
+
+This summer student project has been awarded with 2018 Moritz Karbach prize which is a collaboration award given to summer students "as recognition for outstanding performance" annually, in memory of Moritz Karbach, a young LHCb physicist who lost his life in a climbing accident in April 2015.
+\newline
+
+\noindent
+To be qualified for the prize, the students had to give a brief (10 minutes + 5 minutes for questions) presentation of their projects and sum up their work in CERN (after roughly two out of three months of their stay). More details about the criteria of the award and a list of the winners from previous years (along with the presentations of the projects) can be found under the following link:
+\newline
+
+\noindent\fcolorbox{logocolor}{white}{%
+    \parbox{\textwidth}{%
+        \centering
+        \href{https://lhcb.web.cern.ch/lhcb/Collaboration_prizes/Moritz_Karbach_summer_student_prize.html}{The Moritz Karbach summer student prize (LINK)}.
+    }%
+}
+\vspace{0.6cm}
+
+\begin{figure}[H]
+\centering
+    \includegraphics[scale=0.42]{images/Certificate.png}
+    \caption{The Moritz Karbach prize diploma}
+    \label{fig:diploma}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+    \includegraphics[scale=0.4]{images/Project_Presentation.jpg}
+    \caption{A photo from the presentations session}
+    \label{fig:presentation}
+\end{figure}
+
+%==============================================
+%           Summary
+%==============================================
+
+\newpage
+\section{Summary}
+\hspace{0.6cm}
+
+
+By using the described data-driven solution, it will be a lot more convenient to review, modify and diagnose the configuration of the tasks running on the Online farm nodes. The software is obeying modern development standards that make it flexible and future-proof.
+Unlike its predecessor, the new system can handle rapid growth of CPU number in the future upgrades of the LHCb detector while not making the maintaining, debugging, modification and testing incredibly complex.
+\newline
+
+\noindent
+All of the project's goals have been successfully achieved and the system will be deployed in the production environment - the LHCb Online farm. The summer student has built and tested functional prototypes of each part of the solution which will be maintained and improved further by project supervisor - Markus Frank.
+\newline
+
+\noindent
+The summer student project in LHCb Online group was a great opportunity to develop programming skills under guidance of immensely experienced supervisor while attending lectures covering various topics ranging from particle physics, through computing, to accelerator engineering. The lectures, together with numerous visits in research facilities, fascinating workshops and the applied project made up the best, horizon-broadening summer a curious student could dream of.
+\newline  \newline
+The Summer Student Programme was indeed an experience like nowhere else on Earth.
+\vspace{3cm}
+
+\centerline{\underline{\textbf{Thank You, CERN!}}}
+\vspace{3cm}
+
+
+% Include or exclude the appendix - for the HR department
+\include{appendix}
+
+
+
+
+
+
+
+
+
+\begin{comment}
+
+%-------------- Examples ----------------------
+
+\newpage
+\section{Examples}
+
+Examples
+
+%----------- Insert image ---------------------
+
+\insererfigure{logos/cern.png}{3cm}{Caption}{Label}
+
+% \begin{figure}[H]
+%     	\centering
+%     	\includegraphics[scale=0.1]{warsaw1.png}
+%     	%\caption{Wykresy Bodego transmitancji G, HG oraz HGW}
+%     	%\label{fig:transmitancja}
+% \end{figure}
+
+Cite the image number: \ref{fig: Label}
+
+
+%------------- Equation ------------------------
+
+\begin{equation} \label{eq: exemple}
+\rho + \Delta = 42
+\end{equation}
+
+Equation number reference: \ref{eq: exemple}
+
+% ---------- Math in text ----------------------
+
+Blablabla \$ blablabla $\rho$.
+
+\end{comment}
+
+\end{document}
