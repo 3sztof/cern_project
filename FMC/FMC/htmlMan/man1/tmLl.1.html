@@ -1,0 +1,263 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/tmLl.1.html">tmLl(1)</A></B>                        FMC User Commands                       <B><A HREF="../../htmlMan/man1/tmLl.1.html">tmLl(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>tmLl</B> <B>-</B> List the process(es) started by FMC Task Manager (long list,
+              including: TGID, CMD, UTGID, OOM-SCORE and STATUS)
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>tmLl</B> [<B>-v</B> | <B>--debug</B>] [<B>-N</B> | <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>]
+            [<B>-m</B> | <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]  [<B>-u</B> | <B>--utgid</B> <I>UTGID</I><B>_</B><I>PATTERN...</I>]
+            [<B>-c</B> | <B>--compact</B>] [<B>-H</B> | <B>--header</B>]
+
+       <B>tmLl</B> { <B>-V</B> | <B>--version</B> } [<B>-v</B> | <B>--debug</B>] [<B>-N</B> | <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>]
+            [<B>-m</B> | <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]
+
+       <B>tmLl</B> { <B>-h</B> | <B>--help</B> }
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The command <B>tmLl</B> lists the processes, started by the FMC Task  Manager,
+       whose   <B>UTGID</B>   matches   at   least   one  of  the  wildcard  patterns
+       <I>UTGID</I><B>_</B><I>PATTERN</I>, running on all the nodes whose <B>hostname</B> matches at least
+       one of the wildcard patterns <I>NODE</I><B>_</B><I>PATTERN</I>.
+
+       The list includes, for each process started by the FMC Task Manager:
+
+              <B>TGID</B>   Thread  Group IDentifier, the thread-epoch version of the
+                     old PID;
+
+              <B>CMD</B>    The command, i.e. the  name  of  the  process  executable
+                     image;
+
+              <B>UTGID</B>  The  User assigned unique Thread Group Identifier, set by
+                     the FMC Task Manager Server and used as a tag to identify
+                     the process;
+
+              <B>OOM-SCORE</B>
+                     The  score or badness used by the out-of-memory killer in
+                     order to choose the process(es) to kill in case  of  out-
+                     of-memory  condition:  the  <I>higher</I>  the  <I>OOM-SCORE</I>,  <I>more</I>
+                     <I>likely</I> the process is to be <I>killed</I> by <I>OOM-killer</I>;
+
+              <B>STATUS</B> The process status, <I>running</I> or <I>terminated</I>, including,  in
+                     the  latter case, either the <I>exit</I> <I>code</I> or the <I>termination</I>
+                     <I>signal</I> and the date and time of termination.
+
+       To get the bare UTGID list the command <B><A HREF="../../htmlMan/man1/tmLs.1.html">tmLs(1)</A></B> can be used instead.
+
+       The output can be made more <B>compact</B> by means of the <B>-c</B> option.
+
+       A sample <B>tmLl</B> output in standard format is:
+
+               Node patterns list:  "*".
+               UTGID patterns list:  "*".
+                 Node pattern: "*":
+                   Node: "farm0704". 17 process(es) have UTGID:
+                    #  TGID CMD        UTGID        OOM-SCORE STATUS
+                    0  6988 logSrv     fmcLog             113 running
+                    1  7032 coalSrv    coalSrv_u          113 running
+                    2  7035 cpuinfoSrv cpuinfoSrv_u      1810 running
+                    3  7038 cpustatSrv cpustatSrv_u      1810 running
+                    4  7041 irqSrv     irqSrv_u          1809 running
+                    5  7044 memSrv     memSrv_u          1809 running
+                    6  7047 nifSrv     nifSrv_u            22 running
+                    7  7070 cmSrv      cmSrv_u            108 running
+                    8  7073 psSrv      psSrv_u              1 running
+                    9  7076 tcpipSrv   tcpipSrv_u        1810 running
+                   10  7081 smartSrv   smartSrv_u         113 running
+                   11  7092 fsSrv      fsSrv_u           2907 running
+                   12  7097 osSrv      osSrv_u           1810 running
+                   13  7100 logSrv     gaudiLog          1770 running
+                   14  7103 logSrv     sysLog            1770 running
+                   15 21928 tmSrv      tmSrv_u              0 running
+                   16 26420 divByZero  divByZero_0       4527 terminated on
+               signal 8 (SIGFPE: Floating point exception) at Aug29-113840
+
+       A sample <B>tmLl</B> output in compact format with header (<B>-cH</B> option) is:
+
+               HOSTNAME # TGID CMD UTGID OOM-SCORE STATUS
+               farm0103 0 2851 logSrv fmcLog 115 running
+               farm0103 1 3194 logSrv gaudiLog 1750 running
+               farm0103 2 3197 logSrv sysLog 1780 running
+               farm0103 3 24242 divByZero divByZero_0 4530
+               terminated_on_signal_8_(SIGFPE:_Floating_point_excep-
+              tion)_at_Aug29-142055
+               farm0705 0 4135 logSrv fmcLog 112 running
+               farm0705 1 5486 logSrv gaudiLog 1760 running
+               farm0705 2 5491 logSrv sysLog 1770 running
+               farm0705 3 3808 divByZero divByZero_0 4520
+               terminated_on_signal_8_(SIGFPE:_Floating_point_excep-
+              tion)_at_Aug29-142055
+               farm0512 0 6988 logSrv fmcLog 113 running
+               farm0512 1 7100 logSrv gaudiLog 1770 running
+               farm0512 2 7103 logSrv sysLog 1770 running
+               farm0512 3 5981 divByZero divByZero_0 4527
+               terminated_on_signal_8_(SIGFPE:_Floating_point_excep-
+              tion)_at_Aug29-142055
+
+       If no <I>UTGID</I><B>_</B><I>PATTERN</I> is specified, it is set to "*".  If no <I>NODE</I><B>_</B><I>PATTERN</I>
+       is specified, it is set to "*". The list printed by <B>tmLl</B> is updated not
+       only  periodically,  but  also  whenever a Task Manager command is exe-
+       cuted, and immediately after a process started by the current Task Man-
+       ager istance has terminated for whatever reason.
+
+       The DIM Name Server, looked up to seek for Task Manager Servers, can be
+       chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file "<B>/etc/sysconfig/dim</B>".
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+   <B>General</B> <B>Options</B>
+       <B>-v</B> <B>--debug</B>
+              Increase verbosity for debugging.
+
+       <B>-N</B> <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+   <B>Data</B> <B>Presentation</B> <B>Options</B>
+       <B>-c</B> <B>--compact</B>
+              Print the process list in a compact format  (easier  to  parse):
+              one process per line, no labels, no units, no separator lines.
+
+       <B>-H</B> <B>--header</B>
+              If  the  compact output format has been choosen, print a heading
+              line with the output field labels.
+
+   <B>Data</B> <B>Selection</B> <B>Options</B>
+       <B>-m</B> <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              List only  process(es)  running  on  the  nodes  whose  hostname
+              matches  at  least  one  of  the  wildcard patterns <I>NODE</I><B>_</B><I>PATTERN</I>
+              (<B>default</B>: list process(es) running at all the nodes).
+
+       <B>-u</B> <B>--utgid</B> <I>UTGID</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              List only the process(es) whose UTGID matches at  least  one  of
+              the  wildcard  pattern <I>UTGID</I><B>_</B><I>PATTERN</I> (<B>default</B>: list all the pro-
+              cesses started by  the  Task  Manager  Servers  running  at  the
+              selected nodes).
+
+   <B>Accessory</B> <B>Options</B>
+       <B>-h</B> <B>--help</B>
+              Get basic usage help from the command line, then terminate.
+
+       <B>-V</B> <B>--version</B>
+              For  each  selected node, print the FMC Task Manager Server ver-
+              sion and the FMC package version, than terminate.
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries  "libdim"  and  "libFMCu-
+              tils".
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       List  the  processes  having whatever UTGID, executing at whatever node
+       running the Task Manager Server registered with the current DIM DNS:
+
+       <I>bash$</I> <B>tmLl</B>
+       <I>bash$</I> <B>tmLl</B> <B>-m</B> <B>"*"</B> <B>-u</B> <B>"*"</B>
+       <I>bash$</I> <B>tmLl</B> <B>-m</B> <B>\*</B> <B>-u</B> <B>\*</B>
+
+       Produce a more compact output:
+
+       <I>bash$</I> <B>tmLl</B> <B>-c</B>
+
+       Produce a more compact output with a header line  showing  field  mean-
+       ings:
+
+       <I>bash$</I> <B>tmLl</B> <B>-cH</B>
+
+       List only processes having the UTGID "counter_0" or "gaudiLog" (running
+       at whatever node):
+
+       <I>bash$</I> <B>tmLl</B> <B>-u</B> <B>counter_0</B> <B>-u</B> <B>gaudiLog</B>
+
+       Use a wildcard pattern to select the UTGIDs:
+
+       <I>bash$</I> <B>tmLl</B> <B>-u</B> <B>"count*"</B> <B>-u</B> <B>"gaudi*"</B>
+       <I>bash$</I> <B>tmLl</B> <B>-u</B> <B>count\*</B> <B>-u</B> <B>gaudi\*</B>
+       <I>bash$</I> <B>tmLl</B> <B>-u</B> <B>"count*[2-5]"</B> <B>-u</B> <B>"count*[8-9]"</B>
+
+       Limit the list  to  the  processes  running  on  nodes  "farm0101"  and
+       "farm0102":
+
+       <I>bash$</I> <B>tmLl</B> <B>-m</B> <B>farm0101</B> <B>-m</B> <B>farm0102</B>
+
+       Use a wildcard pattern to select the nodes:
+
+       <I>bash$</I> <B>tmLl</B> <B>-m</B> <B>"farm01*"</B>
+       <I>bash$</I> <B>tmLl</B> <B>-m</B> <B>farm01\*</B>
+       <I>bash$</I> <B>tmLl</B> <B>-m</B> <B>"farm010[3-7]"</B> <B>-m</B> <B>"farm020[3-7]"</B>
+       <I>bash$</I> <B>tmLl</B> <B>-m</B> <B>"farm01?[3-7]"</B> <B>-m</B> <B>"farm02?[3-7]"</B>
+
+       Use a wildcard pattern to select both the nodes and the UTGIDs:
+
+       <I>bash$</I> <B>tmLl</B> <B>-m</B> <B>"farm01*"</B> <B>-m</B> <B>"farm02*"</B> <B>-u</B> <B>"count*"</B> <B>-u</B> <B>"gaudi*"</B>
+       <I>bash$</I> <B>tmLl</B> <B>-m</B> <B>farm01\*</B> <B>-m</B> <B>farm02\*</B> <B>-u</B> <B>count\*</B> <B>-u</B> <B>gaudi\*</B>
+       <I>bash$</I> <B>tmLl</B> <B>-m</B> <B>"farm01?[3-7]"</B> <B>-m</B> <B>"farm02?[3-7]"</B> <B>-u</B> <B>"count*[2-5]"</B>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information  on how to get the FMC (Farm Monitoring and Control System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development Homepage
+       &lt;http://lhcbweb2.bo.infn.it/bin/view/LHCbBologna/FmcLinux&gt;.
+
+       CERN Engineering Department, JCOP, FMC
+       &lt;http://j2eeps.cern.ch/wikis/display/EN/
+       JCOP+Framework+Farm+Monitoring+and+Control+Tool&gt;.
+
+       LHCb Online RPMs
+       &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  tmLl.C,v 2.7 2012/12/13 15:45:44 galli
+
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO</H2><PRE>
+       <B><A HREF="../../htmlMan/man1/tmLs.1.html">tmLs(1)</A></B>, <B><A HREF="../../htmlMan/man1/tmStart.1.html">tmStart(1)</A></B>, <B><A HREF="../../htmlMan/man1/tmKill.1.html">tmKill(1)</A></B>, <B><A HREF="../../htmlMan/man1/tmStop.1.html">tmStop(1)</A></B>.
+       <B><A HREF="../../htmlMan/man1/pcAdd.1.html">pcAdd(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcRm.1.html">pcRm(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcLs.1.html">pcLs(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcLl.1.html">pcLl(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcLss.1.html">pcLss(1)</A></B>.
+       <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>.
+       <B><A HREF="../../htmlMan/man7/glob.7.html">glob(7)</A></B>.
+
+FMC-3.9.14                        2012-12-19                           <B><A HREF="../../htmlMan/man1/tmLl.1.html">tmLl(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

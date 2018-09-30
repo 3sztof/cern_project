@@ -1,0 +1,38 @@
+# -----------------------------------------------------------------------------
+# /etc/sysconfig/fmc
+# -----------------------------------------------------------------------------
+# $Id: etc_sysconfig_fmc,v 1.7 2008/10/28 13:56:02 galli Exp galli $
+# -----------------------------------------------------------------------------
+# TYPICAL WORKER NODE CONFIGURATION
+#
+# tools to be started
+# LOG_SRV=yes                                    # Message Logger Server
+# TM_SRV=yes                                     # Task Manager Server
+# CM_SRV=yes                                     # Configuration Manager Server
+# PC_SRV=no                                      # Process Controller Server
+# IPMI_SRV=no                                    # Power Manager Server
+# -----------------------------------------------------------------------------
+# TYPICAL CTRL-PC CONFIGURATION
+#
+# tools to be started
+# LOG_SRV=yes                                    # Message Logger Server
+# TM_SRV=yes                                     # Task Manager Server
+# CM_SRV=yes                                     # Configuration Manager Server
+# PC_SRV=yes                                     # Process Controller Server
+# IPMI_SRV=yes                                   # Power Manager Server
+# -----------------------------------------------------------------------------
+# tools to be started
+LOG_SRV=yes                                      # Message Logger Server
+TM_SRV=yes                                       # Task Manager Server
+CM_SRV=yes                                       # Configuration Manager Server
+PC_SRV=yes                                       # Process Controller Server
+IPMI_SRV=yes                                     # Power Manager Server
+# -----------------------------------------------------------------------------
+# command-line arguments
+# see /opt/FMC/man/man8/* for the option description
+LOG_ARGS="-S 200"
+TM_ARGS="-p 2 -u online -U root --no-auth"
+CM_ARGS=""
+PC_ARGS="-u root -g root --no-auth"
+IPMI_ARGS="-t 0"
+# -----------------------------------------------------------------------------

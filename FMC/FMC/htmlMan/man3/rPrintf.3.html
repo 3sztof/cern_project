@@ -1,0 +1,182 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man3/rPrintf.3.html">rPrintf(3)</A></B>                   FMC Library Functions                  <B><A HREF="../../htmlMan/man3/rPrintf.3.html">rPrintf(3)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>rPrintf</B> <B>-</B> Send a formatted message without header to the default FMC
+                 Message Logger and/or to the standard error stream and/or to
+                 the OS syslog facility
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>#include</B> <B>&lt;stdio.h&gt;</B>
+       <B>#include</B> <B>&lt;fmcMsgUtils.h&gt;</B>
+
+       <B>int</B> <B>rPrintf</B> <B>(</B> <B>int</B> <I>unit</I><B>_</B><I>mask</I>, <B>int</B> <I>try</I><B>_</B><I>n</I>, <B>char</B> <B>*</B><I>format</I>, <B>...</B> <B>)</B> <B>;</B>
+
+
+</PRE>
+<H2>INTRODUCTION</H2><PRE>
+       The  <B>FMC</B>  <B>Message</B>  <B>Logger</B>  is  a  tool to <I>collect</I>, <I>manage</I> (i.e.  merge,
+       duplicate, filter, suppress duplicates) and <I>display</I> on a  central  con-
+       sole  the  messages sent by the applications running on the farm nodes.
+       It uses <I>DIM</I> to move messages throughout the network and a POSIX.1  <I>FIFO</I>
+       (alias <I>named</I> <I>pipe</I>) on each node as local buffer to collect message sent
+       by the application running on the same node.
+
+       The FMC Message Logger is a <I>general</I> <I>purpose</I> utility, not tailored on  a
+       specific application; it can even collect messages sent by the applica-
+       tions to their <I>standard</I> <I>output</I> and <I>error</I>  streams  by  <B>redirecting</B>  <B>the</B>
+       <B>streams</B>  <B>to</B>  <B>the</B> <B>FIFO</B> at the application start-up (the FMC Task Manager
+       provides a flag in the <B><A HREF="../../htmlMan/man1/tmStart.1.html">tmStart(1)</A></B> command to activate such  a  redirec-
+       tion).
+
+       The  <B>FMC</B>  <B>Message</B>  <B>Logger</B>  consists in the server <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>, which gets
+       messages from a local FIFO and publish them using DIM,  in  the  client
+       <B><A HREF="../../htmlMan/man1/logViewer.1.html">logViewer(1)</A></B>,  which  can display the messages got using DIM or forward
+       them to another <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>, and in the clients  <B><A HREF="../../htmlMan/man1/logSetProperties.1.html">logSetProperties(1)</A></B>  and
+       <B><A HREF="../../htmlMan/man1/logGetProperties.1.html">logGetProperties(1)</A></B>  which  can  change and retrieve the <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B> set-
+       tings at run-time.
+
+       Besides, the <B>FMC</B> <B>Message</B> <B>Logger</B>  provides  several  utilities  to  help
+       sending formatted messages with header to a the FMC Message Logger: the
+       command <B><A HREF="../../htmlMan/man1/mPrint.1.html">mPrint(1)</A></B> and the library calls <B><A HREF="../../htmlMan/man3/dfltLoggerOpen.3.html">dfltLoggerOpen(3)</A></B>,  <B><A HREF="../../htmlMan/man3/mPrintf.3.html">mPrintf(3)</A></B>,
+       <B><A HREF="../../htmlMan/man3/rPrintf.3.html">rPrintf(3)</A></B>,    <B><A HREF="../../htmlMan/man3/dfltLoggerClose.3.html">dfltLoggerClose(3)</A></B>,   <B><A HREF="../../htmlMan/man3/getDfltFifoFD.3.html">getDfltFifoFD(3)</A></B>,   <B><A HREF="../../htmlMan/man3/loggerOpen.3.html">loggerOpen(3)</A></B>,
+       <B><A HREF="../../htmlMan/man3/mfPrintf.3.html">mfPrintf(3)</A></B>, <B><A HREF="../../htmlMan/man3/rfPrintf.3.html">rfPrintf(3)</A></B> and <B><A HREF="../../htmlMan/man3/loggerClose.3.html">loggerClose(3)</A></B>
+
+       Look at section <I>WRITING</I> <I>TO</I> <I>THE</I> <I>FMC</I> <I>LOGGER</I> in the <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B> man page for
+       a  comprehensive review of the ways of sending messages to the FMC Mes-
+       sage Logger.
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The function <B><A HREF="../../htmlMan/man3/rPrintf.3.html">rPrintf(3)</A></B> produce an output message according to  a  <I>for-</I>
+       <I>mat</I>,  which  has exactly the same syntax of the format of the <B><A HREF="../../htmlMan/man3/printf.3.html">printf(3)</A></B>
+       standard library function.
+
+       The message is sent to all the output units included in  the  bit  mask
+       <I>unit</I><B>_</B><I>mask</I>, which can be, either one or the bitwise-or, of the following
+       output units:
+
+       <B>L_DIM</B>  The Default FMC  Message  Logger  (FIFO:  /tmp/logSrv.fifo,  DIM
+              server: /FMC/<I>HOST</I>/logger/fmc);
+
+       <B>L_STD</B>  The standard error stream (stderr) in black &amp; white;
+
+       <B>L_STD_C</B>
+              The standard error stream (stderr) in colors;
+
+       <B>L_SYS</B>  The Linux syslog facility.
+
+       If  the  default  FMC logger is opened with the <B>congestion-proof</B> policy
+       (by setting <I>policy</I> = CONG_PROOF  in  the  <B><A HREF="../../htmlMan/man3/dfltLoggerOpen.3.html">dfltLoggerOpen(3)</A></B>  call)  the
+       parameter  <I>try</I><B>_</B><I>n</I> sets the number of write trials to the FMC logger FIFO
+       before giving up. A write to the FIFO, in  congestion-proof  mode,  can
+       fail  if  the  FIFO  is  full. If <I>try</I><B>_</B><I>n</I> is set greater than one, if the
+       first write attempt fails, more attempts are tried at time intervals of
+       1 ms, 2 ms, 4 ms, 8 ms and so on.
+
+       To  send  a  message  with  header, the function <B><A HREF="../../htmlMan/man3/mPrintf.3.html">mPrintf(3)</A></B> can be used
+       instead.
+
+
+</PRE>
+<H2>RETURN VALUE</H2><PRE>
+       Upon completion, the <B>rPrintf()</B> function returns the integer rVal, where
+       (rVal  &amp;  0x0000ffff) contains the number ow write failure to L_DIM and
+       (rVal &amp; 0xffff0000) &gt;&gt; 16 contains the  number  of  write  failures  to
+       L_STD.
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Print an integer to the default FMC Message Logger:
+
+       <B>rPrintf(L_DIM,</B> <B>5,</B> <B>"%d</B> <B>updates.",</B> <B>i);</B>
+
+       Print two strings to all the output units:
+
+       <B>rPrintf(L_DIM</B> <B>|</B> <B>L_STD</B> <B>|</B> <B>L_SYS,</B> <B>5,</B> <B>"Can't</B> <B>open</B> <B>file:</B> <B>\"%s\":</B> <B>%s!",</B>
+       <B>"/home/output.txt",</B> <B>strerror(errno));</B>
+
+
+</PRE>
+<H2>USAGE</H2><PRE>
+       #include &lt;stdio.h&gt;
+       #include &lt;fmcMsgUtils.h&gt;
+       int main()
+       {
+         int i;
+         dfltLoggerOpen(10,CONG_PROOF,ERROR,DEBUG,0);
+         for(i=0;i&lt;10;i++)
+         {
+           rPrintf(L_DIM|L_SYS|L_STD,5,"%d updates",i);
+         }
+         dfltLoggerClose();
+         return 0;
+       }
+
+       This program must be compiled and linked with  gcc  using  the  options
+       <B>-I/opt/FMC/utils/include</B> <B>-L/opt/FMC/lib</B> <B>-lFMCutils-5</B> <B>-lm</B>.
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information  on how to get the FMC (Farm Monitoring and Control System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development Homepage
+       &lt;http://lhcbweb2.bo.infn.it/bin/view/LHCbBologna/FmcLinux&gt;.
+
+       CERN Engineering Department, JCOP, FMC
+       &lt;http://j2eeps.cern.ch/wikis/display/EN/
+       JCOP+Framework+Farm+Monitoring+and+Control+Tool&gt;.
+
+       LHCb Online RPMs
+       &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  fmcMsgUtils.c,v 2.20 2012/11/29 15:52:27 galli
+       Library: libFMCutils v 6.0
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO</H2><PRE>
+   <B>API</B> <B>for</B> <B>writing</B> <B>to</B> <B>the</B> <B>default</B> <B>FMC</B> <B>Message</B> <B>Logger</B>
+       <B><A HREF="../../htmlMan/man3/dfltLoggerOpen.3.html">dfltLoggerOpen(3)</A></B>, <B><A HREF="../../htmlMan/man3/getDfltFifoFD.3.html">getDfltFifoFD(3)</A></B>, <B><A HREF="../../htmlMan/man3/mPrintf.3.html">mPrintf(3)</A></B>, <B><A HREF="../../htmlMan/man3/dfltLoggerClose.3.html">dfltLoggerClose(3)</A></B>.
+
+   <B>API</B> <B>for</B> <B>writing</B> <B>to</B> <B>an</B> <B>arbitrary</B> <B>FMC</B> <B>Message</B> <B>Logger</B>
+       <B><A HREF="../../htmlMan/man3/loggerOpen.3.html">loggerOpen(3)</A></B>, <B><A HREF="../../htmlMan/man3/mfPrintf.3.html">mfPrintf(3)</A></B>, <B><A HREF="../../htmlMan/man3/rfPrintf.3.html">rfPrintf(3)</A></B>, <B><A HREF="../../htmlMan/man3/loggerClose.3.html">loggerClose(3)</A></B>.
+
+   <B>UI</B> <B>for</B> <B>writing</B> <B>to</B> <B>an</B> <B>arbitrary</B> <B>FMC</B> <B>Message</B> <B>Logger</B> <B>from</B> <B>a</B> <B>shell</B> <B>script</B>
+       <B><A HREF="../../htmlMan/man1/mPrint.1.html">mPrint(1)</A></B>.
+
+   <B>FMC</B> <B>Message</B> <B>Logger</B> <B>Server</B> <B>and</B> <B>User</B> <B>Commands</B>
+       <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/logViewer.1.html">logViewer(1)</A></B>, <B><A HREF="../../htmlMan/man1/logGetProperties.1.html">logGetProperties(1)</A></B>, <B><A HREF="../../htmlMan/man1/logSetProperties.1.html">logSetProperties(1)</A></B>.
+
+   <B>Standard</B> <B>C</B> <B>stream</B> <B>library</B> <B>(format</B> <B>description)</B>
+       <B><A HREF="../../htmlMan/man3/printf.3.html">printf(3)</A></B>.
+
+FMC-3.9.14                        2012-12-20                        <B><A HREF="../../htmlMan/man3/rPrintf.3.html">rPrintf(3)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

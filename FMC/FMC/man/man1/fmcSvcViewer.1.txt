@@ -1,0 +1,10 @@
+
+Usage: fmcSvcViewer [-m hostname_pattern...]
+       fmcSvcViewer -h
+
+OPTIONS:
+-m hostname_pattern... (string, repeatable)
+       print FMC Servers of nodes whose host basename matches the
+       wildcard pattern hostname_pattern
+
+$Id: fmcSvcViewer.C,v 1.1 2006/10/27 13:24:45 galli Exp galli $

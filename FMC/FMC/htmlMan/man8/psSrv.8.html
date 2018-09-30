@@ -1,0 +1,1041 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>                          FMC Servers                         <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>psSrv</B> <B>-</B> FMC Process Monitor Server
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>psSrv</B> [<B>-d</B>] [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-l</B> <I>LOGGER</I>] [<B>-u</B> <I>REFRESH</I><B>_</B><I>TIME</I><B>_</B><I>INTERVAL</I>]
+             [<B>-p</B> <I>PERSISTENCE</I>] [<B>-C</B> <I>CMD</I><B>_</B><I>PATTERN</I>] [<B>-U</B> <I>UTGID</I><B>_</B><I>PATTERN</I>]
+       <B>psSrv</B> <B>-h</B>
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The FMC Process Monitor Server, <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B> retrieves information concern-
+       ing  the processes and tasks (lighweight processes) running on the cur-
+       rent farm node and publishes them using DIM.
+
+       The DIM Name Server, looked up by <B>psSrv</B> to register  the  provided  DIM
+       services, can be chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file <B>/etc/sysconfig/dim</B>.
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B>     Get basic usage help from the command line then exit.
+
+       <B>-d</B>     Set verbosity to maximum for debugging. More detailed control on
+              diagnostic verbosity can be achieved by means of the <I>deBug</I> envi-
+              ronment  variable  (see  below).  Option  <B>-d</B>  is  equivalent  to
+              <I>deBug=0x7ff</I>.
+
+       <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-l</B> <I>LOGGER</I> <I>(integer)</I>
+              Use the logger units defined in the <I>LOGGER</I> mask to send diagnos-
+              tic and information messages. The <I>LOGGER</I> mask can be the bitwise
+              <I>OR</I> of the following logger units:
+
+              0x1    the default FMC Message Logger (fifo: /tmp/logSrv.fifo);
+
+              0x2    the standard error stream;
+
+              0x4    the operating system syslog facility.
+
+              <B>Default</B>: <I>LOGGER</I> = 0x1.
+
+       <B>-u</B> <I>REFRESH</I><B>_</B><I>TIME</I><B>_</B><I>INTERVAL</I> <I>(integer)</I>
+              Set the data refresh period  to  <I>REFRESH</I><B>_</B><I>TIME</I><B>_</B><I>INTERVAL</I>  seconds.
+              (must be in the range [0,60]s). <B>Default</B>: 20 s.
+
+       <B>-p</B> <I>PERSISTENCE</I> <I>(integer)</I>
+              Keep  alive  the  on-demand  process  monitor  DIM services (see
+              below) referring to terminated processes for <I>PERSISTENCE</I> service
+              updates after process termination. <B>Default</B>: <I>PERSISTENCE</I> = 6.
+
+       <B>-C</B> <I>CMD</I><B>_</B><I>PATTERN</I> <I>(string)</I>
+              Publish  only  processes  whose command (executable image name),
+              cut at 15 characters, matches the wildcard pattern  <I>CMD</I><B>_</B><I>PATTERN</I>.
+
+       <B>-U</B> <I>UTGID</I><B>_</B><I>PATTERN</I> <I>(string)</I>
+              Publish  only processes which have the UTGID set and whose UTGID
+              matches the wildcard pattern <I>UTGID</I><B>_</B><I>PATTERN</I>.
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries  "libdim",  "libFMCutils"
+              and "libFMCsensors".
+
+       <B>UTGID</B> (string, optional)
+              UTGID of the <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B> process.
+
+       <B>deBug</B> (integer, optional)
+              Debug mask. Can be set to 0x000...0x7ff. The meaning of the mask
+              bit are:
+
+              0x001 print in/out functions;
+              0x002 print file2strvec()/file2str() diagnostics;
+              0x004 print getTasks() diagnosttics;
+              0x008 print incoherence in read data;
+              0x010 print print process and task numbers;
+              0x020 print process data from sensor;
+              0x040 print task data from sensor;
+              0x080 print huge environment management;
+              0x100 print data buffer allocation operations;
+              0x200 print timed/forced updates;
+              0x400 print dynamical SVC creation/remotion.
+
+              <B>Default</B>: <I>deBug</I> = 0.
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Start the FMC Process Monitor Server, sending  diagnostic  messages  to
+       the default FMC Message Logger:
+
+       <I>bash$</I> <B>/opt/FMC/sbin/psSrv</B>
+
+       Start  the  FMC  Process Monitor Server, sending diagnostic messages to
+       the default FMC Message Logger and to the system syslog facility:
+
+       <I>bash$</I> <B>/opt/FMC/sbin/psSrv</B> <B>-l</B> <B>0x5</B>
+
+       Set the delay time interval between two subsequent refresh to four sec-
+       onds:
+
+       <I>bash$</I> <B>/opt/FMC/sbin/psSrv</B> <B>-u</B> <B>4</B>
+
+       Publish only processes/tasks having the executable image name terminat-
+       ing with "Srv":
+
+       <I>bash$</I> <B>/opt/FMC/sbin/psSrv</B> <B>-C</B> <B>\*Srv</B>
+
+       Publish  only  processes/tasks  having   the   UTGID   "counter_7"   or
+       "counter_8":
+
+       <I>bash$</I> <B>/opt/FMC/sbin/psSrv</B> <B>-U</B> <B>"counter_[78]"</B>
+
+       Keep  active  the  dynamical DIM service related to a certain monitored
+       process until the 10th refresh after the process termination:
+
+       <I>bash$</I> <B>/opt/FMC/sbin/psSrv</B> <B>-p</B> <B>10</B>
+
+
+</PRE>
+<H2>DIM INFORMATION</H2><PRE>
+   <B>DIM</B> <B>Server</B> <B>Name</B>
+       /FMC/<I>HOSTNAME</I>/ps
+              where <I>HOSTNAME</I> is the host name of the current PC,  as  returned
+              by  the command "hostname -s", but written in upper case charac-
+              ters.
+
+   <B>Published</B> <B>DIM</B> <B>Services</B>
+       <B>Generic</B> <B>SVCs</B>
+
+       /FMC/<I>HOSTNAME</I>/ps/server_version
+              <B>Output</B> <B>format</B>: "C" (NULL-terminated string).
+              Publishes a NULL-terminated string containing the  RCS  revision
+              label  of  the  <B>psSrv.C</B>  source code of the current <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B> in-
+              stance, as returned by the command "ident  /opt/FMC/sbin/psSrv";
+              in the present case:
+
+              "psSrv.c,v 3.30 2009/11/11 16:13:55 galli".
+
+       /FMC/<I>HOSTNAME</I>/ps/sensor_version
+              <B>Output</B> <B>format</B>: "C" (NULL-terminated string).
+              Publishes  a  NULL-terminated string containing the RCS revision
+              label of the <B>getPsFromProc.c</B> source code  used  in  the  current
+              <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>   instance,   as   returned   by   the  command  "ident
+              /opt/FMC/lib/libFMCsensors*"; in the present case:
+
+              "getPsFromProc.c,v 2.19 2009/01/30 14:45:18 galli".
+
+       /FMC/<I>HOSTNAME</I>/ps/fmc_version
+              <B>Output</B> <B>format</B>: "C" (NULL-terminated string).
+              Publishes a NULL-terminated string containing the revision label
+              of  the  FMC  package  which  includes the current <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B> exe-
+              cutable, in the present case:
+
+              "3.9.14".
+
+       /FMC/<I>HOSTNAME</I>/ps/success
+              <B>Output</B> <B>format</B>: "I" (integer).
+              Always publishes the integer 1. This dummy services can be  used
+              to  check  whether  the current instance of <B>psSrv</B> is up and run-
+              ning.
+
+       /FMC/<I>HOSTNAME</I>/ps/updates
+              <B>Output</B> <B>format</B>: "I" (integer).
+              Publishes an integer which is the number  of  refreshes  of  the
+              <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>  server.  Useful to understand if the server is running
+              and refreshing data properly.
+
+       /FMC/<I>HOSTNAME</I>/ps/nprocs
+              <B>Output</B> <B>format</B>: "I" (integer).
+              Publishes an integer which is the number of the processes in the
+              last  server  refresh (a multi-threaded processes contributes to
+              this number with one unit).
+
+       /FMC/<I>HOSTNAME</I>/ps/ntasks
+              <B>Output</B> <B>format</B>: "I" (integer).
+              Publishes an integer which is the number of  the  tasks  (light-
+              weight  processes)  in the last server refresh (a multi-threaded
+              processes contributes to this number  with  the  number  of  its
+              threads).
+
+       <B>Summary</B> <B>SVCs</B>
+
+       /FMC/<I>HOSTNAME</I>/ps/summary/labels
+              <B>Output</B> <B>format</B>: "C" (a sequence of 11 NULL-terminated strings).
+              Publishes  the labels referring to the data published in the SVC
+              ".../summary/processes/data":
+              "TGID" "UTGID" "USER" "VSIZE" "RSS" "STAT" "%CPU" "%MEM" "START-
+              ED" "CMD" "CMDLINE".
+
+       /FMC/<I>HOSTNAME</I>/ps/summary/units
+              <B>Output</B> <B>format</B>: "C" (a sequence of 11 NULL-terminated strings).
+              Publishes  the  units referring to the data published in the SVC
+              ".../summary/processes/data":
+              "" "" "" "KiB" "KiB" "" "%" "%" "aaa mmm dd  HH:MM:SS  YYYY"  ""
+              "".
+              where <I>aaa</I> is the abbreviated weekday, <I>mmm</I> is the month as a dec-
+              imal number [01,12], <I>dd</I> is the day of the  month  as  a  decimal
+              number  [01,31],  <I>HH:MM:SS</I> is the time and <I>YYYY</I> is the year as a
+              decimal number.
+
+       /FMC/<I>HOSTNAME</I>/ps/summary/processes/data
+              <B>Output</B> <B>format</B>: "C" (a sequence of 11 *  nprocs  NULL-terminated-
+              strings).
+              Publishes the summary data, for each process that was running at
+              the time of the last server refresh. The first 11 strings  refer
+              to the process with the lowest TGID, the following 11 string re-
+              fer to the next process in TGID order, and so on. The string se-
+              quence, for each process, is the following:
+
+              <B>TGID</B> (alias PID)
+                     Thread  Group Identifier (the former PID, Process Identi-
+                     fier). The term <B>process</B> is synonymous of <B>thread</B> <B>group</B>.
+
+              <B>UTGID</B>  FMC User-assigned  unique  Thread  Group  Identifier,  if
+                     available  (e.g.  if  the process has been started by the
+                     FMC Task Manager or has the variable UTGID defined in the
+                     process environment). Otherwise "N/A" is published.
+
+              <B>USER</B> (alias EUSER, UNAME)
+                     <B>Effective</B>  user  name.  Used for all the security checks.
+                     The only user name of the process that normally  has  any
+                     effect.
+
+              <B>VSIZE</B> (alias VSZ, VIRT)
+                     The  total  size  of the process's memory footprint. This
+                     includes the text segment, stack, static variables,  data
+                     segment, and pages which are shared with other processes.
+
+              <B>RSS</B> (alias RSZ, RES, RESIDENT)
+                     The kernel's estimate of the resident set size  for  this
+                     process.
+
+              <B>STAT</B>   The multi-characters process state of the task. The mean-
+                     ing of the first character is:
+
+                      <B>D</B>      Uninterruptible sleep (usually I/O);
+
+                      <B>R</B>      Running or runnable (on run queue);
+
+                      <B>S</B>      Interruptible sleep (waiting for an event to com-
+                             plete);
+
+                      <B>T</B>      Stopped,  either  by  a job control signal or be-
+                             cause it is being traced;
+
+                      <B>X</B>      Dead (should never be seen);
+
+                      <B>Z</B>      Defunct ("zombie") process,  terminated  but  not
+                             reaped by its parent.
+
+                     The meaning of the following characters is:
+
+                      <B>&lt;</B>      Higher-priority (not nice to other users);
+
+                      <B>N</B>      Lower-priority (nice to other users);
+
+                      <B>L</B>      Has  pages  locked into memory (for real-time and
+                             custom I/O);
+
+                      <B>s</B>      Is a session leader;
+
+                      <B>l</B>      Is multi-threaded (using CLONE_THREAD, like  NPTL
+                             pthreads does);
+
+                      <B>+</B>      Is in the foreground process group.
+
+              <B>%CPU</B> (alias PCPU, CP, C)
+                     The  task's  share of the CPU time since the last update,
+                     expressed as a percentage of the total CPU time per  pro-
+                     cessor. <B>Maximum</B>: 100% x CPU_core_number.
+
+              <B>%MEM</B> (alias PMEM)
+                     The ratio of the process's resident set size to the phys-
+                     ical memory on the machine, expressed  as  a  percentage.
+                     <B>Maximum</B>: 100%.
+
+              <B>STARTED</B> (alias STARTTIME, START)
+                     The process's start time.
+
+              <B>CMD</B> (alias COMM, COMMAND, UCMD, UCOMM)
+                     Command  name,  i.e.  the basename (w/o path) of the exe-
+                     cutable image file, without arguments,  eventually  trun-
+                     cated at 15 characters.
+
+              <B>CMDLINE</B> (alias ARGS, CMD, COMMAND)
+                     The  complete  command  line  with  its  arguments (up to
+                     PATH_MAX = 4096  characters).  This  string  may  contain
+                     blank characters.
+
+       <B>Detailed</B> <B>SVCs</B>
+
+       /FMC/<I>HOSTNAME</I>/ps/details/labels
+              <B>Output</B> <B>format</B>: "C" (a sequence of 44 NULL-terminated strings).
+              Publishes  the labels referring to the data published in the SVC
+              ".../details/processes/data" and ".../details/tasks/data":
+              "CMD" "UTGID" "TID" "USER" "TTY"  "NLWP"  "TGID"  "PPID"  "PGID"
+              "SID"  "TPGID" "FUSER" "RUSER" "SUSER" "GROUP" "FGROUP" "RGROUP"
+              "SGROUP" "SCH" "RTPRIO" "NICE" "PRIO"  "%CPU"  "%MEM"  "MIN_FLT"
+              "MAJ_FLT" "STAT" "PSR" "VSIZE" "LOCK" "RSS" "DATA" "STACK" "EXE"
+              "LIB" "SHARE" "IGNORED" "PENDING" "CATCHED" "BLOCKED"  "STARTED"
+              "ELAPSED" "CPUTIME" "CMDLINE".
+
+       /FMC/<I>HOSTNAME</I>/ps/details/units
+              <B>Output</B> <B>format</B>: "C" (a sequence of 44 NULL-terminated strings).
+              Publishes  the  units referring to the data published in the SVC
+              ".../details/processes/data" and ".../details/tasks/data":
+              "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" ""  ""  ""
+              ""  ""  "" "" "" "%" "%" "Hz" "Hz" "" "" "KiB" "KiB" "KiB" "KiB"
+              "KiB" "KiB" "KiB" "KiB" "" "" "" "" "aaa mmm dd  HH:MM:SS  YYYY"
+              "ddd-HH:MM:SS" "ddd-HH:MM:SS" "".
+              where <I>aaa</I> is the abbreviated weekday, <I>mmm</I> is the month as a dec-
+              imal number [01,12], <I>dd</I> is the day of the  month  as  a  decimal
+              number  [01,31], <I>ddd</I> is the number of the past days, <I>HH:MM:SS</I> is
+              the time and <I>YYYY</I> is the year as a decimal number.
+
+       /FMC/<I>HOSTNAME</I>/ps/details/types
+              <B>Output</B> <B>format</B>: "C" (a sequence of 44 NULL-terminated strings).
+              Publishes the types of data (used from the clients to select in-
+              formation  from  specific categories) referring to the data pub-
+              lished in  the  SVC  ".../details/processes/data"  and  ".../de-
+              tails/tasks/data":
+              "basic"  "basic"  "basic"  "basic"  "basic"  "basic" "ids" "ids"
+              "ids" "ids" "ids" "owner" "owner" "owner" "owner" "owner"  "own-
+              er" "owner" "sched" "sched" "sched" "sched" "stat" "stat" "stat"
+              "stat" "stat" "stat" "size" "size" "size" "size"  "size"  "size"
+              "size"  "size" "signal" "signal" "signal" "signal" "time" "time"
+              "time" "cmdline".
+
+       /FMC/<I>HOSTNAME</I>/ps/details/processes/data
+
+       /FMC/<I>HOSTNAME</I>/ps/details/tasks/data
+              <B>Output</B> <B>format</B>: "C" (a sequence of 44 *  nprocs  NULL-terminated-
+              strings).
+              Publishes  the  detailed  data, for each <B>process</B> (<B>task</B>) that was
+              running at the time of the last server  refresh.  The  first  44
+              strings refer to the process with the lowest TGID, the following
+              44 string refer to the next process in TGID order,  and  so  on.
+              The string sequence, for each process, is the following:
+
+              <B>CMD</B> (alias COMM, COMMAND, UCMD, UCOMM)
+                     Command  name,  i.e.  the basename (w/o path) of the exe-
+                     cutable image file, without arguments,  eventually  trun-
+                     cated at 15 characters.
+
+              <B>UTGID</B>  FMC  User-assigned  unique  Thread  Group  Identifier, if
+                     available (e.g. if the process has been  started  by  the
+                     FMC Task Manager or has the variable UTGID defined in the
+                     process environment). Otherwise "N/A" is published.
+
+              <B>TID</B> (alias LWP, SPID)
+                     Thread Identifier, aka Light Weight  Process  Identifier.
+                     The  <B>TID</B>  of the thread group leader is equal to the <B>TGID</B>
+                     (Thread Group Identifier, the old <B>PID</B>). In  ".../process-
+                     es/..."  SVC (as opposite to ".../tasks/..." SVC) <B>TID</B> al-
+                     ways coincide with <B>TGID</B> (<B>PID</B>).
+
+              <B>USER</B> (alias EUSER, UNAME)
+                     <B>Effective</B> user name. Used for all  the  security  checks.
+                     The  only  user name of the process that normally has any
+                     effect.
+
+              <B>TTY</B> (alias TT, TNAME)
+                     The name of the controlling tty (terminal) if  available,
+                     a question mark (<B>?</B>) otherwise.
+
+              <B>NLWP</B> (alias THCNT)
+                     Number  of Lightweight Processes (Threads) in the process
+                     (thread group).
+
+              <B>TGID</B> (alias PID)
+                     Thread Group Identifier (the former PID, Process  Identi-
+                     fier). The term <B>process</B> is synonymous of <B>thread</B> <B>group</B>.
+
+              <B>PPID</B>   Parent  Process Identifier, i.e. the Thread Group Identi-
+                     fier of the parent process.
+
+              <B>PGID</B> (alias PGRP)
+                     Process Group Identifierr, i.e. the Thread Group  Identi-
+                     fier of the process group leader. Every process is member
+                     of a unique process group. The processes of one  pipeline
+                     form  a single process group. Among the process groups in
+                     a session, at most one  can  be  the  <B>foreground</B>  <B>process</B>
+                     <B>group</B>  of  that  session. The tty (teminal) input and tty
+                     signals (signals generated by Ctrl-C, Ctrl-Z, etc.) go to
+                     processes  in  this foreground process group. All process
+                     groups in a session that are not foreground process group
+                     are <B>background</B> <B>process</B> <B>groups</B>.
+
+              <B>SID</B> (alias SESS, SESSION)
+                     Session  Identifier,  i.e. the Thread Group Identifier of
+                     the session leader. Every process group is  in  a  unique
+                     session. Every session may have a controlling tty (termi-
+                     nal), that is also the controlling tty of each one of its
+                     member  processes.  A  session is often set up by a login
+                     process.
+
+              <B>TPGID</B>  Terminal Process Group Identifier, i.e. the Process Group
+                     Identifier  of  the  process which currently owns the tty
+                     (terminal) that the process is connected to, or -1 if the
+                     process is not connected to a tty.
+
+              <B>FUSER</B>  <B>Filesystem</B> <B>access</B> user name. Used only in file-system ac-
+                     cess. Can be set to any of the current  effective,  saved
+                     or  real  user  names. Processes with "root" as effective
+                     user name can set their filesystem access user name to an
+                     arbitrary  value.  Used,  e.g., by the Linux's user-space
+                     NFS server.
+
+              <B>RUSER</B>  <B>Real</B> user name. Checked only when a process  attempts  to
+                     change  its  effective  user name. Any process may change
+                     its effective user name to the same value as  either  its
+                     saved  or  real  user name. Only processes with "root" as
+                     effective user name may change their effective user  name
+                     to an arbitrary value. Used, e.g., by "ftpd" and "passwd"
+                     programs.
+
+              <B>SUSER</B>  <B>Saved</B> user name. Checked only when a process attempts  to
+                     change  its  effective  user name. Any process may change
+                     its effective user name to the same value as  either  its
+                     saved  or  real  user name. Only processes with "root" as
+                     effective user name may change their effective user  name
+                     to an arbitrary value. Used, e.g., by "ftpd" and "passwd"
+                     programs.
+
+              <B>GROUP</B> (alias EGROUP)
+                     <B>Effective</B> group name. Used for all the  security  checks.
+                     The  only group name of the process that normally has any
+                     effect.
+
+              <B>FGROUP</B> <B>Filesystem</B> <B>access</B> group name. Used  only  in  file-system
+                     access. Can be set to any of the current effective, saved
+                     or real group names. Processes with "root"  as  effective
+                     group  name can set their filesystem access group name to
+                     an arbitrary value. Used, e.g., by the Linux's user-space
+                     NFS server.
+
+              <B>RGROUP</B> <B>Real</B>  group name. Checked only when a process attempts to
+                     change its effective group name. Any process  may  change
+                     its  effective group name to the same value as either its
+                     saved or real group name. Only processes with  "root"  as
+                     effective  group  name  may  change their effective group
+                     name to an arbitrary value. Used,  e.g.,  by  "ftpd"  and
+                     "passwd" programs.
+
+              <B>SGROUP</B> <B>Saved</B> group name. Checked only when a process attempts to
+                     change its effective group name. Any process  may  change
+                     its  effective group name to the same value as either its
+                     saved or real group name. Only processes with  "root"  as
+                     effective  group  name  may  change their effective group
+                     name to an arbitrary value. Used,  e.g.,  by  "ftpd"  and
+                     "passwd" programs.
+
+              <B>SCH</B> (alias CLS, POL)
+                     Scheduling  class of the process. Possible values of this
+                     fields are:
+
+                      <B>TS</B>     <I>SCHED</I><B>_</B><I>OTHER</I>,  the  default   Linux   time-sharing
+                             scheduler,  with  a dynamic priority based on the
+                             nice level.
+
+                      <B>FF</B>     <I>SCHED</I><B>_</B><I>FIFO</I>, the static-priority  Linux  real-time
+                             FIFO scheduler, without time slicing.
+
+                      <B>RR</B>     <I>SCHED</I><B>_</B><I>RR</I>,  the  static-priority  Linux  real-time
+                             Round-Robin scheduler.
+
+                      <B>N/A</B>    Not reported.
+
+                      <B>?</B>      Unknown value.
+
+              <B>RTPRIO</B> Static (real-time) priority of the process. Only value  0
+                     is allowed for TS processes. For FF and RR real-time pro-
+                     cesses, allowed values are in the range 1...99 (0 is  the
+                     least favorable priority, 99 is the most favorable prior-
+                     ity).
+
+              <B>NICE</B> (alias NI)
+                     The nice level of the  process,  used  by  the  TS  Linux
+                     scheduler to compute the dynamic priority. Allowed values
+                     for nice level are in the range -20...19 (-20 corresponds
+                     to  the  most favorable scheduling; 19 corresponds to the
+                     least favorable scheduling).
+
+              <B>PRIO</B> (alias PRI, PR)
+                     Kernel scheduling priority. Possible values  are  in  the
+                     range  -100...39 (-100 is the most favorable priority, 39
+                     is the least favorable priority). TS processes have  PRIO
+                     in the range 0...39, FF and RR processes have PRIO in the
+                     range -100...-1.
+
+              <B>%CPU</B> (alias PCPU, CP, C)
+                     The task's share of the CPU time since the  last  update,
+                     expressed  as a percentage of the total CPU time per pro-
+                     cessor. <B>Maximum</B>: 100% x CPU_core_number.
+
+              <B>%MEM</B> (alias PMEM)
+                     The ratio of the process's resident set size to the phys-
+                     ical  memory  on  the machine, expressed as a percentage.
+                     <B>Maximum</B>: 100%.
+
+              <B>MIN_FLT</B>
+                     The rate (page faults per second) of page faults the pro-
+                     cess  has  made  which have not required loading a memory
+                     page from disk.
+
+              <B>MAJ_FLT</B>
+                     The rate (page faults per second) of page faults the pro-
+                     cess  has  made which have required loading a memory page
+                     from disk.
+
+              <B>STAT</B> (alias S)
+                     The multi-characters process state of the task. The mean-
+                     ing of the first character is:
+
+                      <B>D</B>      Uninterruptible sleep (usually I/O);
+
+                      <B>R</B>      Running or runnable (on run queue);
+
+                      <B>S</B>      Interruptible sleep (waiting for an event to com-
+                             plete);
+
+                      <B>T</B>      Stopped, either by a job control  signal  or  be-
+                             cause it is being traced;
+
+                      <B>X</B>      Dead (should never be seen);
+
+                      <B>Z</B>      Defunct  ("zombie")  process,  terminated but not
+                             reaped by its parent.
+
+                     The meaning of the following characters is:
+
+                      <B>&lt;</B>      Higher-priority (not nice to other users);
+
+                      <B>N</B>      Lower-priority (nice to other users);
+
+                      <B>L</B>      Has pages locked into memory (for  real-time  and
+                             custom I/O);
+
+                      <B>s</B>      Is a session leader;
+
+                      <B>l</B>      Is  multi-threaded (using CLONE_THREAD, like NPTL
+                             pthreads does);
+
+                      <B>+</B>      Is in the foreground process group.
+
+              <B>PSR</B> (alias CPUID, P)
+                     The processor that process is currently assigned  to.  It
+                     is useful to check the operation of process-to-CPU affin-
+                     ity setting by the FMC Task Manager.
+
+              <B>VSIZE</B> (alias VSZ, VIRT)
+                     The total size of the process's  memory  footprint.  This
+                     includes  the text segment, stack, static variables, data
+                     segment, and pages which are shared with other processes.
+
+              <B>LOCK</B>   The  amount  of  the  process's memory which is currently
+                     locked by the kernel. Locked  memory  cannot  be  swapped
+                     out.
+
+              <B>RSS</B> (alias RSZ, RES, RESIDENT)
+                     The  kernel's  estimate of the resident set size for this
+                     process.
+
+              <B>DATA</B>   The amount of memory used for data by the process. It in-
+                     cludes  static  variables  and  the data segment, but ex-
+                     cludes the stack.
+
+              <B>STACK</B>  The amount of memory consumed by the process's stack.
+
+              <B>EXE</B>    The size of the  process's  executable  pages,  excluding
+                     shared pages.
+
+              <B>LIB</B>    The  size of the shared memory pages mapped into the pro-
+                     cess's address space. This excludes  pages  shared  using
+                     System V style IPC.
+
+              <B>SHARE</B> (alias SHRD, SHR)
+                     The size of the pages of shared (mmap-ed) memory.
+
+              <B>IGNORED</B> (alias SIGIGNORE)
+                     The 64-bit mask of the ignored signals.
+
+              <B>PENDING</B> (alias SIGPEND)
+                     The 64-bit mask of the pending signals.
+
+              <B>CATCHED</B> (alias SIGCATCH, CAUGHT)
+                     The 64-bit mask of the caught signals.
+
+              <B>BLOCKED</B> (alias SIGBLOCKED)
+                     The 64-bit mask of the blocked signals.
+
+              <B>STARTED</B> (alias STARTTIME, START)
+                     The process's start time.
+
+              <B>ELAPSED</B> (alias ELAPSEDTIME)
+                     The time elapsed since the process was started.
+
+              <B>CPUTIME</B> (alias TIME)
+                     The process's cumulative CPU time.
+
+              <B>CMDLINE</B> (alias ARGS, CMD, COMMAND)
+                     The  complete  command  line  with  its  arguments (up to
+                     PATH_MAX = 4096  characters).  This  string  may  contain
+                     blank characters.
+
+       <B>Settings</B> <B>SVCs</B>
+
+       /FMC/<I>HOSTNAME</I>/ps/monitored/properties
+              <B>Output</B> <B>format</B>: "C" (one NULL-terminated string).
+              Publishes a string containing the <I>filter</I> used to select the pro-
+              cesses to be monitored by means of a dedicated DIM SVC.  In  the
+              string  "<B>||</B>"  means  logical  <I>OR</I> and "<B>&amp;&amp;</B>" means logical <I>AND</I>. The
+              filter can be changed by means od the <B>startMonitoring</B> and  <B>stop-</B>
+              <B>Monitoring</B> DIM CMDs (see below).
+              Example:
+              (CMD="httpd")  ||  (UTGID="counter_0")  ||  (CMD="*Srv"  &amp;&amp;  UT-
+              GID="*Srv_u")  ||  (CMDLINE="/usr/bin/top"  &amp;&amp;  ARGV[1]="-d"  &amp;&amp;
+              ARGV[2]="1")
+
+       <B>On-demand</B> <B>SVCs</B>
+
+       These services are added as soon as one or more processes, matching the
+       filter published in ".../monitored/properties" (see above), are started
+       and  removed  after  <I>PERSISTENCE</I> refreshes of the <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B> server after
+       the termination of such processes.  The filter can be changed by  means
+       od the <B>startMonitoring</B> and <B>stopMonitoring</B> DIM CMDs (see below).
+
+       /FMC/<I>HOSTNAME</I>/ps/summary/monitored/labels
+              <B>Output</B> <B>format</B>: "C" (a sequence of 11 NULL-terminated strings).
+              Publishes  the labels referring to the summary data published in
+              the SVC ".../summary/monitored/processes/<I>CMD</I>{<I>UTGID</I>}<I>TID</I>/data":
+              "UPDATED" "STATUS" "TID" "VSIZE" "RSS" "%CPU" "%MEM" "CMD"  "UT-
+              GID" "USER" "CMDLINE".
+
+       /FMC/<I>HOSTNAME</I>/ps/summary/monitored/units
+              <B>Output</B> <B>format</B>: "C" (a sequence of 11 NULL-terminated strings).
+              Publishes  the  units referring to the summary data published in
+              the SVC ".../summary/monitored/processes/<I>CMD</I>{<I>UTGID</I>}<I>TID</I>/data":
+              "" "" "" "KiB" "KiB" "%" "%" "" "" "" "".
+
+       /FMC/<I>HOSTNAME</I>/ps/summary/monitored/processes/<I>CMD</I>{<I>UTGID</I>}<I>TID</I>/data
+              <B>Output</B> <B>format</B>: "I:5;F:2;C:16;C:256;C:20;C".
+              Publishes the summary data of the process having <I>CMD</I> as  command
+              name  (basename, w/o path, of the executable image file, without
+              arguments, eventually truncated at 15 characters), <I>UTGID</I> as  Us-
+              er-assigned   unique   Thread   Group   Identifier  and  <I>TID</I>  as
+              Thread/Thread-group identifier. The data sequence is the follow-
+              ing:
+
+              <B>UPDATED</B> [int32_t]
+                     1 if service has been updated in the last <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B> server
+                     refresh, 0 otherwise.
+
+              <B>STATUS</B> [int32_t]
+                     1 if the process was still running in the  last  <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>
+                     server refresh, 0 otherwise.
+
+              <B>TID</B> (alias LWP, SPID) [uint32_t]
+                     Thread  Identifier,  aka Light Weight Process Identifier.
+                     In this service (being a process SVC) <B>TID</B> always coincide
+                     with <B>TGID</B> (Thread Group Identifier, the old <B>PID</B>).
+
+              <B>VSIZE</B> (alias VSZ, VIRT) [uint32_t]
+                     The  total  size  of the process's memory footprint. This
+                     includes the text segment, stack, static variables,  data
+                     segment, and pages which are shared with other processes.
+
+              <B>RSS</B> (alias RSZ, RES, RESIDENT) [uint32_t]
+                     The kernel's estimate of the resident set size  for  this
+                     process.
+
+              <B>%CPU</B> (alias PCPU, CP, C) [float]
+                     The  task's  share of the CPU time since the last update,
+                     expressed as a percentage of the total CPU time per  pro-
+                     cessor. <B>Maximum</B>: 100% x CPU_core_number.
+
+              <B>%MEM</B> (alias PMEM) [float]
+                     The ratio of the process's resident set size to the phys-
+                     ical memory on the machine, expressed  as  a  percentage.
+                     <B>Maximum</B>: 100%.
+
+              <B>CMD</B> (alias COMM, COMMAND, UCMD, UCOMM) [char[16]]
+                     Command  name,  i.e.  the basename (w/o path) of the exe-
+                     cutable image file, without arguments,  eventually  trun-
+                     cated at 15 characters.
+
+              <B>UTGID</B> [char[256]]
+                     FMC  User-assigned  unique  Thread  Group  Identifier, if
+                     available (e.g. if the process has been  started  by  the
+                     FMC Task Manager or has the variable UTGID defined in the
+                     process environment). Otherwise "N/A" is published.
+
+              <B>USER</B> (alias EUSER, UNAME) [char[20]]
+                     <B>Effective</B> user name. Used for all  the  security  checks.
+                     The  only  user name of the process that normally has any
+                     effect.
+
+              <B>CMDLINE</B> (alias ARGS, CMD, COMMAND) [char*]
+                     The complete command  line  with  its  arguments  (up  to
+                     PATH_MAX  =  4096  characters).  This  string may contain
+                     blank characters.
+
+       /FMC/<I>HOSTNAME</I>/ps/details/monitored/labels
+              <B>Output</B> <B>format</B>: "C" (a sequence of 26 NULL-terminated strings).
+              Publishes the labels referring to the detailed data published in
+              the SVC ".../details/monitored/processes/<I>CMD</I>{<I>UTGID</I>}<I>TID</I>/data":
+              "UPDATED"  "STATUS"  "HSTATUS" "TID" "NLWP" "PSR" "VSIZE" "LOCK"
+              "RSS" "DATA" "STACK" "EXE" "LIB" "SHARE" "RTPRIO" "NICE"  "PRIO"
+              "%CPU"  "%MEM"  "MIN_FLT"  "MAJ_FLT" "LAST_UPDATE" "CMD" "UTGID"
+              "USER" "CMDLINE".
+
+       /FMC/<I>HOSTNAME</I>/ps/details/monitored/units
+              <B>Output</B> <B>format</B>: "C" (a sequence of 26 NULL-terminated strings).
+              Publishes the units referring to the detailed data published  in
+              the SVC ".../details/monitored/processes/<I>CMD</I>{<I>UTGID</I>}<I>TID</I>/data":
+              ""  ""  ""  ""  ""  "" "KiB" "KiB" "KiB" "KiB" "KiB" "KiB" "KiB"
+              "KiB" "" "" "" "%" "%" "Hz" "Hz" "bbb dd, HH:MM:SS" "" "" "" "".
+              where  <I>bbb</I>  is  the abbreviated month name, <I>dd</I> is the day of the
+              month as a decimal number [01,31] and <I>HH:MM:SS</I> is the time.
+
+       /FMC/<I>HOSTNAME</I>/ps/details/monitored/processes/<I>CMD</I>{<I>UTGID</I>}<I>TID</I>/data
+              <B>Output</B> <B>format</B>: "I:17;F:4;C:13;C:16;C:256;C:20;C".
+              Publishes the detailed data of the process having <I>CMD</I> as command
+              name  (basename, w/o path, of the executable image file, without
+              arguments, eventually truncated at 15 characters), <I>UTGID</I> as  Us-
+              er-assigned   unique   Thread   Group   Identifier  and  <I>TID</I>  as
+              Thread/Thread-group identifier. The data sequence is the follow-
+              ing:
+
+              <B>UPDATED</B> [int32_t]
+                     1 if service has been updated in the last <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B> server
+                     refresh, 0 otherwise.
+
+              <B>STATUS</B> [int32_t]
+                     1 if the process was still running in the  last  <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>
+                     server refresh, 0 otherwise.
+
+              <B>HSTATUS</B> [uint32_t]
+                     Historical status. The least significant <I>PERSISTENCE</I> bits
+                     of this 32-bit integer is the  status  of  the  monitored
+                     process in the last <I>PERSISTENCE</I> refreshes of the <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>
+                     server (the least significant bit corresponds to the most
+                     recent  refresh,  the most significant bit corresponds to
+                     the oldest refresh). Each bit is 1 if the process was re-
+                     trieved  in  the  process table, 0 if the process was not
+                     retrieved in the process table.
+
+              <B>TID</B> (alias LWP, SPID) [uint32_t]
+                     Thread Identifier, aka Light Weight  Process  Identifier.
+                     In this service (being a process SVC) <B>TID</B> always coincide
+                     with <B>TGID</B> (Thread Group Identifier, the old <B>PID</B>).
+
+              <B>NLWP</B> (alias THCNT) [uint32_t]
+                     Number of Lightweight Processes (Threads) in the  process
+                     (thread group).
+
+              <B>PSR</B> (alias CPUID, P) [uint32_t]
+                     The  processor  that process is currently assigned to. It
+                     is useful to check the operation of process-to-CPU affin-
+                     ity setting by the FMC Task Manager.
+
+              <B>VSIZE</B> (alias VSZ, VIRT) [uint32_t]
+                     The  total  size  of the process's memory footprint. This
+                     includes the text segment, stack, static variables,  data
+                     segment, and pages which are shared with other processes.
+
+              <B>LOCK</B> [uint32_t]
+                     The amount of the process's  memory  which  is  currently
+                     locked  by  the  kernel.  Locked memory cannot be swapped
+                     out.
+
+              <B>RSS</B> (alias RSZ, RES, RESIDENT) [uint32_t]
+                     The kernel's estimate of the resident set size  for  this
+                     process.
+
+              <B>DATA</B> [uint32_t]
+                     The amount of memory used for data by the process. It in-
+                     cludes static variables and the  data  segment,  but  ex-
+                     cludes the stack.
+
+              <B>STACK</B> [uint32_t]
+                     The amount of memory consumed by the process's stack.
+
+              <B>EXE</B> [uint32_t]
+                     The  size  of  the  process's executable pages, excluding
+                     shared pages.
+
+              <B>LIB</B> [uint32_t]
+                     The size of the shared memory pages mapped into the  pro-
+                     cess's  address  space.  This excludes pages shared using
+                     System V style IPC.
+
+              <B>SHARE</B> (alias SHRD, SHR) [uint32_t]
+                     The size of the pages of shared (mmap-ed) memory.
+
+              <B>RTPRIO</B> [uint32_t]
+                     Static (real-time) priority of the process. Only value  0
+                     is allowed for TS processes. For FF and RR real-time pro-
+                     cesses, allowed values are in the range 1...99 (0 is  the
+                     least favorable priority, 99 is the most favorable prior-
+                     ity).
+
+              <B>NICE</B> (alias NI) [uint32_t]
+                     The nice level of the  process,  used  by  the  TS  Linux
+                     scheduler to compute the dynamic priority. Allowed values
+                     for nice level are in the range -20...19 (-20 corresponds
+                     to  the  most favorable scheduling; 19 corresponds to the
+                     least favorable scheduling).
+
+              <B>PRIO</B> (alias PRI, PR) [uint32_t]
+                     Kernel scheduling priority. Possible values  are  in  the
+                     range  -100...39 (-100 is the most favorable priority, 39
+                     is the least favorable priority). TS processes have  PRIO
+                     in the range 0...39, FF and RR processes have PRIO in the
+                     range -100...-1.
+
+              <B>%CPU</B> (alias PCPU, CP, C) [float]
+                     The task's share of the CPU time since the  last  update,
+                     expressed  as a percentage of the total CPU time per pro-
+                     cessor. <B>Maximum</B>: 100% x CPU_core_number.
+
+              <B>%MEM</B> (alias PMEM) [float]
+                     The ratio of the process's resident set size to the phys-
+                     ical  memory  on  the machine, expressed as a percentage.
+                     <B>Maximum</B>: 100%.
+
+              <B>MIN_FLT</B> [float]
+                     The rate (page faults per second) of page faults the pro-
+                     cess  has  made  which have not required loading a memory
+                     page from disk.
+
+              <B>MAJ_FLT</B> [float]
+                     The rate (page faults per second) of page faults the pro-
+                     cess  has  made which have required loading a memory page
+                     from disk.
+
+              <B>LAST_UPDATE</B> [char[13]]
+                     The date and time of the last  refresh  of  the  <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>
+                     server.
+
+              <B>CMD</B> (alias COMM, COMMAND, UCMD, UCOMM) [char[16]]
+                     Command  name,  i.e.  the basename (w/o path) of the exe-
+                     cutable image file, without arguments,  eventually  trun-
+                     cated at 15 characters.
+
+              <B>UTGID</B> [char[256]]
+                     FMC  User-assigned  unique  Thread  Group  Identifier, if
+                     available (e.g. if the process has been  started  by  the
+                     FMC Task Manager or has the variable UTGID defined in the
+                     process environment). Otherwise "N/A" is published.
+
+              <B>USER</B> (alias EUSER, UNAME) [char[20]]
+                     <B>Effective</B> user name. Used for all  the  security  checks.
+                     The  only  user name of the process that normally has any
+                     effect.
+
+              <B>CMDLINE</B> (alias ARGS, CMD, COMMAND) [char*]
+                     The complete command  line  with  its  arguments  (up  to
+                     PATH_MAX  =  4096  characters).  This  string may contain
+                     blank characters.
+
+   <B>Published</B> <B>DIM</B> <B>Commands:</B>
+       /FMC/<I>HOSTNAME</I>/ps/startMonitoring
+              <B>Input</B> <B>format</B>: "C" (a sequence of 26 NULL-terminated strings).
+              Accepts, as argument, a NULL-terminated string containing a com-
+              mand-line to add a new <I>term</I> to the <I>filter</I> <I>expression</I> used to se-
+              lect the processes to be monitored by means of a  dedicated  DIM
+              SVC. Different options specified within the same <B>startMonitoring</B>
+              command are put in logical <I>AND</I> among them, while options  speci-
+              fied in different <B>startMonitoring</B> commands are put in logical <I>OR</I>
+              among them. The current <I>filter</I> <I>expression</I> can be viewed by means
+              of the ".../monitored/properties" DIM SVC (see above).
+
+              <B>DIM</B> <B>Command</B> <B>Synopsis</B>
+
+              [<B>-t</B> | <B>--tid</B> <I>TID</I>] [<B>-u</B> | <B>--utgid</B> <I>UTGID</I><B>_</B><I>PATTERN</I>]
+              [<B>-c</B> | <B>--cmd</B> <I>CMD</I><B>_</B><I>PATTERN</I>] [<B>-C</B> | <B>--cmdline</B> <I>CMDLINE</I><B>_</B><I>PATTERN</I>]
+              [<B>--a1</B> <I>ARG1</I><B>_</B><I>PATTERN</I>] [<B>--a2</B> <I>ARG2</I><B>_</B><I>PATTERN</I>] [<B>--a3</B> <I>ARG3</I><B>_</B><I>PATTERN</I>]
+              [<B>--a4</B> <I>ARG4</I><B>_</B><I>PATTERN</I>] [<B>--a5</B> <I>ARG5</I><B>_</B><I>PATTERN</I>] [<B>--a6</B> <I>ARG6</I><B>_</B><I>PATTERN</I>]
+              [<B>--a7</B> <I>ARG7</I><B>_</B><I>PATTERN</I>] [<B>--a8</B> <I>ARG8</I><B>_</B><I>PATTERN</I>] [<B>--a9</B> <I>ARG9</I><B>_</B><I>PATTERN</I>]
+
+              <B>DIM</B> <B>Command</B> <B>Options</B>
+
+              <B>-t</B> <B>--tid</B> <I>TID</I> <I>(unsigned</I> <I>integer)</I>
+                     Select the process which has <I>TID</I> as Thread Identifier.
+
+              <B>-u</B> <B>--utgid</B> <I>UTGID</I><B>_</B><I>PATTERN</I> <I>(string)</I>
+                     Select  the  process(es) whose UTGID matches the wildcard
+                     pattern <I>UTGID</I><B>_</B><I>PATTERN</I>.
+
+              <B>-c</B> <B>--cmd</B> <I>CMD</I><B>_</B><I>PATTERN</I> <I>(string)</I>
+                     Select the process(es) whose command name (basename,  w/o
+                     path,  of  the  executable image file, without arguments,
+                     eventually truncated at 15 characters) matches the  wild-
+                     card pattern <I>CMD</I><B>_</B><I>PATTERN</I>.
+
+              <B>-C</B> <B>--cmdline</B> <I>CMDLINE</I><B>_</B><I>PATTERN</I> <I>(string)</I>
+                     Select  the process(es) whose command line (complete name
+                     of the executable image file, including path but  exclud-
+                     ing  arguments, up to PATH_MAX = 4096 characters) matches
+                     the wildcard pattern <I>CMDLINE</I><B>_</B><I>PATTERN</I>.
+
+              <B>--a</B><I>n</I> <I>ARGn</I><B>_</B><I>PATTERN</I> <I>(string)</I>
+                     Select the process(es) whose <I>n</I>-th argument  on  the  com-
+                     mand-line  matches the wildcard pattern <I>ARGn</I><B>_</B><I>PATTERN</I> (the
+                     digit <I>n</I> ranges in 1..9).
+
+              <B>DIM</B> <B>Command</B> <B>Examples:</B>
+
+              "-c psSrv"
+              "-t 20152"
+              "-u *Srv_u -c *Srv"
+              "-C /opt/FMC/sbin/tmSrv --a1 -l --a2 1 --a3 -p --a4 2"
+
+       /FMC/<I>HOSTNAME</I>/ps/stopMonitoring
+              <B>Input</B> <B>format</B>: "C" (a sequence of 26 NULL-terminated strings).
+              Accepts, as argument, a NULL-terminated string containing a com-
+              mand-line  to  remove  a <I>term</I> from the <I>filter</I> <I>expression</I> used to
+              select the processes to be monitored by means of a dedicated DIM
+              SVC.
+              The  command  to  remove  a certain filter must have <I>exactly</I> the
+              same options used before to add the filter iteself. E.g.,  if  a
+              filter was added by means of the string "-c *Srv -u *Srv_u" sent
+              to the <B>startMonitoring</B> CMD, it can be  removed  by  sending  the
+              same string "-c *Srv -u *Srv_u" to the CMD <B>stopMonitoring</B>.
+              The  current  <I>filter</I>  <I>expression</I>  can  be viewed by means of the
+              ".../monitored/properties" DIM SVC (see above).
+
+              <B>DIM</B> <B>Command</B> <B>Synopsis</B>
+
+              [<B>-t</B> | <B>--tid</B> <I>TID</I>] [<B>-u</B> | <B>--utgid</B> <I>UTGID</I><B>_</B><I>PATTERN</I>]
+              [<B>-c</B> | <B>--cmd</B> <I>CMD</I><B>_</B><I>PATTERN</I>] [<B>-C</B> | <B>--cmdline</B> <I>CMDLINE</I><B>_</B><I>PATTERN</I>]
+              [<B>--a1</B> <I>ARG1</I><B>_</B><I>PATTERN</I>] [<B>--a2</B> <I>ARG2</I><B>_</B><I>PATTERN</I>] [<B>--a3</B> <I>ARG3</I><B>_</B><I>PATTERN</I>]
+              [<B>--a4</B> <I>ARG4</I><B>_</B><I>PATTERN</I>] [<B>--a5</B> <I>ARG5</I><B>_</B><I>PATTERN</I>] [<B>--a6</B> <I>ARG6</I><B>_</B><I>PATTERN</I>]
+              [<B>--a7</B> <I>ARG7</I><B>_</B><I>PATTERN</I>] [<B>--a8</B> <I>ARG8</I><B>_</B><I>PATTERN</I>] [<B>--a9</B> <I>ARG9</I><B>_</B><I>PATTERN</I>]
+
+              <B>DIM</B> <B>Command</B> <B>Options</B>
+
+              <B>-t</B> <B>--tid</B> <I>TID</I> <I>(unsigned</I> <I>integer)</I>
+                     Deselect the process which has <I>TID</I> as Thread  Identifier.
+
+              <B>-u</B> <B>--utgid</B> <I>UTGID</I><B>_</B><I>PATTERN</I> <I>(string)</I>
+                     Deselect the process(es) whose UTGID matches the wildcard
+                     pattern <I>UTGID</I><B>_</B><I>PATTERN</I>.
+
+              <B>-c</B> <B>--cmd</B> <I>CMD</I><B>_</B><I>PATTERN</I> <I>(string)</I>
+                     Deselect the process(es) whose  command  name  (basename,
+                     w/o  path,  of  the  executable image file, without argu-
+                     ments, eventually truncated at 15 characters) matches the
+                     wildcard pattern <I>CMD</I><B>_</B><I>PATTERN</I>.
+
+              <B>-C</B> <B>--cmdline</B> <I>CMDLINE</I><B>_</B><I>PATTERN</I> <I>(string)</I>
+                     Deselect  the  process(es)  whose  command line (complete
+                     name of the executable image file, including path but ex-
+                     cluding  arguments,  up  to  PATH_MAX  = 4096 characters)
+                     matches the wildcard pattern <I>CMDLINE</I><B>_</B><I>PATTERN</I>.
+
+              <B>--a</B><I>n</I> <I>ARGn</I><B>_</B><I>PATTERN</I> <I>(string)</I>
+                     Deselect the process(es) whose <I>n</I>-th argument on the  com-
+                     mand-line  matches the wildcard pattern <I>ARGn</I><B>_</B><I>PATTERN</I> (the
+                     digit <I>n</I> ranges in 1..9).
+
+              <B>DIM</B> <B>Command</B> <B>Examples:</B>
+
+              "-c psSrv"
+              "-t 20152"
+              "-u *Srv_u -c *Srv"
+              "-C /opt/FMC/sbin/tmSrv --a1 -l --a2 1 --a3 -p --a4 2"
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information on how to get the FMC (Farm Monitoring and Control  System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development Homepage &lt;https://lhcbweb.bo.infn.it/twiki/bin/
+       view.cgi/LHCbBologna/FmcLinux&gt;.
+
+       CERN ITCOBE: FW Farm Monitor and Control &lt;http://itcobe.web.cern.ch/
+       itcobe/Projects/Framework/Download/Components/SystemOverview/fwFMC/wel-
+       come.html&gt;.
+
+       LHCb Online RPMs &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/
+       index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  psSrv.c,v 3.30 2009/11/11 16:13:55 galli
+       Source:  getPsFromProc.c,v 2.19 2009/01/30 14:45:18 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO</H2><PRE>
+       <B><A HREF="../../htmlMan/man1/psViewer.1.html">psViewer(1)</A></B>, <B><A HREF="../../htmlMan/man1/psMonitor.1.html">psMonitor(1)</A></B>, <B><A HREF="../../htmlMan/man1/psSetProperties.1.html">psSetProperties(1)</A></B>.
+       <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/tmStart.1.html">tmStart(1)</A></B>, <B><A HREF="../../htmlMan/man1/tmKill.1.html">tmKill(1)</A></B>, <B><A HREF="../../htmlMan/man1/tmStop.1.html">tmStop(1)</A></B>.
+       <B><A HREF="../../htmlMan/man1/ps.1.html">ps(1)</A></B>, <B><A HREF="../../htmlMan/man1/top.1.html">top(1)</A></B>, <B><A HREF="../../htmlMan/man5/proc.5.html">proc(5)</A></B>.
+       <B>/proc/TGID/status</B>, <B>/proc/TGID/stat</B>, <B>/proc/TGID/statm</B>.
+       <B>/proc/TGID/task/TID/status</B>, <B>/proc/TGID/task/TID/stat</B>,
+       <B>/proc/TGID/task/TID/statm</B>.
+       <B>/usr/share/doc/kernel-doc-2.6.9/Documentation/filesystems/proc.txt</B>.
+
+FMC-3.9.14                        2012-12-19                          <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

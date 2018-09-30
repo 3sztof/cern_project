@@ -1,0 +1,273 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/logGetProperties.1.html">logGetProperties(1)</A></B>            FMC User Commands           <B><A HREF="../../htmlMan/man1/logGetProperties.1.html">logGetProperties(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>logGetProperties</B> <B>-</B> Get the Properties of one or more FMC Message Logger
+                          Server(s)
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>logGetProperties</B> [<B>-v</B>] [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-m</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]
+                        [<B>-s</B> <I>LOG</I><B>_</B><I>PATTERN</I>]
+
+       <B>logGetProperties</B> <B>-V</B> [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-m</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]
+                        [<B>-s</B> <I>LOG</I><B>_</B><I>PATTERN...</I>]
+
+       <B>logGetProperties</B> <B>-h</B>
+
+
+</PRE>
+<H2>INTRODUCTION</H2><PRE>
+       The <B>FMC</B> <B>Message</B> <B>Logger</B> is a tool to <I>collect</I>, <I>manage</I> (i.e. merge, dupli-
+       cate, filter, suppress duplicates) and <I>display</I> on a central console the
+       messages sent by the applications running on the farm  nodes.  It  uses
+       <I>DIM</I>  to  move messages throughout the network and a POSIX.1 <I>FIFO</I> (alias
+       <I>named</I> <I>pipe</I>) on each node as local buffer to collect message sent by the
+       application running on the same node.
+
+       The  FMC Message Logger is a <I>general</I> <I>purpose</I> utility, not tailored on a
+       specific application; it can even collect messages sent by the applica-
+       tions  to  their  <I>standard</I>  <I>output</I> and <I>error</I> streams by <B>redirecting</B> <B>the</B>
+       <B>streams</B> <B>to</B> <B>the</B> <B>FIFO</B> at the application start-up (the FMC  Task  Manager
+       provides  a  flag in the <B><A HREF="../../htmlMan/man1/tmStart.1.html">tmStart(1)</A></B> command to activate such a redirec-
+       tion).
+
+       The <B>FMC</B> <B>Message</B> <B>Logger</B> consists in the  server  <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>,  which  gets
+       messages  from  a  local FIFO and publish them using DIM, in the client
+       <B><A HREF="../../htmlMan/man1/logViewer.1.html">logViewer(1)</A></B>, which can display the messages got using DIM  or  forward
+       them  to  another <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>, and in the clients <B><A HREF="../../htmlMan/man1/logSetProperties.1.html">logSetProperties(1)</A></B> and
+       <B><A HREF="../../htmlMan/man1/logGetProperties.1.html">logGetProperties(1)</A></B> which can change and retrieve  the  <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>  set-
+       tings at run-time.
+
+       Besides,  the  <B>FMC</B>  <B>Message</B>  <B>Logger</B>  provides several utilities to help
+       sending formatted messages with header to a the FMC Message Logger: the
+       command  <B><A HREF="../../htmlMan/man1/mPrint.1.html">mPrint(1)</A></B> and the library calls <B><A HREF="../../htmlMan/man3/dfltLoggerOpen.3.html">dfltLoggerOpen(3)</A></B>, <B><A HREF="../../htmlMan/man3/mPrintf.3.html">mPrintf(3)</A></B>,
+       <B><A HREF="../../htmlMan/man3/rPrintf.3.html">rPrintf(3)</A></B>,   <B><A HREF="../../htmlMan/man3/dfltLoggerClose.3.html">dfltLoggerClose(3)</A></B>,   <B><A HREF="../../htmlMan/man3/getDfltFifoFD.3.html">getDfltFifoFD(3)</A></B>,    <B><A HREF="../../htmlMan/man3/loggerOpen.3.html">loggerOpen(3)</A></B>,
+       <B><A HREF="../../htmlMan/man3/mfPrintf.3.html">mfPrintf(3)</A></B>, <B><A HREF="../../htmlMan/man3/rfPrintf.3.html">rfPrintf(3)</A></B> and <B><A HREF="../../htmlMan/man3/loggerClose.3.html">loggerClose(3)</A></B>.
+
+       Look at section <I>WRITING</I> <I>TO</I> <I>THE</I> <I>FMC</I> <I>LOGGER</I> in the <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B> man page for
+       a comprehensive review of the ways of sending messages to the FMC  Mes-
+       sage Logger.
+
+   <B>No-Drop</B> <B>and</B> <B>Congestion-Proof</B> <B>Behavior</B>
+       The  FMC  Message  Logger  can work either in <B>no-drop</B> or in <B>congestion-</B>
+       <B>proof</B> mode.
+
+       If the FIFO is completely filled (this could be due to a  network  con-
+       gestion  which  prevents  the  FIFO drain), any attempt to write to the
+       FIFO in <B>no-drop</B> mode <B>blocks</B> the writer application until a  message  is
+       pulled  out of the FIFO, while any attempt to write to the FIFO in <B>con-</B>
+       <B>gestion-proof</B> mode returns immediately the <I>EAGAIN</I> <B>error</B>, without block-
+       ing,  without  writing  (dropping  therefore  the  message) and without
+       injecting additional traffic into the network.
+
+   <B>The</B> <B>Message</B> <B>Filter</B>
+       Since very often an excess of messages hides the messages of  interest,
+       it  is often desirable to filter the message flow. The FMC Message Log-
+       ger allows  to  filter  the  message  flow  both  on  the  <I>server</I>  <I>side</I>
+       (<B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>) and on the <I>client</I> <I>side</I> (<B><A HREF="../../htmlMan/man1/logViewer.1.html">logViewer(1)</A></B>). The filtering can be
+       based, on both sides, on:
+
+       * the <I>severity</I> of the message, classified in six classes, (VERB, DEBUG,
+         INFO,  WARN, ERROR and FATAL) and recognized either by a conventional
+         message header or by means of a heuristic  method  based  on  regular
+         expressions, which can be changed at the server start-up;
+
+       * an arbitrary <I>wildcard</I> <I>pattern</I>;
+
+       * an arbitrary <I>extended</I> <I>regular</I> <I>expression</I>.
+
+   <B>The</B> <B>Suppression</B> <B>of</B> <B>Duplicates</B>
+       While  running  processes  on  a large farm, an anomalous condition can
+       trigger the same error message (or the same set of few error  messages)
+       on  all  the  nodes of the farm. If the same messages is sent more than
+       once by each node, the result is a <B>message</B> <B>storm</B> of thousands  of  mes-
+       sages  which  differ  at  most  for a few details (e.g. the name of the
+       sender, a serial number, etc.).
+
+       To avoid such a condition, the FMC  Message  Logger  can  suppress  the
+       duplicated  messages both on the <I>server</I> <I>side</I> and on the <I>client</I> <I>side</I>. To
+       recognize duplicates, it can compare the last <I>n</I> received messages (i.e.
+       can  suppress  repeated  messages  which are <B>interleaved</B> by zero to <I>n-1</I>
+       different messages) where the parameter <I>n</I> can be set  and  modified  at
+       run-time.
+
+       Three  different  comparison criteria can be used to distinguish dupli-
+       cates from different messages:
+
+       * <I>exact</I> <I>comparison</I>: two messages are considered different if  an  exact
+         string comparison between the two messages fails;
+
+       * <I>number</I>  <I>of</I> <I>different</I> <I>tokens</I>: two messages are considered different if
+         the number of tokens which are different in the two messages  exceeds
+         a given threshold;
+
+       * <I>Levenshtein</I>  <I>distance</I>:  two  message  are considered different if the
+         Levenshtein distance between the two messages exceeds a given thresh-
+         old. The Levenshtein distance (also known as <I>edit</I> <I>distance</I>) is a mea-
+         surement of the similarity of the two strings, defined as the  number
+         of single character edit operations (deletion, insertion or substitu-
+         tion) required to transform one string into the other.
+
+       Moreover, the <B>header</B> of the message -- which contains the time and  the
+       node name, which are very often different -- can be <B>skipped</B> in the com-
+       parison to distinguish duplicates from different messages. Indeed,  the
+       FMC  Message  Logger allows to start the comparison either after a set-
+       tled number of characters from the beginning of the messages  or  after
+       the  occurrence  of  a  given  sequence of (not necessarily contiguous)
+       characters of the message.
+
+   <B>The</B> <B>Last</B> <B>Message</B> <B>Buffer</B>
+       When the message filter is tight, only the  severe  messages  are  dis-
+       played  on  the console, while all the other messages are discarded. If
+       something severe does happen, sometimes is desirable to  <B>retrieve</B>  <B>also</B>
+       <B>the</B> <B>less</B> <B>severe</B> <B>messages</B> <B>already</B> <B>discarded</B>.
+
+       To  this  aim the FMC Message Logger Server implements a buffer, on the
+       <I>server</I> <I>side</I>, containing the  <B>last</B>  <I>m</I>  <B>messages</B>  (before  filtering  and
+       duplicate  suppression),  where the parameter <I>m</I> can be set and modified
+       at <B>run-time</B>.  The whole buffer can be retrieved -- filtered and reduced
+       with  the  current settings -- through the DIM service <I>last</I><B>_</B><I>log</I>.  While
+       in normal operation the FMC Message Logger Client subscribes  only,  in
+       MONITORED mode, the DIM service <I>log</I> containing the last single message,
+       however, every time it detects a change in the filter or message reduc-
+       tion  settings  it accesses also the <I>last</I><B>_</B><I>log</I> DIM service, in ONCE_ONLY
+       mode, to download the last message buffer.
+
+       If something severe happens, the user can make the filter and reduction
+       cuts  looser  and the client, detecting a change in the settings, auto-
+       matically downloads the Last Message Buffer. This way, even less severe
+       messages  among  the  last <I>m</I> ones can be displayed to better understand
+       the fault.
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The <B>logGetProperties</B> command gets and  prints  the  <B>properties</B>  of  the
+       selected FMC Message Logger Servers, i.e. the <B>filter</B> settings (severity
+       threshold, filter reguar expressions and wildcard patterns), the <B>dupli-</B>
+       <B>cate</B>  <B>suppression</B>  settings (exact comparison, word distance threshold,
+       Levenshtein distance threshold, compared message number,  header  skip-
+       ping parameters) and the <B>old</B> <B>message</B> <B>storage</B> setting.
+
+       The  setting  strings  are  described  in  manuals <B><A HREF="../../htmlMan/man1/logSetProperties.1.html">logSetProperties(1)</A></B>,
+       <B><A HREF="../../htmlMan/man1/logViewer.1.html">logViewer(1)</A></B> and <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>.
+
+       The DIM Name Server, looked up to seek for Message Logger Servers,  can
+       be chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file "<B>/etc/sysconfig/dim</B>".
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B>     Get basic usage help from the command line.
+
+       <B>-v</B>     Increase output verbosity for debugging.
+
+       <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-V</B>     For  each selected node print the FMC Message Logger Server ver-
+              sion and the FMC version, than exit.
+
+       <B>-m</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Get the current properties from FMC Logger  Servers  running  on
+              nodes  whose  hostname matches at least one of the wildcard pat-
+              terns <I>NODE</I><B>_</B><I>PATTERN</I> (<B>default</B>: Get the current properties from FMC
+              Logger Servers running at all the nodes).
+
+       <B>-s</B> <I>LOG</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Get  the  current  properties  from the FMC Logger Servers whose
+              name matches the wildcard pattern <I>LOG</I><B>_</B><I>PATTERN</I> (<B>default</B>: all  the
+              names).  The  name of a FMC Logger is set using the <B>-s</B> option in
+              the <B>logSrv(8)</B> command line. The name of the  default  logger  is
+              <B>fmc</B>. The name of the Gaudi logger is <B>gaudi</B>.
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must  include  the  path to the libraries "libdim" and "libFMCu-
+              tils".
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Get properties from FMC Message Logger  Server  with  names  "fmc"  and
+       "gaudi" running on nodes "farm0101" and "farm0102":
+
+       <I>bash$</I> <B>logGetProperties</B> <B>-m</B> <B>farm0101</B> <B>-m</B> <B>farm0102</B> <B>-s</B> <B>gaudi</B> <B>-s</B> <B>fmc</B>
+
+       Use wildcard patterns to select nodes and loggers:
+
+       <I>bash$</I> <B>logGetProperties</B> <B>-m</B> <B>"farm01*"</B> <B>-s</B> <B>gaudi</B> <B>-s</B> <B>logger_1</B>
+       <I>bash$</I> <B>logGetProperties</B> <B>-m</B> <B>"farm01[1-5]?"</B> <B>-s</B> <B>"logger_[0-3]"</B>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information  on how to get the FMC (Farm Monitoring and Control System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development Homepage
+       &lt;http://lhcbweb2.bo.infn.it/bin/view/LHCbBologna/FmcLinux&gt;.
+
+       CERN Engineering Department, JCOP, FMC
+       &lt;http://j2eeps.cern.ch/wikis/display/EN/
+       JCOP+Framework+Farm+Monitoring+and+Control+Tool&gt;.
+
+       LHCb Online RPMs
+       &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  logGetProperties.C,v 1.21 2012/12/07 15:48:07 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO</H2><PRE>
+       <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/logViewer.1.html">logViewer(1)</A></B>, <B><A HREF="../../htmlMan/man1/logSetProperties.1.html">logSetProperties(1)</A></B>.
+
+   <B>UI</B> <B>for</B> <B>writing</B> <B>to</B> <B>an</B> <B>arbitrary</B> <B>FMC</B> <B>Message</B> <B>Logger</B> <B>from</B> <B>a</B> <B>shell</B> <B>script</B>
+       <B><A HREF="../../htmlMan/man1/mPrint.1.html">mPrint(1)</A></B>.
+
+   <B>API</B> <B>for</B> <B>formatted</B> <B>writing</B> <B>to</B> <B>the</B> <B>default</B> <B>FMC</B> <B>Message</B> <B>Logger</B>
+       <B><A HREF="../../htmlMan/man3/dfltLoggerOpen.3.html">dfltLoggerOpen(3)</A></B>, <B><A HREF="../../htmlMan/man3/getDfltFifoFD.3.html">getDfltFifoFD(3)</A></B>, <B><A HREF="../../htmlMan/man3/mPrintf.3.html">mPrintf(3)</A></B>, <B><A HREF="../../htmlMan/man3/rPrintf.3.html">rPrintf(3)</A></B>,
+       <B><A HREF="../../htmlMan/man3/dfltLoggerClose.3.html">dfltLoggerClose(3)</A></B>.
+
+   <B>API</B> <B>for</B> <B>formatted</B> <B>writing</B> <B>to</B> <B>an</B> <B>arbitrary</B> <B>FMC</B> <B>Message</B> <B>Logger</B>
+       <B><A HREF="../../htmlMan/man3/loggerOpen.3.html">loggerOpen(3)</A></B>, <B><A HREF="../../htmlMan/man3/mfPrintf.3.html">mfPrintf(3)</A></B>, <B><A HREF="../../htmlMan/man3/rfPrintf.3.html">rfPrintf(3)</A></B>, <B><A HREF="../../htmlMan/man3/loggerClose.3.html">loggerClose(3)</A></B>.
+
+   <B>Regular</B> <B>expression</B> <B>and</B> <B>wildcard</B> <B>pattern</B> <B>syntax</B>
+       <B><A HREF="../../htmlMan/man7/regex.7.html">regex(7)</A></B>, <B><A HREF="../../htmlMan/man7/glob.7.html">glob(7)</A></B>.
+
+FMC-3.9.14                        2012-12-19               <B><A HREF="../../htmlMan/man1/logGetProperties.1.html">logGetProperties(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

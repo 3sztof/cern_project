@@ -1,0 +1,100 @@
+
+NAME
+       coalViewer - Get network interrupt coalescence information from the
+                    FMC Coalescence Monitor Servers
+
+SYNOPSIS
+       coalViewer [-N|--dim-dns DIM_DNS_NODE] [-v|--debug]
+                  [-m|--hostname NODE_PATTERN...]
+                  [-c|--compact [-H|--header]] [-A|--average] [-M|--maximum]
+                  [-a|--all]
+       coalViewer {-V,--version} [-m|--hostname NODE_PATTERN...]
+       coalViewer {-h,--help}
+
+DESCRIPTION
+       Get the network interrupt coalescence factors, - i.e. the ratios
+       between the number of frames sent/received by the network interfaces
+       and the corresponding number of interrupts raised by the network
+       interface cards - from the farm nodes whose hostname matches the
+       wildcard pattern NODE_PATTERN, specified using the -m command line
+       option. In addition to instan values, average and maximum values can
+       be printed by means of --average and --maximum switches, together
+       with the time elapsed since the server start-up or since last server
+       reset (i.e. reset of average and maximum values). Server reset is
+       achieved through the coalReset(FMC) command.
+       DIM Name Server can be chosen (in decreasing order of priority) by:
+              1. Specifying the -N DIM_DNS_NODE command-line option;
+              2. Specifying the DIM_DNS_NODE environment variable;
+              3. Defining the DIM_DNS_NODE in the file "/etc/sysconfig/dim".
+
+OPTIONS
+       --help, -h
+              Get basic usage help from the command line.
+       --version, -V
+              For each selected node print the FMC Coalescence Monitor
+              server version and sensor version, than exit.
+       --dim-dns, -N DIM_DNS_NODE (string)
+              Use DIM_DNS_NODE as DIM Name Server node.
+       --debug, -v
+              Increase verbosity for debugging.
+       --hostname, -m NODE_PATTERN (string, repeatable)
+              Get information from the nodes whose hostname matches the
+              wildcard pattern NODE_PATTERN (default: get information from
+              all the nodes).
+       --compact, -c
+              Print output in compact format (easier to parse).
+       --header, -H
+              Print a header for the compact format.
+       --average, -A
+              Toggle the printout of the average values.
+       --maximum, -M
+              Toggle the printout of the maximum values.
+       --all, -a
+              Toggle all the optional (non-basic) fields. Equivalent to:
+              "--average --maximum".
+
+ENVIRONMENT
+       DIM_DNS_NODE (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+       LD_LIBRARY_PATH (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries "libdim"
+              and "libFMCutils".
+
+EXAMPLES
+       Show the coalescence factors of all the farm nodes:
+              coalViewer
+       Show also average and maximum values:
+              coalViewer -a
+              coalViewer --all
+       Print output in compact format with header:
+              coalViewer -acH
+              coalViewer -a -c -H
+              coalViewer --all --compact --header
+              coalViewer --al --co --hea
+       Show also average values:
+              coalViewer --average
+              coalViewer --av
+              coalViewer -A
+       Show also maximum values:
+              coalViewer --maximum
+              coalViewer --ma
+              coalViewer -M
+       Show only the coalescence factors of selected nodes:
+              coalViewer -m farm0101 -m farm0102 --ave
+       Show only the coalescence factors of wildcard-selected nodes:
+              coalViewer -m "farm01*" -m "farm02*" --ave --max
+              coalViewer -m "farm010[1357]" --all
+       Show the server version installed on the farm nodes:
+              coalViewer -V
+              coalViewer --version
+
+AUTHOR
+       Domenico Galli <domenico.galli@bo.infn.it>
+
+VERSION
+       Source:  coalViewer.C,v 1.16 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+SEE ALSO
+       coalReset(FMC), coalSrv(FMC), nifSrv(FMC), irqSrv(FMC).
+

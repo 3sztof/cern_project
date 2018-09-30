@@ -1,0 +1,74 @@
+
+NAME
+       cpustatSrv - FMC CPU Statistics Monitor Server
+
+SYNOPSIS
+       cpustatSrv [-d] [-c DIM_CONF_FILE] [-l LOGGER]
+                  [-u REFRESH_TIME_INTERVAL]
+       cpustatSrv -h
+
+OPTIONS
+       -h     Get basic usage help from the command line.
+       -d     Increase verbosity for debugging.
+       -c DIM_CONF_FILE (string, optional)
+              If DIM_DNS_NODE is not defined in the environment, try to
+              retrieve it from the file DIM_CONF_FILE.
+              Default: DIM_CONF_FILE="/etc/sysconfig/dim"
+       -l LOGGER (integer, optional)
+              Use loggers defined in LOGGER mask to send messages:
+                     0x1 default DIM Message Logger (fifo: /tmp/logSrv.fifo);
+                     0x2 standard error;
+                     0x4 syslog.
+              Default: 0x1.
+       -u REFRESH_TIME_INTERVAL (integer, optional)
+              Set data refresh period to REFRESH_TIME_INTERVAL seconds.
+              (must be in [0,60]s). Default: 20 s.
+
+ENVIRONMENT:
+       DIM_DNS_NODE (string, mandatory if not defined in DIM_CONF_FILE)
+              Hostname.domain or IP address of the DIM name server.
+       LD_LIBRARY_PATH (string, mandatory, if not set using ldconfig)
+              Variable in PATH format which must include the path to the
+              libraries "libdim", "libFMCutils" and
+              libFMCsensors.
+       UTGID (string, optional)
+              UTGID of the fsSrv process.
+
+PUBLISHED DIM SERVICES:
+       /FMC/<HOSTNAME>/cpu/stat/fmc_version (string)
+              "cpustatSrv.c,v 2.32 2009/10/03 16:10:50 galli".
+       /FMC/<HOSTNAME>/cpu/stat/server_version (string)
+              "getCpustatFromProc.c,v 1.15 2011/09/27 11:51:14 galli".
+       /FMC/<HOSTNAME>/cpu/stat/sensor_version (string)
+              "3.9.14".
+       /FMC/<HOSTNAME>/cpu/stat/success (int)
+              1 if data are retrieved, 0 otherwise.
+       /FMC/<HOSTNAME>/cpu/stat/devices (string[])
+              "core_00" "core_01" "core_02" ...
+              The CPU cores in the current node.
+       /FMC/<HOSTNAME>/cpu/stat/ctxt/labels (string[1])
+              "ctxt_rate".
+       /FMC/<HOSTNAME>/cpu/stat/ctxt/units (string[1])
+              "Hz".
+       /FMC/<HOSTNAME>/cpu/stat/ctxt/data (float[1])
+       /FMC/<HOSTNAME>/cpu/stat/load/labels (string[7])
+              "user" "system" "nice" "idle" "iowait" "irq" "softirq".
+       /FMC/<HOSTNAME>/cpu/stat/load/units (string[7])
+              "%" "%" "%" "%" "%" "%" "%".
+       /FMC/<HOSTNAME>/cpu/stat/load/average/data (float[7])
+       /FMC/<HOSTNAME>/cpu/stat/load/core_00/data (float[7])
+       /FMC/<HOSTNAME>/cpu/stat/load/core_01/data (float[7])
+       /FMC/<HOSTNAME>/cpu/stat/load/core_02/data (float[7])
+       /FMC/<HOSTNAME>/cpu/stat/load/core_../data (float[7])
+
+AUTHOR
+       Domenico Galli <domenico.galli@bo.infn.it>
+
+VERSION
+       Source:  cpustatSrv.c,v 2.32 2009/10/03 16:10:50 galli
+       Source:  getCpustatFromProc.c,v 1.15 2011/09/27 11:51:14 galli
+       Package: FMC-3.9.14
+
+SEE ALSO
+       top(1), /proc/stat, proc(5)
+       /usr/share/doc/kernel-doc-2.6.9/Documentation/filesystems/proc.txt

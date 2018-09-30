@@ -1,0 +1,64 @@
+
+NAME
+       smartViewer - Get the SMART statistics from the FMC SMART Monitor
+                     Servers (smartSrv)
+
+SYNOPSIS
+       smartViewer [-N|--dim-dns DIM_DNS_NODE] [-v|--debug]
+                   [-m|--hostname NODE_PATTERN...]
+       smartViewer {-V,--version} [-m|--hostname NODE_PATTERN...]
+       smartViewer {-h,--help}
+
+DESCRIPTION
+       Get the SMART statistics from the FMC SMART Monitor Servers of the
+       farm nodes whose hostname matches the wildcard pattern NODE_PATTERN,
+       specified using the -m command line option.
+       DIM Name Server can be chosen (in decreasing order of priority) by:
+              1. Specifying the -N DIM_DNS_NODE command-line option;
+              2. Specifying the DIM_DNS_NODE environment variable;
+              3. Defining the DIM_DNS_NODE in the file "/etc/sysconfig/dim".
+
+OPTIONS
+       --help, -h
+              Get basic usage help from the command line.
+       --version, -V
+              For each selected node print the FMC SMART Monitor Server
+              version, than exit.
+       --dim-dns, -N DIM_DNS_NODE (string)
+              Use DIM_DNS_NODE as DIM Name Server node.
+       --debug, -v
+              Increase verbosity for debugging.
+       --hostname, -m NODE_PATTERN (string, repeatable)
+              Get information from the nodes whose hostname matches the
+              wildcard pattern NODE_PATTERN (default: get information from
+              all the nodes).
+
+ENVIRONMENT
+       DIM_DNS_NODE (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+       LD_LIBRARY_PATH (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries "libdim"
+              and "libFMCutils".
+
+EXAMPLES
+       Show the SMART statistics of all the farm nodes:
+              smartViewer
+       Show only the SMART statistics of selected nodes:
+              smartViewer -m farm0101 -m farm0102
+       Show only the statistics of wildcard-selected nodes:
+              smartViewer -m "farm01*" -m "farm02*"
+              smartViewer -m "farm010[1357]"
+       Show the server version installed on the farm nodes:
+              smartViewer -V
+              smartViewer --version
+
+AUTHOR
+       Domenico Galli <domenico.galli@bo.infn.it>
+
+VERSION
+       Source:  smartViewer.C,v 1.11 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+SEE ALSO
+       smartSrv(FMC), smartctl(8), /proc/partitions.
+

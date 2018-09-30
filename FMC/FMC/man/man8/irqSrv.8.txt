@@ -1,0 +1,46 @@
+
+NAME
+       irqSrv - FMC Interrupt Monitor Server
+
+SYNOPSIS
+       irqSrv [-d] [-c DIM_CONF_FILE] [-l LOGGER] [-u REFRESH_TIME_INTERVAL]
+       irqSrv -h
+
+OPTIONS
+       -h     Get basic usage help from the command line.
+       -d     Increase verbosity for debugging.
+       -c DIM_CONF_FILE (string, optional)
+              If DIM_DNS_NODE is not defined in the environment, try to
+              retrieve it from the file DIM_CONF_FILE.
+              Default: DIM_CONF_FILE="/etc/sysconfig/dim"
+       -l LOGGER (integer, optional)
+              Use loggers defined in LOGGER mask to send messages:
+                     0x1 default DIM Message Logger (fifo: /tmp/logSrv.fifo);
+                     0x2 standard error;
+                     0x4 syslog.
+              Default: 0x1.
+       -u REFRESH_TIME_INTERVAL (integer, optional)
+              Set data refresh period to REFRESH_TIME_INTERVAL seconds.
+              (must be in [0,60]s). Default: 20 s.
+
+ENVIRONMENT:
+       DIM_DNS_NODE (string, mandatory if not defined in DIM_CONF_FILE)
+              Hostname.domain or IP address of the DIM name server.
+       LD_LIBRARY_PATH (string, mandatory, if not set using ldconfig)
+              Variable in PATH format which must include the path to the
+              libraries "libdim", "libFMCutils" and
+              libFMCsensors.
+       UTGID (string, optional)
+              UTGID of the fsSrv process.
+
+AUTHOR
+       Domenico Galli <domenico.galli@bo.infn.it>
+
+VERSION
+       Source:  irqSrv.c,v 2.24 2009/10/03 17:23:10 galli
+       Source:  getIrqFromProc.c,v 1.12 2008/10/09 09:53:06 galli
+       Package: FMC-3.9.14
+
+SEE ALSO
+       /proc/interrupts
+       /usr/share/doc/kernel-doc-2.6.9/Documentation/filesystems/proc.txt

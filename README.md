@@ -21,3 +21,7 @@ Docs:		Project documentation, instructions, database and gui diagrams.
 Legacy:		My old scripts (prototypes for later developments by Markus Frank. I leave them here as some contain clever methods
 			and are easier to understand / use than production version that is encapsulated to run as single instance.
 ```
+```
+FMC:		LHCb Online Farm Monitoring and Control system - a base for the project.
+
+```

@@ -1,0 +1,123 @@
+/* ######################################################################### */
+/*
+ * $Log: PcCluster.IC,v $
+ * Revision 1.12  2008/10/09 09:36:53  galli
+ * minor changes
+ *
+ * Revision 1.11  2008/09/26 20:26:39  galli
+ * added method bool findNode(const string&)
+ * method addSchPs(): added 4th argument (bool startIt=true)
+ * added method readInit()
+ * added method printUpdateCnt()
+ *
+ * Revision 1.10  2008/09/22 07:48:12  galli
+ * utils ltos() and ultosx() moved to FmcUtils
+ *
+ * Revision 1.9  2008/09/19 21:08:57  galli
+ * added prototype for methods: getNodes(), getTmSrvNames(), setRunPss(),
+ * checkRunning() and printRunPss()
+ *
+ * Revision 1.8  2008/09/17 13:15:56  galli
+ * no more access to acl
+ *
+ * Revision 1.7  2008/09/16 07:17:20  galli
+ * added prototype for method getSchPsLss()
+ *
+ * Revision 1.6  2008/09/16 06:42:41  galli
+ * added getSchPsLl(), ltos() and ultosx() method prototypes
+ *
+ * Revision 1.5  2008/09/15 07:54:03  galli
+ * added conditional include directives
+ * changed addSchPs() and rmSchPs() prototype
+ * added getSchPsLs() and itos() prototype
+ *
+ * Revision 1.4  2008/09/12 09:22:22  galli
+ * addSchPs() prototype changed
+ * rmSchPs() and printSchPs() prototypes added
+ *
+ * Revision 1.3  2008/09/10 07:20:28  galli
+ * vector<PcNode*>nodes -> vector<PcNode>nodes
+ *
+ * Revision 1.1  2008/09/09 06:32:17  galli
+ * Initial revision
+ */
+/* ######################################################################### */
+#include <string>
+#include <vector>
+#include <list>
+/*---------------------------------------------------------------------------*/
+#include <fnmatch.h>                                            /* fnmatch() */
+#include <errno.h>
+#include <argz.h>           /* argz_create_sep(), argz_len(), argz_extract() */
+/*---------------------------------------------------------------------------*/
+#include "fmcMacro.h"
+#include "fmcMacro.H"                                              /* METHOD */
+#include "fmcMsgUtils.h"           /* dfltLoggerOpen(), mPrintf(), rPrintf() */
+/*---------------------------------------------------------------------------*/
+#include "PcAcl.IC"
+#include "PcProcess.IC"
+#include "PcNode.IC"
+/*---------------------------------------------------------------------------*/
+#ifndef _PC_CLUSTER_IC
+#define _PC_CLUSTER_IC 1
+/* ######################################################################### */
+using namespace std;
+/* ######################################################################### */
+class PcCluster
+{
+  vector<PcNode> nodes;                        /* vector of controlled nodes */
+  pthread_mutex_t rfshMutex;
+  pthread_cond_t rfshCond;
+  /***************************************************************************/
+  public:
+  /***************************************************************************/
+  /* get methods                                                             */
+  /***************************************************************************/
+  vector<PcNode> getNodes(){return nodes;}
+  vector<string> getTmSrvNames();
+  string getSchPsLs(string numSep,string psSep,string nodeSep);
+  string getSchPsLl(string numSep,string psSep,string nodeSep,string detOpen,
+                    string detClose,string detSep);
+  string getSchPsLss(string numSep,string psSep,string nodeSep,string detOpen,
+                     string detClose,string detSep);
+  bool isTmSubscribed(const string &node);
+  bool findNode(const string &node);
+  /***************************************************************************/
+  /* set methods                                                             */
+  /***************************************************************************/
+  /* Add the node hostName to the list of the nodes for this Cluster         */
+  void addNode(string hostName);
+  /* Add the process ps to all the cluster nodes whose hostname matches the  */
+  /* wildcard pattern nodePttn.                                              */
+  void addSchPs(PcProcess &ps, vector<string> &nodePttn, string &cmd, 
+                bool startIt=true);
+  void addSchPs(string &cmdLine,bool startIt=true);
+  void rmSchPs(string utgidPttn, vector<string> nodePttn, unsigned signo,
+               unsigned s9delay, string cmd);
+  void setRunPss(string &node, int runPssSz, char *runPssSeq);
+  void setTmSubscribed(const string &node, bool t);
+  /***************************************************************************/
+  /* check methods                                                           */
+  /***************************************************************************/
+  void checkRunning(string &node);
+  /***************************************************************************/
+  /* read methods                                                            */
+  /***************************************************************************/
+  /* Read the list of the nodes from the file confFileName and add them to   */
+  /* the list of the nodes for this Cluster                                  */
+  void readNodes(string confFileName);
+  void readInit(string initFileName);
+  /***************************************************************************/
+  /* print methods                                                           */
+  /***************************************************************************/
+  /* Print the list of the nodes for this Cluster                            */
+  void printNodes(int sev,string head,string separator,string trail);
+  void printSchPs(int sev,string head1,string sep1,string trail1,
+                          string head2,string sep2,string trail2);
+  void printRunPss(string &node, int sev);
+  void printUpdateCnt(int sev);
+  /***************************************************************************/
+};
+/* ######################################################################### */
+#endif                                                    /* _PCL_CLUSTER_IC */
+/* ######################################################################### */

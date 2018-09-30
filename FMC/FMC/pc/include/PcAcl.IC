@@ -1,0 +1,70 @@
+/* ######################################################################### */
+/*
+ * $Log: PcAcl.IC,v $
+ * Revision 1.5  2012/11/29 15:52:27  galli
+ * Compatibility with gcc/g++ 4.4.6
+ *
+ * Revision 1.4  2008/10/09 09:36:53  galli
+ * minor changes
+ *
+ * Revision 1.3  2008/09/15 07:43:34  galli
+ * added conditional include directives
+ *
+ * Revision 1.2  2008/09/09 14:40:47  galli
+ * first working version
+ *
+ * Revision 1.1  2008/09/09 11:21:00  galli
+ * Initial revision
+ */
+/* ######################################################################### */
+#include <vector>
+#include <string>
+#include <list>
+#include <iostream>
+#include <fstream>
+/*---------------------------------------------------------------------------*/
+#include <string.h>                                           /* strerror(3) */
+#include <stdlib.h>                                               /* exit(3) */
+#include <sys/stat.h>                               /* lstat(2), struct stat */
+#include <pwd.h>                               /* getpwuid(3), struct passwd */
+#include <fnmatch.h>                                           /* fnmatch(3) */
+#include <errno.h>
+#include <unistd.h>                                             /* access(2) */
+/*---------------------------------------------------------------------------*/
+#include "fmcMsgUtils.h"           /* dfltLoggerOpen(), mPrintf(), rPrintf() */
+#include "fmcMacro.H"                                              /* METHOD */
+/*---------------------------------------------------------------------------*/
+#ifndef _PC_ACL_IC
+#define _PC_ACL_IC 1
+/* ######################################################################### */
+using namespace std;
+/* ######################################################################### */
+struct entry
+{
+  string user;
+  string host;
+};
+class PcAcl
+{
+  vector<entry>acl;
+  string authString;                                   /* set by constructor */
+  bool authenticated;
+  public:
+  /***************************************************************************/ 
+  string getAuthString(){return authString;}
+  bool isAuthenticated(){return authenticated;}
+  void on() {authenticated=true;}
+  void off() {authenticated=false;}
+  void read(string aclFileName);
+  void print(int sev,string head,string separator,string trail);
+  bool isAllowed(string cmd,string& cmdArgs);
+  //string authStringPrefix(string s)
+  /***************************************************************************/ 
+  /* constructor */
+  PcAcl();
+  /***************************************************************************/ 
+};
+/* ######################################################################### */
+#endif                                                        /* _PCL_ACL_IC */
+/* ######################################################################### */
+

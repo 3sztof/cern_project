@@ -1,0 +1,53 @@
+/* ######################################################################### */
+/*
+ * $Log: PcTmSeeker.IC,v $
+ * Revision 1.4  2012/11/29 15:52:27  galli
+ * Compatibility with gcc/g++ 4.4.6
+ *
+ * Revision 1.1  2008/09/19 11:46:30  galli
+ * Initial revision
+ */
+/* ######################################################################### */
+#include <string>
+/*---------------------------------------------------------------------------*/
+#include <stdio.h>
+/*---------------------------------------------------------------------------*/
+#include <dic.hxx>
+/*---------------------------------------------------------------------------*/
+#include "fmcMacro.h"                                      /* eExit(), MIN() */
+#include "fmcMacro.H"                                              /* METHOD */
+#include "fmcMsgUtils.h"           /* dfltLoggerOpen(), mPrintf(), rPrintf() */
+/*---------------------------------------------------------------------------*/
+#include "PcCluster.IC"
+#include "PcTmWatcher.IC"
+/*---------------------------------------------------------------------------*/
+#ifndef _PC_TM_SEEKER_IC
+#define _PC_TM_SEEKER_IC 1
+/* ######################################################################### */
+using namespace std;
+/* ######################################################################### */
+class PcTmSeeker : public DimInfo
+{
+  vector<string> tmSrvNames;
+  vector<string> knwnTmSrvNames;
+  list<PcTmWatcher*> tmWatchers;
+  /***************************************************************************/
+  void getServer(char *s, string &srv, string &node);
+  void addTmWatcher(const string &svc, const string &node);
+  void rmTmWatcher(const string &svc, const string &node, char status);
+  void infoHandler();
+  bool isCtrldTmSrv(string srv);
+  void printTmWatchers(int sev);
+  /***************************************************************************/
+  public:
+  /***************************************************************************/
+  /* constructor                                                             */
+  PcTmSeeker(const char *dnsSrvLsSvcPath);
+  /***************************************************************************/
+  /* destructor                                                              */
+  virtual ~PcTmSeeker() {}
+  /***************************************************************************/
+};
+/* ######################################################################### */
+#endif                                                   /* _PC_TM_SEEKER_IC */
+/* ######################################################################### */

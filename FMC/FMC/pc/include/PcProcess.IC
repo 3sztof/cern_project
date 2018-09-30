@@ -1,0 +1,271 @@
+/* ######################################################################### */
+/*
+ * $Log: PcProcess.IC,v $
+ * Revision 1.15  2012/12/04 11:26:36  galli
+ * Support for oomScoreAdj
+ *
+ * Revision 1.14  2008/10/09 09:36:53  galli
+ * minor changes
+ *
+ * Revision 1.13  2008/09/26 20:19:15  galli
+ * added member variable string node
+ * added methods getNode() and setNode()
+ * added method cleanRcDisTime()
+ * added methods void parExpand(string&) and void parExpand()
+ *
+ * Revision 1.12  2008/09/24 09:03:51  galli
+ * setRcEnTime() and setRcDisTime() take no argument
+ *
+ * Revision 1.11  2008/09/23 15:13:39  galli
+ * member variables disPeriod & checkPeriod long -> time_t
+ * removed member variable startN
+ * added member variable rcStartTimes
+ * added member function prototypes: getRcStartTimeN(), addRcStartTime(),
+ * cleanRcStartTime() and printRcStartTimes().
+ *
+ * Revision 1.10  2008/09/23 07:37:32  galli
+ * added mutex to protect variable member access
+ * added prototype for destructor
+ *
+ * Revision 1.9  2008/09/19 07:36:48  galli
+ * added copy constructor prototype
+ *
+ * Revision 1.8  2008/09/17 13:47:59  galli
+ * startTimes made of struct timeval (instead of time_t)
+ *
+ * Revision 1.7  2008/09/16 09:21:41  galli
+ * added inline method isRcEnabled()
+ * list<string>getStartTimesStr() renamed list<string>getStartTimesStrLst()
+ * added prototype for method string getStartTimesStr(string sep)
+ *
+ * Revision 1.5  2008/09/16 06:52:52  galli
+ * constructor takes global variables dfltUserName and dfltGroupName
+ * as default fou user and group
+ * added prototype for operator= (deep copy)
+ * added prototype for method getEnvs()
+ *
+ * Revision 1.4  2008/09/15 07:47:19  galli
+ * added conditional include directives
+ *
+ * Revision 1.3  2008/09/11 13:57:01  galli
+ * added method addArg()
+ *
+ * Revision 1.1  2008/09/08 10:22:29  galli
+ * Initial revision
+ */
+/* ######################################################################### */
+#include <string>
+#include <list>
+#include <vector>
+/*---------------------------------------------------------------------------*/
+#include <sys/time.h>                                     /* gettimeofday(2) */
+#include <errno.h>
+/*---------------------------------------------------------------------------*/
+#include "fmcMacro.h"                                      /* eExit(), MIN() */
+#include "fmcMacro.H"                                              /* METHOD */
+#include "fmcMsgUtils.h"           /* dfltLoggerOpen(), mPrintf(), rPrintf() */
+#include "FmcUtils.IC"        /* toUpper(), itos(), utos(), ltos(), ultosx() */
+/*---------------------------------------------------------------------------*/
+#ifndef _PC_PROCESS_IC
+#define _PC_PROCESS_IC 1
+/* ######################################################################### */
+using namespace std;
+/* ######################################################################### */
+extern string dfltUserName;
+extern string dfltGroupName;
+/* ######################################################################### */
+class PcProcess
+{
+  /***************************************************************************/
+  /* constant throughout the scheduled process life                          */
+  /***************************************************************************/
+  string utgid;
+  string path;
+  vector<string> argv;
+  string wd;
+  bool cleanEnv;
+  list<string> envp;
+  bool daemon;
+  int scheduler;
+  int nice;
+  int rtPrio;
+  int oomScoreAdj;
+  unsigned long affMask;
+  string user;
+  string group;
+  bool rdrStdout;
+  bool rdrStderr;
+  string outFIFO;
+  string errFIFO;
+  bool noDrop;
+  int maxStartN;
+  time_t disPeriod;
+  time_t checkPeriod;
+  string node;
+  /***************************************************************************/
+  /* variables                                                               */
+  /***************************************************************************/
+  bool firstStart;             /* true if process has been started only once */
+  /*-------------------------------------------------------------------------*/
+  /* respawn control */
+  list<time_t>rcStartTimes;     /* times of ps (re)start in last checkPeriod */
+  time_t rcEnTime;                   /* time of process start or re-enabling */
+  time_t rcDisTime; /* time of process disabling; zero if process is enabled */
+  /*-------------------------------------------------------------------------*/
+  /* pcLss */
+  unsigned startCnt;   /* number of ps (re)start. can be > startTimes.size() */
+  list<struct timeval> startTimes;              /* time of process (re)start */
+  /*-------------------------------------------------------------------------*/
+  /* protect variables access */
+  pthread_mutex_t lk;
+  /***************************************************************************/
+  public:
+  /***************************************************************************/
+  /* get methods                                                             */
+  /***************************************************************************/
+  /* constants */
+  string getUtgid(){return utgid;}
+  string getPath(){return path;}
+  vector<string> getArgv(){return argv;}
+  string getWd(){return wd;}
+  bool isCleanEnv(){return cleanEnv;}
+  list<string>&getEnvp(){return envp;}
+  bool isDaemon(){return daemon;}
+  int getScheduler(){return scheduler;}
+  int getNice(){return nice;}
+  int getRtPrio(){return rtPrio;}
+  int getOomScoreAdj(){return oomScoreAdj;}
+  unsigned long getAffMask(){return affMask;}
+  string getUser(){return user;}
+  string getGroup(){return group;}
+  bool isRdrStdout(){return rdrStdout;}
+  bool isRdrStderr(){return rdrStderr;}
+  string getOutFIFO(){return outFIFO;}
+  string getErrFIFO(){return errFIFO;}
+  bool isNoDrop(){return noDrop;}
+  int getMaxStartN(){return maxStartN;}
+  time_t getDisPeriod(){return disPeriod;}
+  time_t getCheckPeriod(){return checkPeriod;}
+  string getNode(){return node;}
+  string getEnv(string envName);
+  string getEnvs(string sep);
+  string getArgs();
+  /*-------------------------------------------------------------------------*/
+  /* variables (require mutex lock) */
+  bool isFirstStart();
+  unsigned getStartCnt();
+  list<struct timeval>getStartTimes();
+  list<string>getStartTimesStrLst();
+  string getStartTimesStr(string sep);
+  /* respawn control variables (require mutex lock) */
+  int getRcStartTimeN();
+  time_t getRcEnTime();
+  time_t getRcDisTime();
+  bool isRcEnabled();
+  /***************************************************************************/
+  /* set methods */
+  /***************************************************************************/
+  void setUtgid(string utgid){this->utgid=utgid;}
+  void setPath(string path){this->path=path;}
+  void setArgv(vector<string> argv){this->argv=argv;}
+  void setWd(string wd){this->wd=wd;}
+  void setCleanEnv(bool cleanEnv){this->cleanEnv=cleanEnv;}
+  void setEnvp(list<string>envp){this->envp=envp;}
+  void setDaemon(bool daemon){this->daemon=daemon;}
+  void setScheduler(int scheduler){this->scheduler=scheduler;}
+  void setNice(int nice){this->nice=nice;}
+  void setRtPrio(int rtPrio){this->rtPrio=rtPrio;}
+  void setOomScoreAdj(int oomScoreAdj){this->oomScoreAdj=oomScoreAdj;}
+  void setAffMask(unsigned long affMask){this->affMask=affMask;}
+  void setUser(string user){this->user=user;}
+  void setGroup(string group){this->group=group;}
+  void setRdrStdout(bool rdrStdout){this->rdrStdout=rdrStdout;}
+  void setRdrStderr(bool rdrStderr){this->rdrStderr=rdrStderr;}
+  void setOutFIFO(string outFIFO){this->outFIFO=outFIFO;}
+  void setErrFIFO(string errFIFO){this->errFIFO=errFIFO;}
+  void setNoDrop(bool noDrop){this->noDrop=noDrop;}
+  void setMaxStartN(int maxStartN){this->maxStartN=maxStartN;}
+  void setDisPeriod(time_t disPeriod){this->disPeriod=disPeriod;}
+  void setCheckPeriod(time_t checkPeriod){this->checkPeriod=checkPeriod;}
+  void setNode(string node){this->node=node;};
+  void setArgv(char **argv);
+  void setArgs(string args);
+  void setArgs(char *args);
+  void addArg(char *arg){argv.push_back(arg);}
+  void putEnv(string envLine);
+  void setEnv(string envName,string envVal);
+  void unsetEnv(string envName);
+  void clearEnv();
+  void addCpu(unsigned cpuN);
+  void rmCpu(unsigned cpuN);
+  /*-------------------------------------------------------------------------*/
+  /* variables (require mutex lock) */
+  void setFirstStart(bool firstStart);
+  void setStartCnt(unsigned startCnt);
+  void setStartTimes(list<struct timeval>startTimes);
+  void addStartTime();
+  /* respawn control variables (require mutex lock) */
+  void addRcStartTime();
+  void cleanRcStartTimes();
+  void setRcEnabled();
+  void setRcDisabled();
+  void setRcEnTime();
+  void setRcDisTime();
+  void cleanRcDisTime();
+  /***************************************************************************/
+  /* expansion methods                                                       */
+  /***************************************************************************/
+  /* Parameter expansion ${RUN_NODE} -> process running hostname in string s */
+  void parExpand(string &s);
+  /***************************************************************************/
+  /* Parameter expansion ${RUN_NODE} -> process running hostname             */
+  /* in utgid, path, argv, wd, envp, outFIFO, errFIFO                        */
+  void parExpand();
+  /***************************************************************************/
+  /* check methods                                                           */
+  /***************************************************************************/
+  void checkRc();
+  /***************************************************************************/
+  /* print methods                                                           */
+  /***************************************************************************/
+  void printArg(string head,string separator,string trail);
+  void printEnv(string head,string separator,string trail);
+  void printCpu(string head,string separator,string trail);
+  void printStartTimes(string head,string separator,string trail);
+  void printRcStartTimes(int sev);
+  /***************************************************************************/
+  /* operator overloads                                                      */
+  /***************************************************************************/
+  PcProcess& operator=(const PcProcess& rhs);
+  /***************************************************************************/
+  /* constructors                                                            */
+  /***************************************************************************/
+  /* default constructor */
+  PcProcess(string utgid="",string path="",vector<string>argv=vector<string>(),
+            string wd="",int cleanEnv=0,list<string>envp=list<string>(),
+            int daemon=0,int scheduler=0,int nice=0,int rtPrio=0,
+            int oomScoreAdj=0,unsigned long affMask=~0UL,
+            string user=dfltUserName,string group=dfltGroupName,
+            int rdrStderr=0,int rdrStdout=0,string outFIFO="",
+            string errFIFO="",int noDrop=0,int maxStartN=10,
+            time_t disPeriod=300,time_t checkPeriod=120,string node="");
+  /* constructor with argument string args instead of argument vector argv */
+  PcProcess(string utgid,string path,string args,
+            string wd="",int cleanEnv=0,list<string>envp=list<string>(),
+            int daemon=0,int scheduler=0,int nice=0,int rtPrio=0,
+            int oomScoreAdj=0,unsigned long affMask=~0UL,
+            string user=dfltUserName,string group=dfltGroupName,
+            int rdrStderr=0,int rdrStdout=0,string outFIFO="",
+            string errFIFO="",int noDrop=0,int maxStartN=10,
+            time_t disPeriod=300,time_t checkPeriod=120,string node="");
+  /* copy constructor */
+  PcProcess(const PcProcess& rhs);
+  /***************************************************************************/
+  /* destructor                                                              */
+  /***************************************************************************/
+  virtual ~PcProcess();
+  /***************************************************************************/
+};
+/* ######################################################################### */
+#endif                                                     /* _PC_PROCESS_IC */
+/* ######################################################################### */

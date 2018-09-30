@@ -1,0 +1,188 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man8/cpuinfoSrv.8.html">cpuinfoSrv(8)</A></B>                     FMC Servers                    <B><A HREF="../../htmlMan/man8/cpuinfoSrv.8.html">cpuinfoSrv(8)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>cpuinfoSrv</B> <B>-</B> FMC CPU Information Server
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>cpuinfoSrv</B> [<B>-d...</B>]  [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-l</B> <I>LOGGER</I>]
+       <B>cpuinfoSrv</B> <B>-h</B>
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The  FMC  CPU  Information  Server, <B><A HREF="../../htmlMan/man8/cpuinfoSrv.8.html">cpuinfoSrv(8)</A></B> retrieves information
+       concerning the CPU(s) installed on the current farm  node  and  publish
+       them using DIM.
+
+       The  DIM  Name Server, looked up by <B>cpuinfoSrv</B> to register the provided
+       DIM services, can be chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file <B>/etc/sysconfig/dim</B>.
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B>     Get basic usage help from the command line then exit.
+
+       <B>-d</B>     Increase verbosity for debugging.
+
+       <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-l</B> <I>LOGGER</I> <I>(integer)</I>
+              Use the logger units defined in the <I>LOGGER</I> mask to send diagnos-
+              tic and information messages. The <I>LOGGER</I> mask can be the bitwise
+              <I>OR</I> of the following logger units:
+
+              0x1    the default FMC Message Logger (fifo: /tmp/logSrv.fifo);
+
+              0x2    the standard error stream;
+
+              0x4    the operating system syslog facility.
+
+              <B>Default</B>: <I>LOGGER</I> = 0x1.
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries  "libdim",  "libFMCutils"
+              and "libFMCsensors".
+
+       <B>UTGID</B> (string, optional)
+              UTGID of the cpuinfoSrv process.
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Start the FMC CPU Information Server, getting the DIM_DNS_NODE from the
+       file <I>/etc/sysconfig/dim</I> and sending diagnostic messages to the  default
+       FMC Message Logger:
+
+       <I>bash$</I> <B>/opt/FMC/sbin/cpuinfoSrv</B>
+
+
+</PRE>
+<H2>DIM INFORMATION</H2><PRE>
+   <B>DIM</B> <B>Server</B> <B>Name</B>
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/cpu/info
+              where  <I>HOST</I><B>_</B><I>NAME</I>  is  the  host  name of the current PC (running
+              <B><A HREF="../../htmlMan/man8/cpuinfoSrv.8.html">cpuinfoSrv(8)</A></B>), as returned by the command  "hostname  -s",  but
+              written in upper case characters.
+
+   <B>Published</B> <B>DIM</B> <B>Services</B>
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/cpu/info/server_version (string)
+              Publishes  a  NULL-terminated string containing the RCS revision
+              label of the <B>cpuinfoSrv.c</B> source code of the  current  <B>cpuinfoS-</B>
+              <B><A HREF="../../htmlMan/man8/rv.8.html">rv(8)</A></B>    instance,   as   returned   by   the   command   "ident
+              /opt/FMC/sbin/cpuinfoSrv"; in the present case:
+
+              "cpuinfoSrv.c,v 2.37 2009/10/03 16:06:03 galli".
+
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/cpu/info/sensor_version (string)
+              Publishes a NULL-terminated string containing the  RCS  revision
+              label  of  the  <B>getCpuinfoFromProc.c</B>  source code of the current
+              <B><A HREF="../../htmlMan/man8/cpuinfoSrv.8.html">cpuinfoSrv(8)</A></B>  instance,  as  returned  by  the  command  "ident
+              /opt/FMC/lib/libFMCsensors*"; in the present case:
+
+              "getCpuinfoFromProc.c,v 1.11 2008/10/21 11:24:37 galli".
+
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/cpu/info/fmc_version (string)
+              Publishes a NULL-terminated string containing the revision label
+              of the FMC package which includes the current <B><A HREF="../../htmlMan/man8/cpuinfoSrv.8.html">cpuinfoSrv(8)</A></B> exe-
+              cutable, in the present case:
+
+              "3.9.14".
+
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/cpu/info/success (int)
+              Publishes the integer 1 if data are retrieved, 0 otherwise. This
+              services can also be used to check whether the current  instance
+              of <B><A HREF="../../htmlMan/man8/cpuinfoSrv.8.html">cpuinfoSrv(8)</A></B> is up and running.
+
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/cpu/info/devices (string[])
+              Publishes  a  sequence of NULL-terminated strings containing the
+              labels of the CPU cores in the current node, e.g.:
+
+              "core_00" "core_01" "core_02" ...
+
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/cpu/info/labels (string[14])
+              Publishes a sequence of 14  NULL-terminated  strings  containing
+              the labels of the published quntities:
+
+              "vendor  id"  "family"  "model"  "model name" "stepping" "clock"
+              "cache size" "hyper-thread"  "multi-core"  "physical  id"  "sib-
+              lings" "core id" "cpu cores" "performance".
+
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/cpu/info/units (string[14])
+              Publishes  a  sequence  of 14 NULL-terminated strings containing
+              the units of the published quntities:
+
+              "" "" "" "" "" "MHz" "KiB" "" "" "" "" "" "" "bogomips".
+
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/cpu/info/core_00/data (string[14])
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/cpu/info/core_01/data (string[14])
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/cpu/info/core_02/data (string[14])
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/cpu/info/core_../data (string[14])
+
+              Publish a sequence of 14 NULL-terminated strings containing the
+              published quntities for the core 0, 1, 2, etc.:
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information on how to get the FMC (Farm Monitoring and Control System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development Homepage &lt;https://lhcbweb.bo.infn.it/twiki/bin/
+       view.cgi/LHCbBologna/FmcLinux&gt;.
+
+       CERN ITCOBE: FW Farm Monitor and Control &lt;http://itcobe.web.cern.ch/
+       itcobe/Projects/Framework/Download/Components/SystemOverview/fwFMC/wel-
+       come.html&gt;.
+
+       LHCb Online RPMs &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/
+       index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  cpuinfoSrv.c,v 2.37 2009/10/03 16:06:03 galli
+       Source:  getCpuinfoFromProc.c,v 1.11 2008/10/21 11:24:37 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO</H2><PRE>
+       <B><A HREF="../../htmlMan/man1/cpuinfoViewer.1.html">cpuinfoViewer(1)</A></B>.
+       <B>/proc/cpuinfo</B>
+       <B>/usr/share/doc/kernel-doc-2.6.9/Documentation/filesystems/proc.txt</B>
+
+FMC-3.9.14                        2012-12-19                     <B><A HREF="../../htmlMan/man8/cpuinfoSrv.8.html">cpuinfoSrv(8)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

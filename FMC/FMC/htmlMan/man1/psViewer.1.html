@@ -1,0 +1,518 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/psViewer.1.html">psViewer(1)</A></B>                    FMC User Commands                   <B><A HREF="../../htmlMan/man1/psViewer.1.html">psViewer(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>psViewer</B> <B>-</B> Get information and statistics about the processes or the
+                  tasks running on the farm nodes from the FMC Process Monitor
+                  Servers
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>psViewer</B> [<B>-v</B> | <B>--debug</B>] [<B>-N</B> | <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>]
+                [<B>-m</B> | <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]  [<B>-c</B> | <B>--compact</B>]
+                [<B>-H</B> | <B>--header</B>] [<B>-a</B> | <B>--all</B>] [<B>--ids</B>] [<B>--owner</B>] [<B>--sched</B>]
+                [<B>--stat</B>] [<B>--size</B>] [<B>--sig</B>] [<B>--time</B>] [<B>--cmd</B>] [<B>--cmdlen</B> <I>LEN</I>]
+                [<B>-t</B> | <B>--threads</B>] [<B>-u</B> | <B>--utgid-only</B>]
+                [<B>-U</B> | <B>--select-utgid</B> <I>UTGID</I><B>_</B><I>PATTERN</I>]
+                [<B>-C</B> | <B>--select-cmd</B> <I>CMD</I><B>_</B><I>PATTERN</I>]
+
+       <B>psViewer</B> { <B>-V</B> | <B>--version</B> } [<B>-v</B> | <B>--debug</B>]
+                [<B>-N</B> | <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>]
+                [<B>-m</B> | <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]
+
+       <B>psViewer</B> { <B>-h</B> | <B>--help</B> }
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       Get  the  information  and the statistics about the <B>processes</B> -- if the
+       command line option <B>-t</B> is not specified -- or about  the  <B>threads</B>  (aka
+       <B>light-weight</B>  <B>processes</B>  or  <B>tasks</B>) -- if the command line option <B>-t</B> is
+       specified -- running on the farm nodes whose hostname matches at  least
+       one  of  the  wildcard  patterns  <I>NODE</I><B>_</B><I>PATTERN</I>,  specified using the <B>-m</B>
+       <I>NODE</I><B>_</B><I>PATTERN</I> command line option (<B>default</B>:  all  the  nodes  registered
+       with the DIM name server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>).
+
+       Thread-specifid  cumulative  data  (e.g.  CPU usage or minor/major page
+       fault rate) refer to the single thread if threads  are  printed,  while
+       are the <B>sum</B> over the component threads if the processes are printed.
+
+       Basic  information  (provided  without  any  other command line option)
+       includes 6 fields:
+
+       <B>CMD</B> (alias COMM, COMMAND, UCMD, UCOMM)
+              Command name, i.e. the basename (w/o  path)  of  the  executable
+              image  file, without arguments, eventually truncated at 15 char-
+              acters.
+
+       <B>UTGID</B>  FMC User-assigned unique Thread Group Identifier,  if  available
+              (e.g. if the process has been started by the FMC Task Manager or
+              has the variable UTGID defined in the process environment). Oth-
+              erwise "N/A" is printed.
+
+       <B>TID</B> (alias LWP, SPID)
+              Thread  Identifier, aka Light Weight Process Identifier. The <B>TID</B>
+              of the thread group leader is equal to the  <B>TGID</B>  (Thread  Group
+              Identifier,  the  old  <B>PID</B>).  When  processes  (as  opposite  to
+              threads) are printed, <B>TID</B> always coincide with <B>TGID</B> (<B>PID</B>).
+
+       <B>USER</B> (alias EUSER, UNAME)
+              <B>Effective</B> user name. Used for all the security checks. The  only
+              user name of the process that normally has any effect.
+
+       <B>TTY</B> (alias TT, TNAME)
+              The name of the controlling tty (terminal) if available, a ques-
+              tion mark (<B>?</B>) otherwise.
+
+       <B>NLWP</B> (alias THCNT)
+              Number of Lightweight Processes (Threads) in the process (thread
+              group).
+
+       The  DIM Name Server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>, looked up to seek for FMC CPU Infor-
+       mation Servers, can be chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file "<B>/etc/sysconfig/dim</B>".
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+   <B>General</B> <B>Options</B>
+       <B>-h</B> <B>--help</B>
+              Get basic usage help from the command line, then terminate.
+
+       <B>-v</B> <B>--debug</B>
+              Increase verbosity for debugging.
+
+       <B>-N</B> <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-m</B> <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Print only the process/task information of the farm nodes  whose
+              hostname   matches   at  least  one  of  the  wildcard  patterns
+              <I>NODE</I><B>_</B><I>PATTERN</I> (<B>default</B>: print the process/task information of all
+              the nodes registered with the DIM name server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>).
+
+       <B>-V</B> <B>--version</B>
+              For each selected node print the FMC Process Monitor Server ver-
+              sion and the FMC version, than terminate.
+
+       <B>-c</B> <B>--compact</B>
+              Print the process/task information in compact format (easier  to
+              parse): one process/task per line, no labels, no units, no sepa-
+              rator lines.
+
+       <B>-H</B> <B>--header</B>
+              If the compact output format has been choosen, print  a  heading
+              line with the output field labels.
+
+   <B>Process</B> <B>selection</B> <B>Options</B>
+       <B>-u</B> <B>--utgid-only</B>
+              Show  only  processes  which  have the <B>UTGID</B> set (e.g. processes
+              started by the FMC Task Manager  or  processes  which  have  the
+              variable <B>UTGID</B> defined in the process environment).
+
+       <B>-U</B> <B>--select-utgid</B> <I>UTGID</I><B>_</B><I>PATTERN</I> <I>(string)</I>
+              Show  only  processes  which  have the <B>UTGID</B> set and whose <B>UTGID</B>
+              matches the wildcard pattern <I>UTGID</I><B>_</B><I>PATTERN</I>.
+
+       <B>-C</B> <B>--select-cmd</B> <I>CMD</I><B>_</B><I>PATTERN</I> <I>(string)</I>
+              Show only processes whose command (basename  of  the  executable
+              image  file  w/o  arguments),  cut at 15 characters, matches the
+              wildcard pattern <I>CMD</I><B>_</B><I>PATTERN</I>.
+
+   <B>Data</B> <B>selection</B> <B>Options</B>
+       <B>--ids</B>  Toggle the  printout  of  the  following  5  process  identifier
+              fields:
+
+              <B>TGID</B> (alias PID)
+                     Thread  Group Identifier (the former PID, Process Identi-
+                     fier). The term <B>process</B> is synonymous of <B>thread</B> <B>group</B>.
+
+              <B>PPID</B>   Parent Process Identifier, i.e. the Thread Group  Identi-
+                     fier of the parent process.
+
+              <B>PGID</B> (alias PGRP)
+                     Process  Group Identifierr, i.e. the Thread Group Identi-
+                     fier of the process group leader. Every process is member
+                     of  a unique process group. The processes of one pipeline
+                     form a single process group. Among the process groups  in
+                     a  session,  at  most  one  can be the <B>foreground</B> <B>process</B>
+                     <B>group</B> of that session. The tty (teminal)  input  and  tty
+                     signals (signals generated by Ctrl-C, Ctrl-Z, etc.) go to
+                     processes in this foreground process group.  All  process
+                     groups in a session that are not foreground process group
+                     are <B>background</B> <B>process</B> <B>groups</B>.
+
+              <B>SID</B> (alias SESS, SESSION)
+                     Session Identifier, i.e. the Thread Group  Identifier  of
+                     the  session  leader.  Every process group is in a unique
+                     session. Every session may have a controlling tty (termi-
+                     nal), that is also the controlling tty of each one of its
+                     member processes. A session is often set up  by  a  login
+                     process.
+
+              <B>TPGID</B>  Terminal Process Group Identifier, i.e. the Process Group
+                     Identifier of the process which currently  owns  the  tty
+                     (terminal) that the process is connected to, or -1 if the
+                     process is not connected to a tty.
+
+       <B>--owner</B>
+              Toggle the printout -- in addition to  the  <B>USER</B>  (alias  EUSER,
+              effective  user  name)  field, which is always printed -- of the
+              following 7 process owner user/group fields:
+
+              <B>FUSER</B>  <B>Filesystem</B> <B>access</B> user name.  Used  only  in  file-system
+                     access. Can be set to any of the current effective, saved
+                     or real user names. Processes with  "root"  as  effective
+                     user name can set their filesystem access user name to an
+                     arbitrary value. Used, e.g., by  the  Linux's  user-space
+                     NFS server.
+
+              <B>RUSER</B>  <B>Real</B>  user  name. Checked only when a process attempts to
+                     change its effective user name. Any  process  may  change
+                     its  effective  user name to the same value as either its
+                     saved or real user name. Only processes  with  "root"  as
+                     effective  user name may change their effective user name
+                     to an arbitrary value. Used, e.g., by "ftpd" and "passwd"
+                     programs.
+
+              <B>SUSER</B>  <B>Saved</B>  user name. Checked only when a process attempts to
+                     change its effective user name. Any  process  may  change
+                     its  effective  user name to the same value as either its
+                     saved or real user name. Only processes  with  "root"  as
+                     effective  user name may change their effective user name
+                     to an arbitrary value. Used, e.g., by "ftpd" and "passwd"
+                     programs.
+
+              <B>GROUP</B> (alias EGROUP)
+                     <B>Effective</B>  group  name. Used for all the security checks.
+                     The only group name of the process that normally has  any
+                     effect.
+
+              <B>FGROUP</B> <B>Filesystem</B>  <B>access</B>  group  name. Used only in file-system
+                     access. Can be set to any of the current effective, saved
+                     or  real  group names. Processes with "root" as effective
+                     group name can set their filesystem access group name  to
+                     an arbitrary value. Used, e.g., by the Linux's user-space
+                     NFS server.
+
+              <B>RGROUP</B> <B>Real</B> group name. Checked only when a process attempts  to
+                     change  its  effective group name. Any process may change
+                     its effective group name to the same value as either  its
+                     saved  or  real group name. Only processes with "root" as
+                     effective group name may  change  their  effective  group
+                     name  to  an  arbitrary  value. Used, e.g., by "ftpd" and
+                     "passwd" programs.
+
+              <B>SGROUP</B> <B>Saved</B> group name. Checked only when a process attempts to
+                     change  its  effective group name. Any process may change
+                     its effective group name to the same value as either  its
+                     saved  or  real group name. Only processes with "root" as
+                     effective group name may  change  their  effective  group
+                     name  to  an  arbitrary  value. Used, e.g., by "ftpd" and
+                     "passwd" programs.
+
+       <B>--sched</B>
+              Toggle the  printout  of  the  following  4  process  scheduling
+              fields:
+
+              <B>SCH</B> (alias CLS, POL)
+                     Scheduling  class of the process. Possible values of this
+                     fields are:
+
+                      <B>TS</B>     <I>SCHED</I><B>_</B><I>OTHER</I>,  the  default   Linux   time-sharing
+                             scheduler,  with  a dynamic priority based on the
+                             nice level.
+
+                      <B>FF</B>     <I>SCHED</I><B>_</B><I>FIFO</I>, the static-priority  Linux  real-time
+                             FIFO scheduler, without time slicing.
+
+                      <B>RR</B>     <I>SCHED</I><B>_</B><I>RR</I>,  the  static-priority  Linux  real-time
+                             Round-Robin scheduler.
+
+                      <B>N/A</B>    Not reported.
+
+                      <B>?</B>      Unknown value.
+
+              <B>RTPRIO</B> Static (real-time) priority of the process. Only value  0
+                     is allowed for TS processes. For FF and RR real-time pro-
+                     cesses, allowed values are in the range 1...99 (0 is  the
+                     least favorable priority, 99 is the most favorable prior-
+                     ity).
+
+              <B>NICE</B> (alias NI)
+                     The nice level of the  process,  used  by  the  TS  Linux
+                     scheduler to compute the dynamic priority. Allowed values
+                     for nice level are in the range -20...19 (-20 corresponds
+                     to  the  most favorable scheduling; 19 corresponds to the
+                     least favorable scheduling).
+
+              <B>PRIO</B> (alias PRI, PR)
+                     Kernel scheduling priority. Possible values  are  in  the
+                     range  -100...39 (-100 is the most favorable priority, 39
+                     is the least favorable priority). TS processes have  PRIO
+                     in the range 0...39, FF and RR processes have PRIO in the
+                     range -100...-1.
+
+       <B>--stat</B> Toggle the printout of the following 6 process state fields:
+
+              <B>%CPU</B> (alias PCPU, CP, C)
+                     The task's share of the CPU time since the  last  update,
+                     expressed  as a percentage of the total CPU time per pro-
+                     cessor. <B>Maximum</B>: 100% x CPU_core_number.
+
+              <B>%MEM</B> (alias PMEM)
+                     The ratio of the process's resident set size to the phys-
+                     ical  memory  on  the machine, expressed as a percentage.
+                     <B>Maximum</B>: 100%.
+
+              <B>MIN_FLT</B>
+                     The rate (page faults per second) of page faults the pro-
+                     cess  has  made  which have not required loading a memory
+                     page from disk.
+
+              <B>MAJ_FLT</B>
+                     The rate (page faults per second) of page faults the pro-
+                     cess  has  made which have required loading a memory page
+                     from disk.
+
+              <B>STAT</B> (alias S)
+                     The multi-characters process state of the task. The mean-
+                     ing of the first character is:
+
+                      <B>D</B>      Uninterruptible sleep (usually I/O);
+
+                      <B>R</B>      Running or runnable (on run queue);
+
+                      <B>S</B>      Interruptible sleep (waiting for an event to com-
+                             plete);
+
+                      <B>T</B>      Stopped,  either  by  a  job  control  signal  or
+                             because it is being traced;
+
+                      <B>X</B>      Dead (should never be seen);
+
+                      <B>Z</B>      Defunct  ("zombie")  process,  terminated but not
+                             reaped by its parent.
+
+                     The meaning of the following characters is:
+
+                      <B>&lt;</B>      Higher-priority (not nice to other users);
+
+                      <B>N</B>      Lower-priority (nice to other users);
+
+                      <B>L</B>      Has pages locked into memory (for  real-time  and
+                             custom I/O);
+
+                      <B>s</B>      Is a session leader;
+
+                      <B>l</B>      Is  multi-threaded (using CLONE_THREAD, like NPTL
+                             pthreads does);
+
+                      <B>+</B>      Is in the foreground process group.
+
+              <B>PSR</B> (alias CPUID, P)
+                     The processor that process is currently assigned  to.  It
+                     is useful to check the operation of process-to-CPU affin-
+                     ity setting by the FMC Task Manager.
+
+       <B>--size</B> Toggle the printout of the following 8 process size fields:
+
+              <B>VSIZE</B> (alias VSZ, VIRT)
+                     The total size of the process's  memory  footprint.  This
+                     includes  the text segment, stack, static variables, data
+                     segment, and pages which are shared with other processes.
+
+              <B>LOCK</B>   The  amount  of  the  process's memory which is currently
+                     locked by the kernel. Locked  memory  cannot  be  swapped
+                     out.
+
+              <B>RSS</B> (alias RSZ, RES, RESIDENT)
+                     The  kernel's  estimate of the resident set size for this
+                     process.
+
+              <B>DATA</B>   The amount of memory used for data  by  the  process.  It
+                     includes  static  variables  and  the  data  segment, but
+                     excludes the stack.
+
+              <B>STACK</B>  The amount of memory consumed by the process's stack.
+
+              <B>EXE</B>    The size of the  process's  executable  pages,  excluding
+                     shared pages.
+
+              <B>LIB</B>    The  size of the shared memory pages mapped into the pro-
+                     cess's address space. This excludes  pages  shared  using
+                     System V style IPC.
+
+              <B>SHARE</B> (alias SHRD, SHR)
+                     The size of the pages of shared (mmap-ed) memory.
+
+       <B>--sig</B>  Toggle  the  printout  of  the  following  4 process signal mask
+              fields:
+
+              <B>IGNORED</B> (alias SIGIGNORE)
+                     The 64-bit mask of the ignored signals.
+
+              <B>PENDING</B> (alias SIGPEND)
+                     The 64-bit mask of the pending signals.
+
+              <B>CATCHED</B> (alias SIGCATCH, CAUGHT)
+                     The 64-bit mask of the caught signals.
+
+              <B>BLOCKED</B> (alias SIGBLOCKED)
+                     The 64-bit mask of the blocked signals.
+
+       <B>--time</B> Toggle the printout of the following 3 process time fields:
+
+              <B>STARTED</B> (alias STARTTIME, START)
+                     The process's start time.
+
+              <B>ELAPSED</B> (alias ELAPSEDTIME)
+                     The time elapsed since the process was started.
+
+              <B>CPUTIME</B> (alias TIME)
+                     The process's cumulative CPU time.
+
+       <B>--cmd</B>  Toggle the printout of the field:
+
+              <B>CMDLINE</B> (alias ARGS, CMD, COMMAND)
+                     The complete command  line  with  its  arguments  (up  to
+                     PATH_MAX  =  4096  characters). The output in this column
+                     may contain spaces.
+
+       <B>--cmdlen</B> <I>LEN</I> <I>(integer)</I>
+              If the <I>CMDLINE</I> field has to be printed, cut it  at  <I>LEN</I>  charac-
+              ters.
+
+       <B>-a</B> <B>--all</B>
+              Toggle  all  the  optional  (non-basic)  fields.  Equivalent to:
+              "--ids --owner --sched --stat --size --sig --time --cmd".
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries  "libdim"  and  "libFMCu-
+              tils".
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Show the basic fields:
+
+       <I>bash$</I> <B>psViewer</B>
+
+       Show all the fields:
+
+       <I>bash$</I> <B>psViewer</B> <B>-a</B>
+       <I>bash$</I> <B>psViewer</B> <B>--all</B>
+
+       Print output in compact format with header:
+
+       <I>bash$</I> <B>psViewer</B> <B>-acH</B>
+       <I>bash$</I> <B>psViewer</B> <B>-a</B> <B>-c</B> <B>-H</B>
+       <I>bash$</I> <B>psViewer</B> <B>--all</B> <B>--compact</B> <B>--header</B>
+       <I>bash$</I> <B>psViewer</B> <B>--a</B> <B>--co</B> <B>--hea</B>
+
+       Show only the processes which have the UTGID set:
+
+       <I>bash$</I> <B>psViewer</B> <B>-au</B>
+       <I>bash$</I> <B>psViewer</B> <B>--all</B> <B>--utgid</B>
+
+       Show basic + scheduling fields:
+
+       <I>bash$</I> <B>psViewer</B> <B>--sched</B>
+       <I>bash$</I> <B>psViewer</B> <B>--sc</B>
+
+       Show basic + scheduling + state + size fields:
+
+       <I>bash$</I> <B>psViewer</B> <B>--sched</B> <B>--stat</B> <B>--size</B>
+       <I>bash$</I> <B>psViewer</B> <B>--sc</B> <B>--st</B> <B>--siz</B>
+
+       Show all but signal fields:
+
+       <I>bash$</I> <B>psViewer</B> <B>--all</B> <B>--sig</B>
+
+       Show all but signal and command-line fields:
+
+       <I>bash$</I> <B>psViewer</B> <B>--all</B> <B>--sig</B> <B>--cmd</B>
+
+       Show the CMDLINE field and cut it at 30 characters:
+
+       <I>bash$</I> <B>psViewer</B> <B>--cmd</B> <B>--cmdlen</B> <B>30</B>
+
+       Show all but signal field and cut the CMDLINE field at 30 characters:
+
+       <I>bash$</I> <B>psViewer</B> <B>--all</B> <B>--sig</B> <B>--cmdlen</B> <B>30</B>
+
+       Show only processes running on selected nodes:
+
+       <I>bash$</I> <B>psViewer</B> <B>-m</B> <B>farm0101</B> <B>-m</B> <B>farm0102</B> <B>-u</B> <B>--sched</B>
+
+       Show only processes running on wildcard-selected nodes:
+
+       <I>bash$</I> <B>psViewer</B> <B>-m</B> <B>"farm01*"</B> <B>-m</B> <B>"farm02*"</B> <B>-u</B> <B>--sched</B> <B>--stat</B>
+       <I>bash$</I> <B>psViewer</B> <B>-m</B> <B>"farm010[1357]"</B> <B>-u</B> <B>--size</B>
+
+       Show the server version installed on the farm nodes:
+
+       <I>bash$</I> <B>psViewer</B> <B>-V</B>
+       <I>bash$</I> <B>psViewer</B> <B>--version</B>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information  on how to get the FMC (Farm Monitoring and Control System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development  Homepage  &lt;https://lhcbweb.bo.infn.it/twiki/bin/
+       view.cgi/LHCbBologna/FmcLinux&gt;.
+
+       CERN  ITCOBE:  FW  Farm Monitor and Control &lt;http://itcobe.web.cern.ch/
+       itcobe/Projects/Framework/Download/Components/SystemOverview/fwFMC/wel-
+       come.html&gt;.
+
+       LHCb Online RPMs &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/
+       index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  psViewer.C,v 2.4 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO:</H2><PRE>
+       <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/psSetProperties.1.html">psSetProperties(1)</A></B>.
+       <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/tmStart.1.html">tmStart(1)</A></B>.
+       <B><A HREF="../../htmlMan/man1/top.1.html">top(1)</A></B>, <B><A HREF="../../htmlMan/man1/ps.1.html">ps(1)</A></B>, <B><A HREF="../../htmlMan/man5/proc.5.html">proc(5)</A></B>.
+       <B>/usr/share/doc/kernel-doc-2.6.9/Documentation/filesystems/proc.txt.</B>
+
+FMC-3.9.14                        2012-12-19                       <B><A HREF="../../htmlMan/man1/psViewer.1.html">psViewer(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

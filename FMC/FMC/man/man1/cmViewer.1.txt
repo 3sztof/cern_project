@@ -1,0 +1,50 @@
+
+NAME
+       cmViewer - View configurations set in the FMC Configuration Manager
+
+SYNOPSIS
+       cmViewer [-N DIM_DNS_NODE] [-C CTRL_PC_PATTERN...] [-v...]
+       cmViewer -V [-C CTRL_PC_PATTERN...]
+       cmViewer -h
+
+DESCRIPTION
+       Print the configurations set in the FMC Configuration Manager.
+       DIM Name Server can be chosen (in decreasing order of priority) by:
+              1. Specifying the -N DIM_DNS_NODE command-line option;
+              2. Specifying the DIM_DNS_NODE environment variable;
+              3. Defining the DIM_DNS_NODE in the file "/etc/sysconfig/dim".
+
+OPTIONS
+       -h     Get basic usage help from the command line.
+       -V     For each selected node print the FMC Configuration Manager
+              Server version and FMC version, than exit.
+       -N DIM_DNS_NODE (string)
+              Use DIM_DNS_NODE as DIM Name Server node.
+       -C CTRL_PC_PATTERN (string, repeatable)
+              Print configuration of control PCs whose hostname matches the
+              wildcard pattern CTRL_PC_PATTERN (default: all the nodes).
+       -v (repeatable)
+              Increase verbosity for debugging.
+
+ENVIRONMENT
+       DIM_DNS_NODE (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+       LD_LIBRARY_PATH (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries "libdim.so"
+              and "libFMCutils-2.so".
+
+EXAMPLES
+       cmViewer
+       cmViewer -C ctrl01
+       cmViewer -C ctrl0[1-3]
+
+AUTHOR
+       Domenico Galli <domenico.galli@bo.infn.it>
+
+VERSION
+       Source:  cmViewer.C,v 1.13 2007/12/13 08:39:54 galli
+       Package: FMC-3.9.2
+
+SEE ALSO
+       cmSrv(FMC), cmSetIpmi(FMC), cmSetPc(FMC).
+

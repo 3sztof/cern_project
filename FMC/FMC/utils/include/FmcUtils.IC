@@ -1,0 +1,70 @@
+/* ######################################################################### */
+/*
+ * $Log: FmcUtils.IC,v $
+ * Revision 1.7  2012/11/29 15:52:27  galli
+ * Compatibility with gcc/g++ 4.4.6
+ *
+ * Revision 1.6  2008/10/14 11:59:54  galli
+ * additional parameter (with default value) to printLogServerVersion()
+ *
+ * Revision 1.5  2008/10/13 11:51:54  galli
+ * added function printLogServerVersion()
+ *
+ * Revision 1.4  2008/10/09 07:51:30  galli
+ * added function ultoso()
+ *
+ * Revision 1.3  2008/09/30 13:04:19  galli
+ * added functions toLower() and printServerVersion()
+ *
+ * Revision 1.2  2008/09/26 20:35:11  galli
+ * added static method ultos()
+ *
+ * Revision 1.1  2008/09/22 07:45:19  galli
+ * Initial revision
+ */
+/* ######################################################################### */
+#include <stdio.h>
+#include <string>
+#include <vector>
+#include <algorithm>                                     /* stl::transform() */
+#include <cctype>                                          /* stl::toupper() */
+#include <iostream>
+#include <sstream>
+#include <fnmatch.h>                                            /* fnmatch() */
+/*---------------------------------------------------------------------------*/
+#include <dic.hxx>
+/*---------------------------------------------------------------------------*/
+#ifndef _FMC_UTILS_IC
+#define _FMC_UTILS_IC 1
+/* ######################################################################### */
+using namespace std;
+/* ######################################################################### */
+class FmcUtils
+{
+  /***************************************************************************/
+  public:
+  /***************************************************************************/
+  static string toUpper(string &s);
+  static string toLower(string &s);
+  static string itos(int i);
+  static string utos(unsigned i);
+  static string ltos(long i);
+  static string ultos(unsigned long i);
+  static string ultosx(unsigned long i);
+  static string ultoso(unsigned long i);
+  static void printServerVersion(int hostPttnC, char **hostPttnV,
+                                 string svcHead, string srvName, int deBug,
+                                 int width1, int width2,
+                                 unsigned slashInName=0);
+  static void printServerVersion(vector<string> hostPttn, string svcHead,
+                                 string srvName, int deBug, int width1,
+                                 int width2, unsigned slashInName=0);
+  static void printLogServerVersion(vector<string> hostPttn,
+                                    vector<string> logPttn,
+                                    string svcHead, int deBug,
+                                    int width1, int width2);
+  /***************************************************************************/
+};
+/* ######################################################################### */
+#endif                                                      /* _FMC_UTILS_IC */
+/* ######################################################################### */

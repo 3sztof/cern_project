@@ -1,0 +1,236 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/cmSet.1.html">cmSet(1)</A></B>                       FMC User Commands                      <B><A HREF="../../htmlMan/man1/cmSet.1.html">cmSet(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>cmSet</B> <B>-</B> Write a file to one or more farm nodes through the FMC Configu-
+               ration Manager
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>cmSet</B> [<B>-v...</B>]  [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-m</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]  [<B>-f</B>]
+             [<B>-t</B> <I>RPC</I><B>_</B><I>TIME</I><B>_</B><I>OUT</I>] [<B>-M</B> <I>PERMISSION</I>] [<B>-u</B> <I>UID</I>] [<B>-g</B> <I>GID</I>]
+             [<B>-i</B> <I>INPUT</I><B>_</B><I>FILE</I><B>_</B><I>PATH</I>] <B>-p</B> <I>FILE</I><B>_</B><I>PATH</I>
+
+       <B>cmSet</B> <B>-V</B> [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-m</B> <I>NODE</I><B>_</B><I>PATTERN</I>]
+
+       <B>cmSet</B> <B>-h</B>
+
+
+</PRE>
+<H2>INTRODUCTION</H2><PRE>
+       The FMC <B>Configuration</B> <B>Manager</B> is a tool to <B>read</B>, <B>write</B> and <B>remove</B>  <B>con-</B>
+       <B>figuration</B>  <B>files</B> (more generally, ASCII files) to/from the farm nodes.
+
+       The Process Controller Server, <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B>, typically runs  on  each  farm
+       node and allows to access the files on the node it is running on.
+
+       The  Process  Controller  Clients <B><A HREF="../../htmlMan/man1/cmSet.1.html">cmSet(1)</A></B>, <B><A HREF="../../htmlMan/man1/cmUnset.1.html">cmUnset(1)</A></B> and <B><A HREF="../../htmlMan/man1/cmGet.1.html">cmGet(1)</A></B> can
+       contact one or more Process Controller Servers running on remote  nodes
+       to write files, remove files and read files respectively.
+
+       File  access  can be <B>restricted</B> in 2 different ways simultaneously: (a)
+       by means of a username/hostname access control and (b) by  means  of  a
+       filename access control. See <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B> for more information.
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The  command  <B><A HREF="../../htmlMan/man1/cmSet.1.html">cmSet(1)</A></B>  <B>writes</B>  the file at path <I>INPUT</I><B>_</B><I>FILE</I><B>_</B><I>PATH</I> on the
+       local host (if the option <B>-i</B> <I>INPUT</I><B>_</B><I>FILE</I><B>_</B><I>PATH</I> is specified) or the  file
+       got  from the standard input (if the option <B>-i</B> <I>INPUT</I><B>_</B><I>FILE</I><B>_</B><I>PATH</I> is omit-
+       ted) to the absolute path <I>FILE</I><B>_</B><I>PATH</I> into all the farm nodes whose host-
+       name matches at least one of the wildcard patterns <I>NODE</I><B>_</B><I>PATTERN</I>.
+
+       If  the  file  content  is  got  from  the  standard  input  (option <B>-i</B>
+       <I>INPUT</I><B>_</B><I>FILE</I><B>_</B><I>PATH</I> omitted) the user is asked to  type  the  file  content
+       into  the  terminal.  To terminate the text input, the character <B>Ctrl-D</B>
+       must be typed in a new line.
+
+       Unless the option <B>-f</B> (force) is specified,  before  proceeding  writing
+       the  files,  the  list  of  the  nodes  matching  the wildcard patterns
+       <I>NODE</I><B>_</B><I>PATTERN</I> is shown and a <B>confirmation</B> is asked.
+
+       The DIM Name Server, looked  up  to  seek  for  Configuration  Managers
+       Servers, can be chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file "<B>/etc/sysconfig/dim</B>".
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B>     Get basic usage help from the command line, then terminate.
+
+       <B>-v</B>     Increase verbosity for debugging.
+
+       <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-m</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Operate  only with the nodes whose hostname matches at least one
+              of the wildcard patterns <I>NODE</I><B>_</B><I>PATTERN</I> (<B>default</B>: operate with all
+              the nodes).
+
+       <B>-V</B>     For  each  selected  node  print  the  FMC Configuration Manager
+              Server version and the FMC version, than terminate.
+
+       <B>-p</B> <I>FILE</I><B>_</B><I>PATH</I> <I>(string,</I> <I>mandatory)</I>
+              Write to the files at path <I>FILE</I><B>_</B><I>PATH</I> into the selected nodes.
+
+       <B>-i</B> <I>INPUT</I><B>_</B><I>FILE</I><B>_</B><I>PATH</I> <I>(string)</I>
+              Get the content to be written to files <I>FILE</I><B>_</B><I>PATH</I> in the selected
+              nodes,  from the file at path <I>INPUT</I><B>_</B><I>FILE</I><B>_</B><I>PATH</I> on the local host.
+              <B>Default</B>: get the content from the standard input stream.
+
+       <B>-f</B>     Do not ask for a  confirmation  before  proceeding  writing  the
+              files.  <B>Default</B> before proceeding writing the files, the list of
+              the nodes matching the wildcard patterns <I>NODE</I><B>_</B><I>PATTERN</I>  is  shown
+              and a confirmation is asked.
+
+       <B>-t</B> <I>RPC</I><B>_</B><I>TIME</I><B>_</B><I>OUT</I> <I>(integer)</I>
+              Set  the timeout for the Remote Procedure Call to <I>RPC</I><B>_</B><I>TIME</I><B>_</B><I>OUT</I> .
+
+       <B>-M</B> <I>PERMISSION</I> <I>(octal</I> <I>integer)</I>
+              Set the file access permission of written  file  to  <I>PERMISSION</I>.
+              The  integer  <I>PERMISSION</I>  can be the bitwise <I>OR</I> of the following
+              (<B>octal</B>) numbers:
+
+              00001 read permission by others
+              00002 write permission by others
+              00004 execute/search permission by others
+              00010 read permission by group
+              00020 write permission by group
+              00040 execute/search permission by group
+              00100 read permission by owner
+              00200 write permission by owner
+              00400 execute/search permission by owner
+              01000 sticky bit
+              02000 set group ID on execution
+              04000 set user ID on execution
+
+       <B>-u</B> <I>UID</I> <I>(integer)</I>
+              Set the ownership of the written file  to  the  user  identifier
+              <I>UID</I>.
+
+       <B>-g</B> <I>GID</I> <I>(integer)</I>
+              Set  the  ownership  of the written file to the group identifier
+              <I>GID</I>.
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries  "libdim"  and  "libFMCu-
+              tils".
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Write the text got from the standard input to the file "/tmp/test.conf"
+       into all the farm nodes registered with the current DIM name server:
+
+       <I>bash$</I> <B>cmSet</B> <B>-p</B> <B>/tmp/test.conf</B>
+
+       Write the text got from the standard input to the file "/tmp/test.conf"
+       into the farm node "farm0101":
+
+       <I>bash$</I> <B>cmSet</B> <B>-m</B> <B>farm0101</B> <B>-p</B> <B>/tmp/test.conf</B>
+
+       Write the text got from the standard input to the file "/tmp/test.conf"
+       into the farm nodes "farm0101" and "farm0102":
+
+       <I>bash$</I> <B>cmSet</B> <B>-m</B> <B>farm0101</B> <B>-m</B> <B>farm0102</B> <B>-p</B> <B>/tmp/test.conf</B>
+
+       Use wildcard patterns to select the nodes:
+
+       <I>bash$</I> <B>cmSet</B> <B>-m</B> <B>"farm0[0-5]*"</B> <B>-m</B> <B>"farm07[135][0-5]"</B> <B>-p</B> <B>/tmp/test.conf</B>
+
+       Write the text got from the local file  "tmp_test.conf"  to  the  files
+       "/tmp/test.conf" into the farm nodes "farm0101" and "farm0102":
+
+       <I>bash$</I> <B>cmSet</B> <B>-m</B> <B>farm0101</B> <B>-m</B> <B>farm0102</B> <B>-i</B> <B>tmp_test.conf</B> <B>-p</B> <B>/tmp/test.conf</B>
+
+       Do not ask for confirmation:
+
+       <I>bash$</I> <B>cmSet</B> <B>-f</B> <B>-m</B> <B>farm0101</B> <B>-m</B> <B>farm0102</B> <B>-i</B> <B>tmp_test.conf</B>
+       <B>-p</B> <B>/tmp/test.conf</B>
+       <I>bash$</I> <B>cmSet</B> <B>-f</B> <B>-i</B> <B>etc_tmSrv.allow</B> <B>-p</B> <B>/etc/tmSrv.allow</B>
+       <I>bash$</I> <B>cmSet</B> <B>-f</B> <B>-m</B> <B>"ctrl*"</B> <B>-i</B> <B>etc_pcSrv.allow</B> <B>-p</B> <B>/etc/pcSrv.allow</B>
+       <I>bash$</I> <B>cmSet</B> <B>-f</B> <B>-m</B> <B>"ctrl*"</B> <B>-i</B> <B>etc_pcSrv.init</B> <B>-p</B> <B>/etc/pcSrv.init</B>
+
+       Set the UID to 1206, the GID to 100 and the permission to -rwxr-xr-x:
+
+       <I>bash$</I> <B>cmSet</B> <B>-m</B> <B>farm0101</B> <B>-u</B> <B>1206</B> <B>-g</B> <B>100</B> <B>-M</B> <B>755</B> <B>-p</B> <B>/tmp/test.conf</B>
+
+       Set the permission to -rwx------:
+
+       <I>bash$</I> <B>cmSet</B> <B>-m</B> <B>farm0101</B> <B>-u</B> <B>1206</B> <B>-g</B> <B>100</B> <B>-M</B> <B>700</B> <B>-p</B> <B>/tmp/test.conf</B>
+
+       Set the permission to -rwxr-sr-x:
+
+       <I>bash$</I> <B>cmSet</B> <B>-m</B> <B>farm0101</B> <B>-u</B> <B>1206</B> <B>-g</B> <B>100</B> <B>-M</B> <B>2755</B> <B>-p</B> <B>/tmp/test.conf</B>
+
+       Set the permission to -rwsr-sr-x:
+
+       <I>bash$</I> <B>cmSet</B> <B>-m</B> <B>farm0101</B> <B>-u</B> <B>1206</B> <B>-g</B> <B>100</B> <B>-M</B> <B>6755</B> <B>-p</B> <B>/tmp/test.conf</B>
+
+       Check the version of the Configuration Manager Servers installed on the
+       farm nodes:
+
+       <I>bash$</I> <B>cmSet</B> <B>-V</B>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information  on how to get the FMC (Farm Monitoring and Control System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development  Homepage  &lt;https://lhcbweb.bo.infn.it/twiki/bin/
+       view.cgi/LHCbBologna/FmcLinux&gt;.
+
+       CERN  ITCOBE:  FW  Farm Monitor and Control &lt;http://itcobe.web.cern.ch/
+       itcobe/Projects/Framework/Download/Components/SystemOverview/fwFMC/wel-
+       come.html&gt;.
+
+       LHCb Online RPMs &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/
+       index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  cmSet.C,v 1.14 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO:</H2><PRE>
+       <B><A HREF="../../htmlMan/man1/cmUnset.1.html">cmUnset(1)</A></B>, <B><A HREF="../../htmlMan/man1/cmGet.1.html">cmGet(1)</A></B>, <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B>,
+       <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>.
+       <B><A HREF="../../htmlMan/man7/glob.7.html">glob(7)</A></B>.
+
+FMC-3.9.14                        2012-12-19                          <B><A HREF="../../htmlMan/man1/cmSet.1.html">cmSet(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

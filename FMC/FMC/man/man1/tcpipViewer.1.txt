@@ -1,0 +1,104 @@
+
+NAME
+       tcpipViewer - Get the TCP/IP stack statistics from the FMC TCP/IP
+                     Stack Monitor Servers (tcpipSrv)
+
+SYNOPSIS
+       tcpipViewer [-N|--dim-dns DIM_DNS_NODE] [-v|--debug]
+                   [-m|--hostname NODE_PATTERN...]
+                   [-c|--compact [-H|--header]]
+                   [-A|--average] [-M|--maximum] [-a|--all]
+                   [-z|--no-zero]
+       tcpipViewer {-V,--version} [-m|--hostname NODE_PATTERN...]
+       tcpipViewer {-h,--help}
+
+DESCRIPTION
+       Get the TCP/IP stack statistics from the FMC TCP/IP Stack
+       Monitor Servers of the farm nodes whose hostname matches the
+       wildcard pattern NODE_PATTERN, specified using the -m command line
+       option. In addition to instant values, average and maximum values can
+       be printed by means of --average and --maximum switches, together
+       with the time elapsed since the server start-up or since last server
+       reset (i.e. reset of average and maximum values). Server reset is
+       achieved through the tcpipReset(FMC) command.
+       DIM Name Server can be chosen (in decreasing order of priority) by:
+              1. Specifying the -N DIM_DNS_NODE command-line option;
+              2. Specifying the DIM_DNS_NODE environment variable;
+              3. Defining the DIM_DNS_NODE in the file "/etc/sysconfig/dim".
+
+OPTIONS
+       --help, -h
+              Get basic usage help from the command line.
+       --version, -V
+              For each selected node print the FMC TCP/IP stack Monitor
+              server version, than exit.
+       --dim-dns, -N DIM_DNS_NODE (string)
+              Use DIM_DNS_NODE as DIM Name Server node.
+       --debug, -v
+              Increase verbosity for debugging.
+       --hostname, -m NODE_PATTERN (string, repeatable)
+              Get information from the nodes whose hostname matches the
+              wildcard pattern NODE_PATTERN (default: get information from
+              all the nodes).
+       --compact, -c
+              Print output in compact format (easier to parse).
+       --header, -H
+              Print a header for the compact format.
+       --average, -A
+              Toggle the printout of the average values.
+       --maximum, -M
+              Toggle the printout of the maximum values.
+       --all, -a
+              Toggle all the optional (non-basic) fields. Equivalent to:
+              "--average --maximum".
+       --no-zero, -z
+              Reduce the number of zero data fields printed.
+
+ENVIRONMENT
+       DIM_DNS_NODE (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+       LD_LIBRARY_PATH (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries "libdim"
+              and "libFMCutils".
+
+EXAMPLES
+       Show the TCP/IP stack statistics of all the farm nodes:
+              tcpipViewer
+       Show also average and maximum values:
+              tcpipViewer -a
+              tcpipViewer --all
+       Print output in compact format with header:
+              tcpipViewer -acH
+              tcpipViewer -a -c -H
+              tcpipViewer --all --compact --header
+              tcpipViewer --al --co --hea
+       Show also average values:
+              tcpipViewer --average
+              tcpipViewer --av
+              tcpipViewer -A
+       Show also maximum values:
+              tcpipViewer --maximum
+              tcpipViewer --ma
+              tcpipViewer -M
+       Reduce the number of zero data fields printed:
+              tcpipViewer -az
+              tcpipViewer --all --no-zero
+       Show only the TCP/IP stack statistics of selected nodes:
+              tcpipViewer -m farm0101 -m farm0102 --ave
+       Show only the statistics of wildcard-selected nodes:
+              tcpipViewer -m "farm01*" -m "farm02*" --ave --max
+              tcpipViewer -m "farm010[1357]" --all
+       Show the server version installed on the farm nodes:
+              tcpipViewer -V
+              tcpipViewer --version
+
+AUTHOR
+       Domenico Galli <domenico.galli@bo.infn.it>
+
+VERSION
+       Source:  tcpipViewer.C,v 1.11 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+SEE ALSO
+       tcpipReset(FMC), tcpipSrv(FMC), netstat(8), /proc/net/snmp.
+

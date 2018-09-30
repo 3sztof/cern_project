@@ -1,0 +1,115 @@
+
+NAME
+       cpustatViewer - Get CPU state information from the FMC CPU state
+                       Monitor Servers
+
+SYNOPSIS
+       cpustatViewer [-N|--dim-dns DIM_DNS_NODE] [-v|--debug]
+                     [-m|--hostname NODE_PATTERN...]
+                     [-c|--compact [-H|--header]] [-s|--separate]
+                     [-a|--all]
+       cpustatViewer {-V,--version} [-m|--hostname NODE_PATTERN...]
+       cpustatViewer {-h,--help}
+
+DESCRIPTION
+       Get the context switch rate and the CPU states from the farm nodes
+       whose hostname matches the wildcard pattern NODE_PATTERN, specified
+       using the -m command line option. In addition to global node values,
+       separate CPU values can be printed by means of --separate switch.
+       Printed data are the context switch rates measured in Hz and the
+       fraction of time spent by the CPUs performing different kinds of
+       work:
+              ctxt_rate
+                     Total number of context switches per second across all
+                     the CPUs.
+              user   Time percentage the CPU has spent in normal processes
+                     executing in user mode.
+              system Time percentage the CPU has spent in normal processes
+                     executing in kernel mode.
+              nice   Time percentage the CPU has spent in niced processes
+                     in user mode. Time spent in niced tasks will also be
+                     counted in system and user time.
+              idle   Time percentage the CPU has spent not working.
+              iowait Time percentage the CPU has spent in waiting for I/O to
+                     complete.
+              irq    Time percentage the CPU has spent in servicing
+                     interrupts (top halves). Available only with kernel
+                     version >=2.5 (with previous kernel version this number
+                     is set to zero).
+              softirq
+                     Time percentage the CPU has spent in servicing softirqs
+                     (bottom halves). Available only with kernel version
+                     >=2.5 (with previous kernel version this number is set
+                     to zero).
+       DIM Name Server can be chosen (in decreasing order of priority) by:
+              1. Specifying the -N DIM_DNS_NODE command-line option;
+              2. Specifying the DIM_DNS_NODE environment variable;
+              3. Defining the DIM_DNS_NODE in the file "/etc/sysconfig/dim".
+
+OPTIONS
+       --help, -h
+              Get basic usage help from the command line.
+       --version, -V
+              For each selected node print the FMC CPU state Monitor
+              server version and sensor version, than exit.
+       --dim-dns, -N DIM_DNS_NODE (string)
+              Use DIM_DNS_NODE as DIM Name Server node.
+       --debug, -v
+              Increase verbosity for debugging.
+       --hostname, -m NODE_PATTERN (string, repeatable)
+              Get information from the nodes whose hostname matches the
+              wildcard pattern NODE_PATTERN (default: get information from
+              all the nodes).
+       --compact, -c
+              Print output in compact format (easier to parse).
+       --header, -H
+              Print a header for the compact format.
+       --separate, -s
+              Toggle the printout of the separate CPU states.
+       --maximum, -M
+              Toggle the printout of the maximum values.
+       --all, -a
+              Toggle all the optional (non-basic) fields. Equivalent to:
+              "--separate".
+
+ENVIRONMENT
+       DIM_DNS_NODE (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+       LD_LIBRARY_PATH (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries "libdim"
+              and "libFMCutils".
+
+EXAMPLES
+       Show the CPU states of all the farm nodes:
+              cpustatViewer
+       Show also average and maximum values:
+              cpustatViewer -a
+              cpustatViewer --all
+       Print output in compact format with header:
+              cpustatViewer -acH
+              cpustatViewer -a -c -H
+              cpustatViewer --all --compact --header
+              cpustatViewer --al --co --hea
+       Show also separate CPU states:
+              cpustatViewer --separate
+              cpustatViewer --se
+              cpustatViewer -s
+       Show only the CPU states of selected nodes:
+              cpustatViewer -m farm0101 -m farm0102 --sep
+       Show only the CPU states of wildcard-selected nodes:
+              cpustatViewer -m "farm01*" -m "farm02*" --sep
+              cpustatViewer -m "farm010[1357]" --all
+       Show the server version installed on the farm nodes:
+              cpustatViewer -V
+              cpustatViewer --version
+
+AUTHOR
+       Domenico Galli <domenico.galli@bo.infn.it>
+
+VERSION
+       Source:  cpustatViewer.C,v 1.16 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+SEE ALSO
+       cpustatSrv(FMC), proc(5), top(1), /proc/stat.
+       /usr/share/doc/kernel-doc-2.6.9/Documentation/filesystems/proc.txt.

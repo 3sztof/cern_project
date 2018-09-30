@@ -1,0 +1,100 @@
+
+NAME
+       irqViewer - Get interrupt rates information from the FMC IRQ
+                   Monitor Servers
+
+SYNOPSIS
+       irqViewer [-N|--dim-dns DIM_DNS_NODE] [-v|--debug]
+                 [-m|--hostname NODE_PATTERN...]
+                 [-c|--compact [-H|--header]] [-A|--average] [-M|--maximum]
+                 [-a|--all]
+       irqViewer {-V,--version} [-m|--hostname NODE_PATTERN...]
+       irqViewer {-h,--help}
+
+DESCRIPTION
+       Get the information about the hard interrupt rates on the farm nodes
+       whose hostname matches the wildcard pattern NODE_PATTERN, specified
+       using the -m command line option. In addition to instant values,
+       average and maximum values can be printed by means of --average and
+       --maximum switches, together with the time elapsed since the server
+       start-up or since last server reset (i.e. reset of average and
+       maximum values). Server reset is achieved through the irqReset(FMC)
+       command.
+       DIM Name Server can be chosen (in decreasing order of priority) by:
+              1. Specifying the -N DIM_DNS_NODE command-line option;
+              2. Specifying the DIM_DNS_NODE environment variable;
+              3. Defining the DIM_DNS_NODE in the file "/etc/sysconfig/dim".
+
+OPTIONS
+       --help, -h
+              Get basic usage help from the command line.
+       --version, -V
+              For each selected node print the FMC Interrupt Monitor Server
+              version and sensor version, than exit.
+       --dim-dns, -N DIM_DNS_NODE (string)
+              Use DIM_DNS_NODE as DIM Name Server node.
+       --debug, -v
+              Increase verbosity for debugging.
+       --hostname, -m NODE_PATTERN (string, repeatable)
+              Get information from the nodes whose hostname matches the
+              wildcard pattern NODE_PATTERN (default: get information from
+              all the nodes).
+       --compact, -c
+              Print output in compact format (easier to parse).
+       --header, -H
+              Print a header for the compact format.
+       --average, -A
+              Toggle the printout of the average values.
+       --maximum, -M
+              Toggle the printout of the maximum values.
+       --all, -a
+              Toggle all the optional (non-basic) fields. Equivalent to:
+              "--average --maximum".
+
+ENVIRONMENT
+       DIM_DNS_NODE (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+       LD_LIBRARY_PATH (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries "libdim"
+              and "libFMCutils".
+
+EXAMPLES
+       Show the instant values:
+              irqViewer
+       Show also average and maximum values:
+              irqViewer -a
+              irqViewer --all
+       Print output in compact format with header:
+              irqViewer -acH
+              irqViewer -a -c -H
+              irqViewer --all --compact --header
+              irqViewer --al --co --hea
+       Show also average values:
+              irqViewer --average
+              irqViewer --av
+              irqViewer -A
+       Show also maximum values:
+              irqViewer --maximum
+              irqViewer --ma
+              irqViewer -M
+       Show only interrupt raised on selected nodes:
+              irqViewer -m farm0101 -m farm0102 --ave
+       Show only interrupt raised on wildcard-selected nodes:
+              irqViewer -m "farm01*" -m "farm02*" --ave --max
+              irqViewer -m "farm010[1357]" --all
+       Show the server version installed on the farm nodes:
+              irqViewer -V
+              irqViewer --version
+
+AUTHOR
+       Domenico Galli <domenico.galli@bo.infn.it>
+
+VERSION
+       Source:  irqViewer.C,v 1.13 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+SEE ALSO
+       irqReset(FMC), irqSrv(FMC), coalSrv(FMC), proc(5).
+       /proc/interrupts.
+       /usr/share/doc/kernel-doc-2.6.9/Documentation/filesystems/proc.txt.
+

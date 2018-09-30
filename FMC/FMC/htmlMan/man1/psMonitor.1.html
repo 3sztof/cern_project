@@ -1,0 +1,388 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/psMonitor.1.html">psMonitor(1)</A></B>                   FMC User Commands                  <B><A HREF="../../htmlMan/man1/psMonitor.1.html">psMonitor(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>psMonitor</B> <B>-</B> Show the statistics of the processes monitored by the FMC
+                   Process Monitor Server
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>psMonitor</B> [<B>-v</B> | <B>--debug</B>] [<B>-N</B> | <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>]
+                 [<B>-m</B> | <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]
+
+       <B>psMonitor</B> { <B>-V</B> | <B>--version</B> } [<B>-N</B> | <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>]
+                 [<B>-m</B> | <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]
+
+       <B>psMonitor</B> { <B>-h</B> | <B>--help</B> }
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The <B>psMonitor</B> is an application which can continuously shows the param-
+       eters of a list of processes running on the nodes of a computer farm on
+       which the server <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B> is running. A generic process  running  on  a
+       farm  node  can  be  added or removed to/from the list of the monitored
+       processes by means of the menues opened by pressing the <B>a</B> (add) and the
+       <B>r</B> (remove) keys.
+
+       The <B>psMonitor</B> application terminates on the command <B>q</B>.
+
+       Displayed parameters are:
+
+       <B>HOST</B>   The hostname of the PC the process is running on.
+
+       <B>TGID</B> (alias PID)
+              Thread  Group  Identifier  (the former PID, Process Identifier).
+              The term <B>process</B> is synonymous of <B>thread</B> <B>group</B>.
+
+       <B>CMD</B> (alias COMM, COMMAND, UCMD, UCOMM)
+              Command name, i.e. the basename (w/o  path)  of  the  executable
+              image  file, without arguments, eventually truncated at 15 char-
+              acters.
+
+       <B>UTGID</B>  FMC User-assigned unique Thread Group Identifier,  if  available
+              (e.g. if the process has been started by the FMC Task Manager or
+              has the variable UTGID defined in the process environment). Oth-
+              erwise "N/A" is printed.
+
+       <B>S</B>      Status. Can be <B>R</B> (in execution), <B>N</B> (new process in execution) or
+              <B>X</B> (terminated).
+
+       <B>NLWP</B> (alias THCNT)
+              Number of Lightweight Processes (Threads) in the process (thread
+              group). The number is printed in <I>red</I> if the number has increased
+              since the last refresh, in <I>green</I> if it has decreased.
+
+       <B>P</B> (alias CPUID, PSR)
+              The ID of the processor that process is currently  assigned  to.
+              It  is  useful to check the operation of process-to-CPU affinity
+              setting by the FMC Task Manager. The processor ID is printed  in
+              <I>red</I> if it has changed since the last refresh.
+
+       <B>%CPU</B> (alias PCPU, CP, C)
+              The  task's  share  of  the  CPU  time  since  the  last update,
+              expressed as a percentage of the total CPU time  per  processor.
+              <B>Maximum</B>: 100% x CPU_core_number.  The value is printed in <I>red</I> if
+              it has increased by at least 1% since the last refresh, in  <I>yel-</I>
+              <I>low</I> if it is greater than 99.0%, in <I>green</I> if it has decreased by
+              at least 1% since the last refresh.
+
+       <B>%MEM</B> (alias PMEM)
+              The ratio of the process's resident set  size  to  the  physical
+              memory on the machine, expressed as a percentage. <B>Maximum</B>: 100%.
+              The value is printed in <I>red</I> if it  has  increased  by  at  least
+              0.01%  since  the  last refresh, in <I>yellow</I> if it is greater than
+              90.0%, in <I>green</I> if it has decreased by at least 0.01% since  the
+              last refresh.
+
+       <B>MIN_FLT</B>
+              The rate (page faults per second) of page faults the process has
+              made which have not required loading a memory  page  from  disk.
+              The  value  is  printed in <I>red</I> if it has increased by at least a
+              factor 100 since the last refresh, in <I>green</I> if it has  decreased
+              by at least a factor 100 since the last refresh.
+
+       <B>MAJ_FLT</B>
+              The rate (page faults per second) of page faults the process has
+              made which have required loading a memory page  from  disk.  The
+              value is printed in <I>red</I> if it has increased by at least a factor
+              10 since the last refresh, in <I>yellow</I> if it is  greater  than  10
+              page faults per second, in <I>green</I> if it has decreased by at least
+              a factor 10 since the last refresh.
+
+       <B>VSIZE</B> (alias VSZ, VIRT)
+              The total size of the process's memory footprint. This  includes
+              the  text  segment,  stack,  static variables, data segment, and
+              pages which are  shared  with  other  processes.  The  value  is
+              printed  in  <I>red</I>  if it has increased since the last refresh, in
+              <I>green</I> if it has decreased.
+
+       <B>LOCK</B>   The amount of the process's memory which is currently locked  by
+              the  kernel.  Locked  memory cannot be swapped out. The value is
+              printed in <I>red</I> if it has increased since the  last  refresh,  in
+              <I>green</I> if it has decreased.
+
+       <B>RSS</B> (alias RSZ, RES, RESIDENT)
+              The kernel's estimate of the resident set size for this process.
+              The value is printed in <I>red</I> if it has increased since  the  last
+              refresh, in <I>green</I> if it has decreased.
+
+       <B>DATA</B>   The  amount  of memory used for data by the process. It includes
+              static variables and the data segment, but excludes  the  stack.
+              The  value  is printed in <I>red</I> if it has increased since the last
+              refresh, in <I>green</I> if it has decreased.
+
+       <B>STACK</B>  The amount of memory consumed by the process's stack. The  value
+              is printed in <I>red</I> if it has increased since the last refresh, in
+              <I>green</I> if it has decreased.
+
+       <B>EXE</B>    The size of the process's  executable  pages,  excluding  shared
+              pages.
+
+       <B>LIB</B>    The  size  of  the shared memory pages mapped into the process's
+              address space. This excludes pages shared using System  V  style
+              IPC.  The  value is printed in <I>red</I> if it has increased since the
+              last refresh, in <I>green</I> if it has decreased.
+
+       <B>SHARE</B> (alias SHRD, SHR)
+              The size of the pages of shared (mmap-ed) memory. The  value  is
+              printed  in  <I>red</I>  if it has increased since the last refresh, in
+              <I>green</I> if it has decreased.
+
+       <B>RT</B> (alias RTPRIO)
+              Static (real-time) priority of the  process.  Only  value  0  is
+              allowed  for  TS  processes.  For FF and RR real-time processes,
+              allowed values are in the range 1...99 (0 is the least favorable
+              priority,  99  is  the  most  favorable priority).  The value is
+              printed in <I>red</I> if it has increased since the  last  refresh,  in
+              <I>green</I> if it has decreased.
+
+       <B>NI</B> (alias NICE)
+              The nice level of the process, used by the TS Linux scheduler to
+              compute the dynamic priority. Allowed values for nice level  are
+              in  the  range  -20...19  (-20 corresponds to the most favorable
+              scheduling; 19 corresponds to the least  favorable  scheduling).
+              The  value  is printed in <I>red</I> if it has decreased since the last
+              refresh, in <I>green</I> if it has increased.
+
+       <B>PR</B> (alias PRI, PRIO)
+              Kernel scheduling priority. Possible values  are  in  the  range
+              -100...39  (-100 is the most favorable priority, 39 is the least
+              favorable priority). TS processes have PRIO in the range 0...39,
+              FF  and RR processes have PRIO in the range -100...-1. The value
+              is printed in <I>red</I> if it has decreased since the last refresh, in
+              <I>green</I> if it has increased.
+
+       <B>LAST_UPDATE</B>
+              Time of the last update of the process data.
+
+       <B>USER</B> (alias EUSER, UNAME)
+              <B>Effective</B>  user name. Used for all the security checks. The only
+              user name of the process that normally has any effect.
+
+       <B>CMDLINE</B> (alias ARGS, CMD, COMMAND)
+              The complete command line with its arguments (up to  PATH_MAX  =
+              4096  characters). The output in this column may contain spaces.
+
+       The DIM Name Server, looked up to seek for Process Monitor Servers, can
+       be chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file "<B>/etc/sysconfig/dim</B>".
+
+
+</PRE>
+<H2>COMMANDS</H2><PRE>
+   <B>Main</B> <B>window</B>
+       <B>q</B>      Quit the application.
+
+       <B>a</B>      Open the Add-Filter Menu.
+
+       <B>r</B>      Open the Remove-Filter Menu.
+
+       <B>k</B>, <B>p</B>, UP_ARROW
+              Scroll  backward  one  line  the process list, if it exceeds the
+              terminal height.
+
+       <B>j</B>, <B>n</B>, DOWN_ARROW, RETURN, ENTER
+              Scroll forward one line the process list, if it exceeds the ter-
+              minal height.
+
+       <B>u</B>      Scroll  backward  half  page the process list, if it exceeds the
+              terminal height.
+
+       <B>d</B>      Scroll forward half page the process list,  if  it  exceeds  the
+              terminal height.
+
+       <B>b</B>, <B>-</B>, PAGE_UP
+              Scroll  backward  one  page  the process list, if it exceeds the
+              terminal height.
+
+       <B>f</B>, SPACE_BAR, PAGE_DOWN
+              Scroll forward one page the process list, if it exceeds the ter-
+              minal height.
+
+       <B>g</B>, HOME
+              Go  to the beginning of the process list, if it exceeds the ter-
+              minal height.
+
+       <B>G</B>, END Go to the end of the process list, if it  exceeds  the  terminal
+              height.
+
+       <B>h</B>, LEFT_ARROW
+              Scroll  leftward  one  character the process list, if it exceeds
+              the terminal width.
+
+       <B>l</B>, RIGHT_ARROW
+              Scroll rightward one character the process list, if  it  exceeds
+              the terminal width.
+
+       <B>H</B>, SHIFT-TAB
+              Scroll  leftward  one  page  the process list, if it exceeds the
+              terminal width.
+
+       <B>L</B>, TAB Scroll rightward one page the process list, if  it  exceeds  the
+              terminal width.
+
+   <B>Add-Filter</B> <B>Menu</B>
+       TAB, DOWN_ARROW
+              Go to the next field in the menu.
+
+       SHIFT-TAB, UP_ARROW
+              Go to the previous field in the menu.
+
+       PAGE_UP
+              Go to the first field in the menu.
+
+       PAGE_DOWN
+              Go to the last field in the menu.
+
+       LEFT_ARROW, RIGHT_ARROW
+              Move leftward and rightward one character inside a field.
+
+       HOME, END
+              Go to the beginning or the end of a field.
+
+       BACKSPACE
+              Delete previous character in a field.
+
+       DELETE Delete current character in a field.
+
+       RETURN Confirm a field (including "Cancel" and "OK" fields). Confirming
+              the "Cancel" field the Add-Filter action is  cancelled  and  the
+              Add-Filter  Menu is closed. Confirming the "OK" field a new pro-
+              cess selection filter is added to the list  and  the  Add-Filter
+              Menu is closed.
+
+       ESC    Cancel  and exit from the Add-Filter Menu (equivalent to confirm
+              the "Cancel" field).
+
+   <B>Remove-Filter</B> <B>Menu</B>
+       RETURN Remove the currently selected filter and exit the  Remove-Filter
+              Menu.
+
+       <B>q</B>, ESC Cancel and exit the Remove-Filter Menu.
+
+       <B>k</B>, <B>p</B>, UP_ARROW
+              Move the selected filter backward one line in the filter list.
+
+       <B>j</B>, <B>n</B>, DOWN_ARROW, RETURN, ENTER
+              Move the selected filter forward one line in the filter list.
+
+       <B>b</B>, <B>-</B>, PAGE_UP
+              Move the selected filter backward one page in the filter list.
+
+       <B>f</B>, SPACE_BAR, PAGE_DOWN
+              Move the selected filter forward one page in the filter list.
+
+       <B>g</B>, HOME
+              Go to the first filter in the filter list.
+
+       <B>G</B>, END Go to the last filter in the filter list.
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B> <B>--help</B>
+              Get basic usage help from the command line.
+
+       <B>-v</B> <B>--debug</B>
+              Increase verbosity for debugging.
+
+       <B>-N</B> <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-m</B> <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Contact  FMC  Process  Monitor  Servers  only at the nodes whose
+              hostname  matches  at  least  one  of  the   wildcard   patterns
+              <I>NODE</I><B>_</B><I>PATTERN</I>  (<B>default</B>:  contact  the FMC Process Monitor at all
+              the nodes).
+
+       <B>-V</B> <B>--version</B>
+              For each selected node print  the  FMC  Process  Monitor  Server
+              version and the FMC version, than exit.
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must  include  the  path to the libraries "libdim" and "libFMCu-
+              tils".
+
+       <B>UTGID</B> (string, optional)
+              Printed in diagnostic messages, used to identify  the  <B>psMonitor</B>
+              instance.
+
+       <B>deBug</B> (int, optional)
+              Debug mask. Can be set to 0..0x10.
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Get process data from the monitored processes on all the nodes:
+
+       <I>bash$</I> <B>psMonitor</B>
+       <I>bash$</I> <B>psMonitor</B> <B>-m</B> <B>"*"</B>
+       <I>bash$</I> <B>psMonitor</B> <B>-m</B> <B>\*</B>
+
+       Get  process  data only of the monitored processes running at the nodes
+       "farm0101" and "farm0102":
+
+       <I>bash$</I> <B>psMonitor</B> <B>-m</B> <B>farm0101</B> <B>-m</B> <B>farm0102</B>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information on how to get the FMC (Farm Monitoring and Control  System)
+       package and related information is available at the web sites:
+
+       FMC  Linux  Development Homepage &lt;https://lhcbweb.bo.infn.it/twiki/bin/
+       view.cgi/LHCbBologna/FmcLinux&gt;.
+
+       CERN ITCOBE: FW Farm Monitor  and  Control  &lt;http://itcobe.web.cern.ch/
+       itcobe/Projects/Framework/Download/Components/SystemOverview/fwFMC/wel-
+       come.html&gt;.
+
+       LHCb Online RPMs &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/
+       index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  psMonitor.C,v 1.23 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO</H2><PRE>
+       <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/psSetProperties.1.html">psSetProperties(1)</A></B>, <B><A HREF="../../htmlMan/man1/psViewer.1.html">psViewer(1)</A></B>.
+       <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/tmStart.1.html">tmStart(1)</A></B>.
+       <B><A HREF="../../htmlMan/man1/top.1.html">top(1)</A></B>, <B><A HREF="../../htmlMan/man1/ps.1.html">ps(1)</A></B>, <B><A HREF="../../htmlMan/man5/proc.5.html">proc(5)</A></B>.
+       <B>/usr/share/doc/kernel-doc-2.6.9/Documentation/filesystems/proc.txt.</B>
+
+FMC-3.9.14                        2012-12-19                      <B><A HREF="../../htmlMan/man1/psMonitor.1.html">psMonitor(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

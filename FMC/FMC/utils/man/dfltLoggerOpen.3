@@ -1,0 +1,457 @@
+.ig
+dfltLoggerOpen.3
+
+..
+.
+.\" --------------------------------------------------------------------
+.\" Setup
+.\" --------------------------------------------------------------------
+.
+.mso www.tmac
+.
+.\" set adjust to both
+.ad b
+.
+.\" fonts of fixed length
+.
+.if n \{\
+.  mso tty-char.tmac
+.  ftr CR R
+.  ftr CI I
+.  ftr CB B
+.\}
+.
+.if '\*[.T]'dvi' \
+.  ftr CB CW
+.
+.\" --------------------------------------------------------------------
+." String definitions
+.
+.ds @- "\-\"
+.ds @-- "\-\^\-\"
+.
+.ds Ellipsis .\|.\|.\"
+.
+.
+.\" --------------------------------------------------------------------
+.\" Begin of macro definitions
+.de c
+.\" this is like a comment request when escape mechanism is off
+..
+.eo
+.
+.c --------------------------------------------------------------------
+.de TP+
+.br
+.ns
+.TP \$1
+..
+.c --------------------------------------------------------------------
+.c Like TP, but if specified indent is more than half
+.c the current line-length - indent, use the default indent.
+.de Tp
+.  ie \n[.$]=0:((0\$1)*2u>(\n.lu-\n(.iu)) .TP
+.  el .TP "\$1"
+..
+.c --------------------------------------------------------------------
+.de Text
+.  nop \)\$*
+..
+.c --------------------------------------------------------------------
+.de Synopsis
+.  ds @arg1 \$1\"
+.  nr @old_indent \n[.i]
+.  ad l
+.  in +\w'\f[B]\*[@arg1]\0'u
+.  ti \n[@old_indent]u
+.  B \*[@arg1]\0\c
+.  rr @old_indent
+.  rm @arg1
+..
+.c --------------------------------------------------------------------
+.de EndSynopsis
+.  ad
+.  in
+..
+.c --------------------------------------------------------------------
+.c ShortOpt[]  (name [arg])
+.c
+.c short option in synopsis
+.c
+.de ShortOpt[]
+.  if \n[.$]=0 \
+.    return
+.  ds @opt \$1\"
+.  shift
+.  ie \n[.$]=0 \
+.    Text \f[R][\f[]\f[CB]\*[@-]\*[@opt]\f[]\f[R]]\f[]
+.  el \
+.    Text \f[R][\f[]\f[CB]\*[@-]\*[@opt]\~\f[]\f[I]\/\$*\f[]\f[R]]\f[]
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c LongOpt[]  (name [arg])
+.c
+.c short option in synopsis
+.c
+.de LongOpt[]
+.  if \n[.$]=0 \
+.    return
+.  ds @opt \$1\"
+.  shift
+.  ie \n[.$]=0 \
+.    Text \f[R][\f[]\f[CB]\*[@--]\*[@opt]\f[]\f[R]]\f[]
+.  el \
+.    Text \f[R][\f[]\f[CB]\*[@--]\*[@opt]\~\f[]\f[I]\/\$*\f[]\f[R]]\f[]
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c DoubleOpt[]  (names namel [arg])
+.c
+.c long option in synopsis
+.c
+.de DoubleOpt[]
+.  if \n[.$]=0 \
+.    return
+.  ds @opt \$1\"
+.  shift
+.  ds @optl \$1\"
+.  shift
+.  ie \n[.$]=0 \
+.    Text \f[R][\f[]\f[CB]\*[@-]\*[@opt]\f[R]\~|\~\f[]\*[@--]\*[@optl]\f[]\f[R]]\f[]
+.  el \
+.    Text \f[R][\f[]\f[CB]\*[@-]\*[@opt]\f[R]\~|\~\f[]\*[@--]\*[@optl]\~\f[]\f[I]\/\$*\f[]\f[R]]\f[]
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c Option in synopsis (short option)
+.de SynOpt
+.  if \n[.$]=0 \
+.    return
+.  ds @opt \$1\"
+.  shift
+.  ie \n[.$]=0 \
+.    Text \f[R][\f[]\f[CB]\*[@-]\*[@opt]\f[]\f[R]]\f[]
+.  el \
+.    Text \f[R][\f[]\f[CB]\*[@-]\*[@opt]\~\f[]\f[I]\/\$*\f[]\f[R]]\f[]
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c ShortOpt ([char [punct]])
+.c
+.c `-c' somewhere in the text 
+.c second arg is punctuation
+.c
+.de ShortOpt
+.  ds @opt \$1\"
+.  shift
+.  Text \f[CB]\*[@-]\*[@opt]\f[]\/\$*
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c LongOpt  ([name [punct]])
+.c
+.c `--name' somewhere in the text 
+.c second arg is punctuation
+.c
+.de LongOpt
+.  ds @opt \$1\"
+.  shift
+.  Text \f[CB]\*[@--]\f[]\f[B]\*[@opt]\f[]\/\$*
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c OptDef  (shortopt [longopt [argument]])
+.c
+.c option documentation
+.c args : `shortopt', `longopt' can be 
+.c
+.de OptDef
+.  ds @short
+.  ds @long
+.  ds @arg
+.  if \n[.$]>=1 \{\
+.    ds @arg1 "\$1\"
+.    if !'\*[@arg1]'' \
+.      ds @short "\f[CB]\*[@-]\*[@arg1]\f[]\"
+.    if \n[.$]>=2 \{\
+.      if !'\*[@short]'' \
+.        as @short \f[CW]\0\f[]
+.      ds @arg2 "\$2\"
+.      if !'\*[@arg2]'' \
+.        ds @long "\f[CB]\*[@--]\f[]\f[B]\*[@arg2]\f[]\"
+.      if \n[.$]>=3 \{\
+.        if !'\*[@long]'' \
+.          as @long \|\~\|\"
+.        shift 2
+.        ds @arg \f[I]\$*\"
+.      \}
+.    \}
+.  \}
+.  IP "\f[R]\*[@short]\*[@long]\*[@arg]\f[]"
+.  rm @arg
+.  rm @arg1
+.  rm @arg2
+.  rm @short
+.  rm @long
+..
+.c --------------------------------------------------------------------
+.c Continuation of an OptDef header.
+.de OptDef+
+.  br
+.  ns
+.  OptDef \$@
+..
+.c --------------------------------------------------------------------
+.c Environment variable
+.de EnvVar
+.  SM
+.  BR \$1 \$2
+..
+.c --------------------------------------------------------------------
+.c a shell command line
+.de ShellCommand
+.  nr @font \n[.f]
+.  c replace argument separator by unbreakable space
+.  ds @args \$1\""
+.  shift
+.  while (\n[.$]>0) \{\
+.    ds @args \*[@args]\~\$1
+.    shift
+.  \}
+.  br
+.  ad l
+.  nh
+.  Text \f[I]bash$\h'1m'\f[P]\f[B]\*[@args]\f[P]\&\"
+.  ft R
+.  ft P
+.  hy
+.  ad
+.  ft \n[@font]
+.  br
+.  rr @font
+.  rm @args
+..
+.c --------------------------------------------------------------------
+.c `char or string'
+.de Quoted
+.  ft CR
+.  Text \[oq]\$*\[cq]
+.  ft
+..
+.c --------------------------------------------------------------------
+.c End of macro definitions
+.ec
+.
+.TH dfltLoggerOpen 3  ___now___ "___fmcVer___" "FMC Library Functions"
+.SH NAME
+.
+.
+.Synopsis dfltLoggerOpen\ \-
+Open the access for writing to the default FMC Message Logger
+.EndSynopsis
+.
+.SH SYNOPSIS
+.nf
+.B #include <stdio.h>
+.B #include <fmcMsgUtils.h>
+.fi
+.sp
+.Synopsis int\ dfltLoggerOpen\ (
+\fBint\fP \fIopen_try_n\fP, \fBint\fP \fIpolicy\fP,
+\fBint\fP \fIerr_lvl\fP, \fBint\fP \fIinfo_lvl\fP, 
+\fBint\fP \fIcolor\fP \fB);\fP
+.EndSynopsis
+.sp
+.
+.
+.SH INTRODUCTION
+.
+The \fBFMC Message Logger\fP is a tool to \fIcollect\fP, \fImanage\fP (i.e.
+merge, duplicate, filter, suppress duplicates) and \fIdisplay\fP on a central
+console the messages sent by the applications running on the farm nodes. It
+uses \fIDIM\fP to move messages throughout the network and a POSIX.1 \fIFIFO\fP
+(alias \fInamed pipe\fP) on each node as local buffer to collect message sent
+by the application running on the same node.
+.PP
+The FMC Message Logger is a \fIgeneral purpose\fP utility, not tailored on a
+specific application; it can even collect messages sent by the applications to
+their \fIstandard output\fP and \fIerror\fP streams by \fBredirecting the
+streams to the FIFO\fP at the application start-up (the FMC Task Manager
+provides a flag in the \fBtmStart\fP(1) command to activate such a
+redirection).
+.PP
+The \fBFMC Message Logger\fP consists in the server \fBlogSrv\fP(8), which gets
+messages from a local FIFO and publish them using DIM, in the client
+\fBlogViewer\fP(1), which can display the messages got using DIM or forward
+them to another \fBlogSrv\fP(8), and in the clients \fBlogSetProperties\fP(1)
+and \fBlogGetProperties\fP(1) which can change and retrieve the \fBlogSrv\fP(8)
+settings at run-time.
+.PP
+Besides, the \fBFMC Message Logger\fP provides several utilities to help
+sending formatted messages with header to a the FMC Message Logger: the command
+\fBmPrint\fP(1) and the library calls \fBdfltLoggerOpen\fP(3),
+\fBmPrintf\fP(3), \fBrPrintf\fP(3), \fBdfltLoggerClose\fP(3),
+\fBgetDfltFifoFD\fP(3), \fBloggerOpen\fP(3), \fBmfPrintf\fP(3),
+\fBrfPrintf\fP(3) and \fBloggerClose\fP(3)
+.PP
+Look at section \fIWRITING TO THE FMC LOGGER\fP in the \fBlogSrv\fP(8) man page
+for a comprehensive review of the ways of sending messages to the FMC Message
+Logger.
+.
+.
+.SH DESCRIPTION
+.
+The function \fBdfltLoggerOpen\fP(3) opens the write access to the default FMC
+Message Logger, which than can be written by means of the \fBmPrintf\fP(3) and
+\fBrPrintf\fP(3) library calls. The library call \fBdfltLoggerClose\fP(3) can
+be used to close the write access to the logger.
+.PP
+If the open trial fails (e.g. because \fBlogSrv\fP(8) has not yet started), it
+is repeated up to \fIopen_try_n\fP times, waiting one second every time.
+.PP
+The logger can be opened in \fBno-drop mode\fP (\fIpolicy\fP = NO_DROP) or in
+\fBcongestion-proof mode\fP (\fIpolicy\fP = CONG_PROOF).  If the FIFO is
+completely filled, an attempt to write to the FIFO in no-drop mode blocks until
+a message is pulled out of the FIFO, while an attempt to write to the FIFO in
+congestion-proof mode returns the \fIEAGAIN\fP error without blocking.
+.PP
+The \fBno-drop\fP behavior can be useful for debugging purposes: no message are
+lost, but the applications can block waiting to send messages in case of
+network congestion or if an application is sending messages at a rate greater
+than the rate of message displaying.
+.PP
+The \fBcongestion-proof\fP behavior is more useful in normal run operation: in
+case of network congestion, messages are dropped, but applications do not block
+and no additional message traffic is injected into the network (except the TCP
+retransmissions, which however are slowed down by the congestion control
+mechanism), since the messages are dropped in the FIFO, before they reach the
+network.
+.PP
+The parameters \fIerr_lvl\fP, \fIinfo_lvl\fP and \fIcolor\fP concern \fBonly\fP
+the diagnostic messages \fBraised by\fP the \fBdfltLoggerOpen\fP(3) call
+\fBitself\fP: the parameters \fIerr_lvl\fP and \fIinfo_lvl\fP are the severity
+of information and error messages, while \fIcolor\fP is the color attribure (0
+= B&W, 1 = colored).  The parameters \fIerr_lvl\fP and \fIinfo_lvl\fP
+can be set to VERB, DEBUG, INFO, WARN, ERROR or FATAL.
+.PP
+.
+.
+.SH RETURN VALUE
+.
+Upon successful completion, the \fBdfltLoggerOpen\fP(3) function returns zero.
+On error, 1 is returned.
+.
+.
+.SH EXAMPLES
+.
+Open the default FMC logger in congestion-proof mode, with maximum 10 retries,
+ERROR tag to \fBdfltLoggerOpen\fP(3) error messages, INFO tag to
+\fBdfltLoggerOpen\fP(3) information messages and the \fBdfltLoggerOpen\fP(3)
+messages printed in black & white to the stderr:
+.PP
+\fBdfltLoggerOpen(10,CONG_PROOF,ERROR,INFO,0);\fP
+.PP
+Open the default FMC logger in no-drop mode, with maximum 20 retries,
+INFO tag to \fBdfltLoggerOpen\fP(3) error messages, VERB tag to
+\fBdfltLoggerOpen\fP(3) information messages and the \fBdfltLoggerOpen\fP(3)
+messages printed in color (ANSI escape sequences) to the stderr:
+.PP
+\fBdfltLoggerOpen(20,NO_DROP,INFO,VERB,1);\fP
+.PP
+.
+.
+. SH USAGE
+.
+Using black & white for print to standard error stream:
+.PP
+#include <stdio.h>
+.br
+#include <fmcMsgUtils.h>
+.br
+int main()
+.br
+{
+.br
+  int i;
+.br
+  dfltLoggerOpen(10,CONG_PROOF,ERROR,DEBUG,0);
+.br
+  for(i=0;i<10;i++)
+.br
+  {
+.br
+    mPrintf(L_DIM|L_SYS|L_STD,INFO,__func__,0,"%d updates",i);
+.br
+  }
+.br
+  dfltLoggerClose();
+.br
+  return 0;
+.br
+}
+.PP
+Using colors (ANSI escape sequences) for print to standard error stream:
+.PP
+#include <stdio.h>
+.br
+#include <fmcMsgUtils.h>
+.br
+int main()
+.br
+{
+.br
+  int i;
+.br
+  dfltLoggerOpen(10,CONG_PROOF,ERROR,DEBUG,1);
+.br
+  for(i=0;i<10;i++)
+.br
+  {
+.br
+    mPrintf(L_DIM|L_SYS|L_STD_C,INFO,__func__,0,"%d updates",i);
+.br
+  }
+.br
+  dfltLoggerClose();
+.br
+  return 0;
+.br
+}
+.PP
+These programs must be compiled and linked with gcc using the options
+\fB-I/opt/FMC/utils/include -L/opt/FMC/lib -lFMCutils-5 -lm\fP.
+___fmcRef___
+.
+.
+.SH VERSION
+.
+Source:  ___msgUtilsVer___
+.br
+Library: ___fmcUtilsVer___
+.br
+Package: ___fmcVer___
+.
+.
+.SH "SEE ALSO"
+.ad l
+.SS API for writing to the default FMC Message Logger
+.BR \%getDfltFifoFD (3),
+.BR \%mPrintf (3),
+.BR \%rPrintf (3),
+.BR \%dfltLoggerClose (3).
+.br
+.SS API for writing to an arbitrary FMC Message Logger
+.BR \%loggerOpen (3),
+.BR \%mfPrintf (3),
+.BR \%rfPrintf (3),
+.BR \%loggerClose (3).
+.br
+.SS UI for writing to an arbitrary FMC Message Logger from a shell script
+.BR \%mPrint (1).
+.br
+.SS FMC Message Logger Server and User Commands
+.BR \%logSrv (8),
+.BR \%logViewer (1),
+.BR \%logGetProperties (1),
+.BR \%logSetProperties (1).

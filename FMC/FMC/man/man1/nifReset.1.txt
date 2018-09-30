@@ -1,0 +1,60 @@
+
+NAME
+       nifReset - Reset the counters of the FMC Network Interface Monitor
+                  Servers
+
+SYNOPSIS
+       nifReset [-N DIM_DNS_NODE] [-v] [-m NODE_PATTERN...]
+       nifReset -h
+
+DESCRIPTION
+       Reset the counters used to evaluate the average and the maximum
+       values of the Network Interface statistics on the Servers running
+       on the farm nodes whose hostname matches the wildcard pattern
+       NODE_PATTERN, specified using the -m command line option.
+       DIM Name Server can be chosen (in decreasing order of priority) by:
+              1. Specifying the -N DIM_DNS_NODE command-line option;
+              2. Specifying the DIM_DNS_NODE environment variable;
+              3. Defining the DIM_DNS_NODE in the file "/etc/sysconfig/dim".
+
+OPTIONS
+       -h     Get basic usage help from the command line.
+       -N DIM_DNS_NODE (string)
+              Use DIM_DNS_NODE as DIM Name Server node.
+       -v     Increase verbosity for debugging.
+       -m NODE_PATTERN (string, repeatable)
+              Reset only the nifSrv servers running on the nodes whose
+              hostname matches the wildcard pattern NODE_PATTERN (default:
+              reset the interrupt servers running on all the nodes).
+
+ENVIRONMENT
+       DIM_DNS_NODE (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+       LD_LIBRARY_PATH (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries "libdim"
+              and "libFMCutils".
+
+EXAMPLES
+       Reset the Network Interface Monitor Servers running on all the farm
+       nodes:
+              nifReset -m "*"
+              nifReset
+       Reset only the Network Interface Monitor Servers running on the
+       selected nodes:
+              nifReset -m farm0101 -m farm0102
+       Reset only the Network Interface Monitor Servers running on the
+       wildcard-selected nodes:
+              nifReset -m "farm01*" -m "farm02*"
+              nifReset -m farm01\* -m farm02\*
+              nifReset -m "farm010[1357]"
+
+AUTHOR
+       Domenico Galli <domenico.galli@bo.infn.it>
+
+VERSION
+       Source:  nifReset.C,v 1.5 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+SEE ALSO
+       nifViewer(FMC), nifSrv(FMC).
+

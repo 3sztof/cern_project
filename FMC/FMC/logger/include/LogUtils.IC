@@ -1,0 +1,65 @@
+/* ######################################################################### */
+/*
+ * $Log: LogUtils.IC,v $
+ * Revision 1.3  2009/02/17 16:49:55  galli
+ * minor changes
+ *
+ * Revision 1.2  2009/02/10 13:04:59  galli
+ * Added prototype for method LogUtils::fifoOpen()
+ *
+ * Revision 1.1  2009/02/09 16:29:49  galli
+ * Initial revision
+ */
+/* ######################################################################### */
+#ifndef _LOG_UTILS_IC
+#define _LOG_UTILS_IC 1
+/*---------------------------------------------------------------------------*/
+#include <string>
+/*---------------------------------------------------------------------------*/
+#include <stdio.h>                                             /* snprintf() */
+#include <time.h>                                                  /* time_t */
+#include <unistd.h>                                         /* gethostname() */
+#include <string.h>     /* strchr(), strncpy(), memchr(), strlen(), strcat() */
+#include <regex.h>                                              /* regexec() */
+#include <ctype.h>                                              /* isdigit() */
+#include <sys/stat.h>                                 /* struct stat, stat() */
+#include <errno.h>
+#include <fnmatch.h>                               /* fnmatch(), FNM_NOMATCH */
+/*---------------------------------------------------------------------------*/
+#include <dic.hxx>
+/*---------------------------------------------------------------------------*/
+/* in include */
+#include "fmcMacro.H"                                              /* METHOD */
+#include "fmcMacro.h"                         /* MIN(), likely(), unlikely() */
+#include "fmcPar.h"                                           /* DIM_SVC_LEN */
+/*---------------------------------------------------------------------------*/
+/* in utils/include */
+#include "fmcMsgUtils.h"                                             /* INFO */
+#include "fmcCmpUtils.h"                                        /* levDist() */
+/*---------------------------------------------------------------------------*/
+/* in logger/include */
+#include "logSrv.h"                                              /* BUF_SIZE */
+/* ######################################################################### */
+typedef struct srt_msg
+{
+  int ord;
+  char *msg;
+}srt_msg_t;
+/* ######################################################################### */
+class LogUtils
+{
+  /***************************************************************************/
+  public:
+  /***************************************************************************/
+  static int headerPrepend(char *buf,int severity);
+  static int printC(FILE *outFP,int severity,int severityThreshold,int color,
+                    char *s);
+  static int msgCmp(const void *arg1,const void *arg2);
+  static FILE *fileOpen(char *filePath);
+  static FILE *fifoOpen(char *fifoPath,int noDrop);
+  static void printLastLog(char *lastLogSvcName,int color,
+                           int severityThreshold);
+};
+/* ######################################################################### */
+#endif                                                      /* _LOG_UTILS_IC */
+/* ######################################################################### */

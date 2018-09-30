@@ -1,0 +1,595 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>                        FMC Servers                       <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>ipmiSrv</B> <B>-</B> FMC Power Manager Server
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>ipmiSrv</B> [<B>-N</B> | <B>--dim_dns_node</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-l</B> | <B>--logger</B> <I>LOGGER</I>]
+               [<B>-c</B> | <B>--conf-file</B> <I>CONF</I><B>_</B><I>FILE</I>]
+               [<B>-s</B> | <B>--sensor-dictionary-file</B> <I>SENS</I><B>_</B><I>FILE</I>]
+               [<B>-d</B> | <B>--update-dictionary-file</B>]
+               [<B>-f</B> | <B>--password-file</B> <I>PASSWD</I><B>_</B><I>FILE</I>]
+               [<B>-t</B> | <B>--max-threads-number</B> <I>MAX</I><B>_</B><I>THREAD</I><B>_</B><I>NUMBER</I>]
+               [<B>--min-period</B> <I>MIN</I><B>_</B><I>PERIOD</I>] [<B>--max-period</B> <I>MAX</I><B>_</B><I>PERIOD</I>]
+               [<B>--sensor-period</B> <I>SENSOR</I><B>_</B><I>PERIOD</I>] [<B>--get-try-n</B> <I>GET</I><B>_</B><I>TRY</I><B>_</B><I>NUMBER</I>]
+               [<B>--cmd-try-n</B> <I>CMD</I><B>_</B><I>TRY</I><B>_</B><I>NUMBER</I>]
+
+       <B>ipmiSrv</B> { <B>-h</B> | <B>--help</B> }
+
+
+</PRE>
+<H2>INTRODUCTION</H2><PRE>
+       The FMC Power Manager is a tool which allows, in an OS-independent man-
+       ner, to <B>switch-on</B>, <B>switch-off</B>, and <B>power-cycle</B> the farm nodes,  and  to
+       <B>monitor</B>  their  physical  condition:  <B>power</B> <B>status</B> (on/off), and sensor
+       information retrieved through the I2C bus  (<B>temperatures</B>,  <B>fan</B>  <B>speeds</B>,
+       <B>voltages</B> and <B>currents</B>).
+
+       The  FMC Power Manager can operate on the farm nodes whose motherboards
+       and network interface cards implement the  <B>IPMI</B>  (Intelligent  Platform
+       Management  Interface)  specifications,  version 1.5 or subsequent, and
+       copes with several IPMI limitations.
+
+       The FMC Power Manager Server, <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B> typically runs on a  few  con-
+       trol  PCs  (each  one  watching up to 200-1000 farm nodes) and uses the
+       IPMI protocol to communicate with the BMC  (Baseboard  Management  Con-
+       troller)  of the farm nodes, and the DIM network communication layer to
+       communicate with the Power Manager Clients.
+
+       The Power Manager Clients <B><A HREF="../../htmlMan/man1/pwSwitch.1.html">pwSwitch(1)</A></B>,  <B><A HREF="../../htmlMan/man1/pwStatus.1.html">pwStatus(1)</A></B>  and  <B><A HREF="../../htmlMan/man1/ipmiViewer.1.html">ipmiViewer(1)</A></B>
+       can  contact  one or more Power Manager Servers, running on remote Con-
+       trol PCs, to switch on/off the farm worker nodes  controlled  by  these
+       Control PCs and to retrieve their physical condition.
+
+       The  FMC  Power  Manager  Server <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B> accesses the farm node BMCs
+       both periodically and on user demand: it inquires <B>periodically</B> the farm
+       node  BMCs  to get their power status and sensor information (and keeps
+       the information and its time stamp to be able to answer immediately  to
+       a client request); it sends commands (power on, power off, power cycle,
+       etc.) to the farm node BMCs <B>on</B> <B>user</B> <B>request</B>.
+
+       The Power Manager Server copes with the long IPMI response time by <B>par-</B>
+       <B>allelly</B> <B>accessing</B> <B>each</B> <B>node</B> from a different short-living thread. Every
+       IPMI access request by <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B> starts, by default,  as  many  short-
+       living  threads  as  the number of the controlled nodes and each short-
+       living thread accesses one node only. In case of a huge number of  con-
+       figured  nodes (&gt;~ 500), the number of short-living threads can be lim-
+       ited: in this running condition the IPMI accesses which exceed the max-
+       imum thread number are queued up.
+
+       The Power Manager Server copes also with the IPMI limitation to be able
+       to process only one access at a time, by  <B>arbitrating</B>  among  the  <B>IPMI</B>
+       <B>accesses</B> <B>to</B> <B>the</B> <B>same</B> <B>node</B>. In case of overlapping commands or and peri-
+       odical inquiries, the Power Manager Server <B>enqueues</B> <B>commands</B>, in  order
+       for all the received commands to be executed, one at a time, exactly in
+       the  same  order  they  were  issued,  and  <B>cancel</B>  <B>periodical</B>   <B>sensor</B>
+       <B>inquiries</B>,  in  order  to  avoid  indefinite  thread  pile-up  for not-
+       responding IPMI interfaces.
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The FMC Power Manager Server, <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>  controls  a  cluster  of  PCs
+       through  the  IPMI  protocol.  It reads the list of the controlled farm
+       nodes and their properties from the Power  Manager  configuration  file
+       <I>CONF</I><B>_</B><I>FILE</I> (by default: <B>/etc/ipmiSrv.conf</B>). See section FILE below for a
+       description of the configuration file format.
+
+       The FMC Power Manager Server parallelly accesses the BMCs of  the  farm
+       nodes   using  short-living  threads.  Every  IPMI  access  request  by
+       <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B> starts, by <B>default</B>, as  many  short-living  threads  as  the
+       number  of  the  controlled nodes and each short-living thread accesses
+       one node only.
+
+       The <B>maximum</B> <B>number</B> <B>of</B> <B>threads</B> which could  run  simultaneously  can  be
+       <B>limited</B>  by  the  command line option <B>-t</B> <I>MAX</I><B>_</B><I>THREAD</I><B>_</B><I>NUMBER</I>. This option
+       can be useful when  the  number  of  configured  nodes  is  very  large
+       (&gt;~ 500)  to avoid exhausting the computer resources, with the drawback
+       of a longer global access time. If a limit is set  then  IPMI  accesses
+       are  queued up and a maximum number of <I>MAX</I><B>_</B><I>THREAD</I><B>_</B><I>NUMBER</I> can be running
+       at a time. <I>MAX</I><B>_</B><I>THREAD</I><B>_</B><I>NUMBER</I> must be at  least  6,  otherwise  a  FATAL
+       error is raised. If <I>MAX</I><B>_</B><I>THREAD</I><B>_</B><I>NUMBER</I> = 0 no limit is set to the number
+       of threads running simultaneously.
+
+       The  refresh  of  sensor  information  is  performed  periodically   by
+       <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>. The period (by default 60 s) can be changed by means of the
+       <B>--sensor-period</B> <I>SENSOR</I><B>_</B><I>PERIOD</I> command line option.
+
+       The refresh of power status information is also performed  periodically
+       by  <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>,  but  with  a  period  which  varies from <I>MIN</I><B>_</B><I>PERIOD</I> to
+       <I>MAX</I><B>_</B><I>PERIOD</I>, being set to <I>MIN</I><B>_</B><I>PERIOD</I> soon after commands (to report soon
+       the change produced by the command) and increasing at each iteration by
+       the 20% until <I>MAX</I><B>_</B><I>PERIOD</I> is reached. <I>MIN</I><B>_</B><I>PERIOD</I> (by default 4 s) can be
+       changed   by  the  <B>--min-period</B>  <I>MIN</I><B>_</B><I>PERIOD</I>  command  line  option  and
+       <I>MAX</I><B>_</B><I>PERIOD</I> (by default  30  s)  can  be  changed  by  the  <B>--max-period</B>
+       <I>MAX</I><B>_</B><I>PERIOD</I> command line option.
+
+       The  IPMI  <B>user</B>  <B>name</B>  can  be defined either <B>globally</B>, by means of the
+       <I>IPMI</I><B>_</B><I>USER</I> global configuration record in file <I>/etc/ipmiSrv.conf</I>, or  on
+       a <B>per-node</B> <B>basis</B>, by means of the <I>userName</I> field in the node configura-
+       tion record in the  same  file  <I>/etc/ipmiSrv.conf</I>  (see  FILES  section
+       below). Per-node user name, if defined, overrides global user name.
+
+       The  special  user  name <B>noUser</B> can be defined, either as a global user
+       name or as a per-node user name, to send <I>no</I> <I>user</I> <I>name</I> to the IPMI hard-
+       ware.
+
+       The  IPMI <B>pass-word</B> can be defined in three different ways (in decreas-
+       ing order of priority):
+
+              1. <B>globally</B>,  by  writing  the  pass-word  in  the  ASCII   file
+                 <I>PASSWD</I><B>_</B><I>FILE</I>  and  starting  <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>  with the command-line
+                 option <B>--password-file</B> <I>PASSWD</I><B>_</B><I>FILE</I> or  <B>-f</B>  <I>PASSWD</I><B>_</B><I>FILE</I>.  This
+                 option passes to the <B><A HREF="../../htmlMan/man1/ipmitool.1.html">ipmitool(1)</A></B> command the name of the file
+                 instead of the password, and is therefore preferable for  the
+                 security.
+
+              2. on  a  <B>per-node</B>  <B>basis</B>, by means of the <B>passWord</B> field in the
+                 node configuration record in the file <I>/etc/ipmiSrv.conf</I>  (see
+                 FILES section below).
+
+              3. <B>globally</B>,  by  means  of the <I>IPMI</I><B>_</B><I>PASSWD</I> global configuration
+                 record in file <I>/etc/ipmiSrv.conf</I> (see FILES section below);
+
+       The DIM Name Server, looked up by <B>ipmiSrv</B> to register the provided  DIM
+       services  and commands, can be chosen (in decreasing order of priority)
+       by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file <B>/etc/sysconfig/dim</B>.
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B> <B>--help</B>
+              Get basic usage help from the command line then exit.
+
+       <B>-N</B> <B>--dim_dns_node</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-l</B> <B>--logger</B> <I>LOGGER</I> <I>(integer)</I>
+              Use the logger units defined in the <I>LOGGER</I> mask to send diagnos-
+              tic and information messages. The <I>LOGGER</I> mask can be the bitwise
+              <I>OR</I> of the following logger units:
+
+              0x1    the default FMC Message Logger (fifo: /tmp/logSrv.fifo);
+
+              0x2    the standard error stream;
+
+              0x4    the operating system syslog facility.
+
+              <B>Default</B>: <I>LOGGER</I> = 0x1.
+
+       <B>-c</B> <B>--conf-file</B> <I>CONF</I><B>_</B><I>FILE</I> <I>(string)</I>
+              Read the IPMI configuration from the file  <I>CONF</I><B>_</B><I>FILE</I>  (see  FILE
+              section below for the format of <I>CONF</I><B>_</B><I>FILE</I>). <B>Default</B>: <I>CONF</I><B>_</B><I>FILE</I> =
+              <B>/etc/ipmiSrv.conf</B>.
+
+       <B>-c</B> <B>--sensor-dictionary-file</B> <I>SENS</I><B>_</B><I>FILE</I> <I>(string)</I>
+              Read/write  sensor  dictionary  from/to  the   file   <I>SENS</I><B>_</B><I>FILE</I>.
+              <B>Default</B>: <I>SENS</I><B>_</B><I>FILE</I> = <B>/etc/ipmi_sensor_dictionary.txt</B>.
+
+       <B>-d</B> <B>--update-dictionary-file</B>
+              Discover  the  sensor  list  of  the  nodes  in  the cluster, at
+              <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>  start-up,  using  IPMI,  and   update   the   sensor
+              dictionary  file  <I>SENS</I><B>_</B><I>FILE</I>  (this  can  take up to 400 s). This
+              option allows to enable the access to the sensors of new  brands
+              or  models  of PC added to the cluster. <B>Default</B>: do not discover
+              the sensor list through IPMI, but read the sensor list from  the
+              previously stored sensor dictionary file <I>SENS</I><B>_</B><I>FILE</I>.
+
+       <B>-f</B> <B>--password-file</B> <I>PASSWD</I><B>_</B><I>FILE</I> <I>(string)</I>
+              Read  the  IPMI  pass-word from the the file <I>PASSWD</I><B>_</B><I>FILE</I> at run-
+              time. <B>Default</B>: read the IPMI pass-word from the  file  <I>CONF</I><B>_</B><I>FILE</I>
+              at start-up.
+
+       <B>-t</B> <B>--max-threads-number</B> <I>MAX</I><B>_</B><I>THREAD</I><B>_</B><I>NUMBER</I> <I>(integer)</I>
+              Set the maximum number of threads which could run simultaneously
+              to <I>MAX</I><B>_</B><I>THREAD</I><B>_</B><I>NUMBER</I>. This option can be useful when the  number
+              of  configured  nodes  is very large (&gt; 500) to avoid exhausting
+              the computer resources, with the drawback  of  a  longer  global
+              access  time.  Consider  that,  if  no limit is set, IPMI access
+              needs one thread for each controlled node. If  a  limit  is  set
+              then   IPMI   accesses  are  queued  and  a  maximum  number  of
+              <I>MAX</I><B>_</B><I>THREAD</I><B>_</B><I>NUMBER</I> can be running at  a  time.  <I>MAX</I><B>_</B><I>THREAD</I><B>_</B><I>NUMBER</I>
+              must  be  at  least  6,  otherwise  a  FATAL error is raised. If
+              <I>MAX</I><B>_</B><I>THREAD</I><B>_</B><I>NUMBER</I> = 0 no limit is set to the number  of  threads
+              running simultaneously. <B>Default</B>: <I>MAX</I><B>_</B><I>THREAD</I><B>_</B><I>NUMBER</I> = 0.
+
+       <B>--min-period</B> <I>MIN</I><B>_</B><I>PERIOD</I> <I>(float)</I>
+              Set  the  minimum power status refresh period, expressed in sec-
+              onds to <I>MIN</I><B>_</B><I>PERIOD</I>. The power status refresh period  is  set  to
+              <I>MIN</I><B>_</B><I>PERIOD</I>  soon  after  a command is issued, to report soon the
+              change produced by the command, then in  increased  by  the  20%
+              each  time until <I>MAX</I><B>_</B><I>PERIOD</I> is reached. <B>Default</B>: 4 s. <B>Minimum</B>: 4
+              s.
+
+       <B>--max-period</B> <I>MAX</I><B>_</B><I>PERIOD</I> <I>(float)</I>
+              Set the maximum power status refresh period, expressed  in  sec-
+              onds to <I>MAX</I><B>_</B><I>PERIOD</I>. <B>Default</B>: 30 s. <B>Minimum</B>: 4 s.
+
+       <B>--sensor-period</B> <I>SENSOR</I><B>_</B><I>PERIOD</I> <I>(float)</I>
+              Set   the   sensor  refresh  period,  expressed  in  seconds  to
+              <I>SENSOR</I><B>_</B><I>PERIOD</I>. <B>Default</B>: 60 s. <B>Minimum</B>: 4 s.
+
+       <B>--get-try-n</B> <I>GET</I><B>_</B><I>TRY</I><B>_</B><I>NUMBER</I> <I>(integer)</I>
+              Set the maximum number of attempts in getting  IPMI  information
+              before giving-up to <I>GET</I><B>_</B><I>TRY</I><B>_</B><I>NUMBER</I>. <B>Default</B>: 5. <B>Minimum</B>: 1.
+
+       <B>--get-try-n</B> <I>GET</I><B>_</B><I>TRY</I><B>_</B><I>NUMBER</I> <I>(integer)</I>
+              Set the maximum number of IPMI command attempts before giving-up
+              to <I>CMD</I><B>_</B><I>TRY</I><B>_</B><I>NUMBER</I>. <B>Default</B>: 10. <B>Minimum</B>: 1.
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries  "libdim"  and  "libFMCu-
+              tils".
+
+       <B>IPMI_USER</B> (string, mandatory if not set in <I>CONF</I><B>_</B><I>FILE</I>)
+              Default  IPMI username. Can be overridden by the per-host speci-
+              fications provided by <I>CONF</I><B>_</B><I>FILE</I>.
+
+       <B>IPMI_PASSWD</B> (string, mandatory if not set in <I>CONF</I><B>_</B><I>FILE</I>)
+              Default IPMI password. Can be overridden by the per-host  speci-
+              fications provided by <I>CONF</I><B>_</B><I>FILE</I>.
+
+       <B>IPMI_CMD</B> (string, optional)
+              Path  to  the  ipmitool  executable  image.  <B>Default</B>: <I>IPMI</I><B>_</B><I>CMD</I> =
+              <B>/usr/bin/ipmitool</B>.
+
+       <B>UTGID</B> (string, optional)
+              UTGID of the ipmiSrv process.
+
+       <B>deBug</B> (integer, decimal or hexadecimal, optional)
+              Debug mask. Can be set to 0x00...0x7ff. The meaning of the  mask
+              bit are:
+
+              0x001: print update period;
+              0x002: print retrieved data;
+              0x004: print command queue;
+              0x008: print output of ipmitool commands;
+              0x010: print start/end functions;
+              0x020: print published services;
+              0x040: print sent IPMI commands;
+              0x080: print IPMI per-node configuration;
+              0x100: print thread management;
+              0x200: print Single IPMI access failures;
+              0x400: print Sensor errors.
+
+              <B>Default</B>: <I>deBug</I> = 0.
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Start  the  FMC  Power Manager, getting the configuration from the file
+       "/etc/ipmiSrv.conf",   getting   the   DIM_DNS_NODE   from   the   file
+       "/etc/sysconfig/dim",  sending messages to the default FMC Message Log-
+       ger, with no limit to the number of threads,  a  power  status  refresh
+       period  which varies from 4 s to 30 s, a sensor refresh period of 60 s,
+       a maximum number of 10 IPMI access attempt  for  commands  and  5  IPMI
+       access attempt for monitor:
+
+       <I>bash$</I> <B>/opt/FMC/sbin/ipmiSrv</B>
+
+       Update the sensor dictionary at start-up (this can take up to 400 s) to
+       enable the access to the sensors of new brands or models of PC added to
+       the cluster:
+
+       <I>bash$</I> <B>/opt/FMC/sbin/ipmiSrv</B> <B>-d</B>
+       <I>bash$</I> <B>/opt/FMC/sbin/ipmiSrv</B> <B>--update-dictionary-file</B>
+
+       Set the maximum number of <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B> threads which could run simultane-
+       ously to 800, in order to save computer resources if the number of con-
+       figured nodes is greater then 800:
+
+       <I>bash$</I> <B>/opt/FMC/sbin/ipmiSrv</B> <B>-t</B> <B>800</B>
+       <I>bash$</I> <B>/opt/FMC/sbin/ipmiSrv</B> <B>--max-threads-number</B> <B>800</B>
+
+       Read  the  global  IPMI pass-word at run-time from the file <I>/etc/ipmiS-</I>
+       <I>rv.passwd</I>:
+
+       <I>bash$</I> <B>/opt/FMC/sbin/ipmiSrv</B> <B>-f</B> <B>/etc/ipmiSrv.passwd</B>
+       <I>bash$</I> <B>/opt/FMC/sbin/ipmiSrv</B> <B>--password-file</B> <B>/etc/ipmiSrv.passwd</B>
+
+
+</PRE>
+<H2>FILES</H2><PRE>
+       <I>/etc/ipmiSrv.conf</I>
+
+   <B>Configuration</B> <B>File</B>
+       <I>/etc/ipmiSrv.conf</I>
+
+       <B>Description</B>
+
+       The file <I>/etc/ipmiSrv.conf</I> stores the IPMI configuration of the cluster
+       nodes  which  have  to be controlled by the current instance of the FMC
+       Power Manager. The record of the file can be either a <B>global</B> <B>configura-</B>
+       <B>tion</B>  <B>record</B> - which set the default user, the default password and the
+       path to the ipmitool executable image - or a <B>node</B> <B>configuration</B>  <B>record</B>
+       which  add  the node to the list of the controlled nodes and optionally
+       set, for the specific node, a user and a password  which  override  the
+       default  user  and  passwors,  and further details of the specific node
+       configuration (UDP port number, authentication type, etc.).
+
+       <B>File</B> <B>format</B>
+
+       File is made of an arbitrary number of records, which can be  either  a
+       <B>global</B> <B>configuration</B> <B>record</B> or a <B>node</B> <B>configuration</B> <B>record</B>. Records are
+       separated by the character '\n' (new-line, line-feed, LF, ASCII  0x0a).
+       Blank  records  as  well as comment records (i.e. records starting with
+       the '#' character) are skipped. If a record contains the '#' character,
+       all  charaters  following  the '#' character (including the '#' itself)
+       are ignored.
+
+       <B>Global</B> <B>configuration</B> <B>record</B> <B>format</B>
+
+       Can have one of the following three formats:
+
+              <B>IPMI_USER=string</B>
+                     Set the default username (mandatory).
+
+              <B>IPMI_PASSWD=string</B>
+                     Set the default password (mandatory).
+
+              <B>IPMI_CMD=string</B>
+                     Set the path to the <B>ipmitool</B> executable image (optional).
+
+       where the strings need to be quoted (by double quotation marks) only if
+       they include spaces.
+
+       <B>Node</B> <B>configuration</B> <B>record</B> <B>format</B>
+
+       The record is made of 7 fields, separated by commas, in the sequence:
+
+              <B>hostName,userName,passWord,port,authType,privLvl,oemType</B>
+
+       The first field (hostName) is mandatory; the following  fields  can  be
+       omitted.  The last fields can be omitted simply avoid writing them. In-
+       termediate fields can be omitted by writing the string "<B>NULL</B>" (see  ex-
+       ample below).
+
+       <B>Node</B> <B>configuration</B> <B>field</B> <B>description</B>
+
+              <B>hostName</B> (string, mandatory)
+                     hostname of the controlled node.
+
+              <B>userName</B> (string, optional)
+                     username  used  on the controlled node (overrides the de-
+                     fault user set in a global configuration record).
+
+              <B>passWord</B> (string, optional)
+                     passWord used on the controlled node (overrides  the  de-
+                     fault password set in a global configuration record).
+
+              <B>port</B> (integer, optional)
+                     UDP port contacted on the controlled node.
+
+              <B>authType</B> (string, optional)
+                     Authentication  type  to use during the IPMIv1.5 lan ses-
+                     sion activation on the controlled node.  Supported  types
+                     are: <I>NONE</I>, <I>PASSWORD</I>, <I>MD2</I>, <I>MD5</I>, or <I>OEM</I>.
+
+              <B>privLvl</B> (string, optional)
+                     Force session privilege level on the controlled node. Al-
+                     lowed level: <I>CALLBACK</I>, <I>USER</I>, <I>OPERATOR</I>, <I>ADMINISTRATOR</I>. <B>De-</B>
+                     <B>fault</B> <B>level</B>: <I>ADMINISTRATOR</I>.
+
+              <B>oemType</B> (string, optional)
+                     Select  OEM  type to support on the controlled node. This
+                     usually involves minor hacks in place in the code to work
+                     around quirks in various BMCs from various manufacturers.
+                     Supported types  are:  <I>supermicro</I>,  <I>intelwv2</I>,  <I>intelplus</I>,
+                     <I>icts</I>, <I>ibm</I>.
+
+       <B>Record</B> <B>Examples:</B>
+
+       # Sample configuration file
+       # Global configuration records
+       IPMI_USER=root         # default user
+       IPMI_PASSWD=my_passwd  # default password
+       # Node configuration records
+       # hostName,userName,passWord,port,authType,privLvl,oemType
+       farm0101
+       farm0102,myuser
+       farm0102,noUser
+       farm0103,noUser,mypassword
+       farm0104,myuser,mypassword,1623
+       farm0105,myuser,mypassword,1623,MD2,OPERATOR,intelwv2
+       farm0106,NULL,NULL,NULL,MD2,OPERATOR,intelwv2
+
+
+</PRE>
+<H2>DIM INFORMATION</H2><PRE>
+   <B>DIM</B> <B>Server</B> <B>Name</B>
+       /FMC/<I>CTRLPC</I><B>_</B><I>HOST</I><B>_</B><I>NAME</I>/power_manager
+              where  <I>CTRLPC</I><B>_</B><I>HOST</I><B>_</B><I>NAME</I> is the host name of the current PC (run-
+              ning <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>), as returned by the command "hostname -s",  but
+              written in upper case characters.
+
+   <B>Published</B> <B>DIM</B> <B>Services</B>
+       /FMC/<I>CTRLPC</I><B>_</B><I>HOST</I><B>_</B><I>NAME</I>/power_manager/server_version (string)
+              Publishes  a  NULL-terminated string containing the RCS revision
+              label of the <B>ipmiSrv.c</B> source code of the current <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B> in-
+              stance,  as  returned by the command "ident /opt/FMC/sbin/ipmiS-
+              rv"; in the present case:
+
+              "ipmiSrv.c,v 3.32 2012/11/29 15:52:27 galli".
+
+       /FMC/<I>CTRLPC</I><B>_</B><I>HOST</I><B>_</B><I>NAME</I>/power_manager/actuator_version (string)
+              Publishes a NULL-terminated string containing the  RCS  revision
+              label  of  the <B>ipmiUtils.c</B> source code of the current <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>
+              instance, as returned by the command "ident /opt/FMC/sbin/ipmiS-
+              rv"; in the present case:
+
+              "ipmiUtils.c,v 2.4 2008/12/02 15:38:55 galli".
+
+       /FMC/<I>CTRLPC</I><B>_</B><I>HOST</I><B>_</B><I>NAME</I>/power_manager/fmc_version (string)
+              Publishes a NULL-terminated string containing the revision label
+              of the FMC package which includes the  current  <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>  exe-
+              cutable, in the present case:
+
+              "3.9.14".
+
+       /FMC/<I>CTRLPC</I><B>_</B><I>HOST</I><B>_</B><I>NAME</I>/power_manager/success (int)
+              Always  publishes the integer 1. This dummy services can be used
+              to check whether the current instance of <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>  is  up  and
+              running.
+
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/power_status (integer)
+              Publishes  an  array of integers which are the last power status
+              probe of the nodes (0 = off, 1 = on). <I>HOST</I><B>_</B><I>NAME</I> is the host name
+              of  the controlled node, not the host name of the PC running <B>ip-</B>
+              <B><A HREF="../../htmlMan/man8/miSrv.8.html">miSrv(8)</A></B>.
+
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/power_status_timestamp (integer)
+              Publishes an array of integers which are the time  of  the  last
+              power  status  probe of the nodes, measured in seconds since the
+              Epoch (00:00:00 UTC, January 1, 1970).  <I>HOST</I><B>_</B><I>NAME</I>  is  the  host
+              name of the controlled node, not the host name of the PC running
+              <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>.
+
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/sensors_timestamp (integer)
+              Publishes an array of integers which are the time  of  the  last
+              sensor measure of the nodes, measured in seconds since the Epoch
+              (00:00:00 UTC, January 1, 1970). <I>HOST</I><B>_</B><I>NAME</I> is the host  name  of
+              the  controlled node, not the host name of the PC running <B>ipmiS-</B>
+              <B><A HREF="../../htmlMan/man8/rv.8.html">rv(8)</A></B>.
+
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/sensors/temp/names (string)
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/sensors/fan/names (string)
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/sensors/voltage/names (string)
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/sensors/current/names (string)
+              Publishes a sequence of NULL-terminated strings which are labels
+              to tag the sensors (e.g.: "Planar temp", "VRD 0 Temp", "ambient-
+              temp", "cpu0.dietemp", "cpu0.memtemp", etc.). <I>HOST</I><B>_</B><I>NAME</I>  is  the
+              host  name  of  the controlled node, not the host name of the PC
+              running <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>.
+
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/sensors/temp/units (string)
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/sensors/fan/units (string)
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/sensors/voltage/units (string)
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/sensors/current/units (string)
+              Publishes a sequence of NULL-terminated strings  which  are  the
+              units  of  the sensors measures (e.g.: "degrees C", "degrees F",
+              "RPM", "Volts", etc.). <I>HOST</I><B>_</B><I>NAME</I> is the host name  of  the  con-
+              trolled node, not the host name of the PC running <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>.
+
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/sensors/temp/input (float)
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/sensors/fan/input (integer)
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/sensors/voltage/input (float)
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/sensors/current/input (float)
+              Publishes  an  array of numbers (integer or float) which are the
+              last values of the sensors measures. <I>HOST</I><B>_</B><I>NAME</I> is the host  name
+              of  the controlled node, not the host name of the PC running <B>ip-</B>
+              <B><A HREF="../../htmlMan/man8/miSrv.8.html">miSrv(8)</A></B>.
+
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/sensors/temp/status (string)
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/sensors/fan/status (string)
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/sensors/voltage/status (string)
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/sensors/current/status (string)
+              Publishes a sequence of NULL-terminated strings  which  are  the
+              sensor  status  evaluated  by the IPMI hardware. The meanings of
+              the strings are:
+
+                     <B>cr</B>: critical
+                     <B>nc</B>: non-critical
+                     <B>nr</B>: non-recoverable
+                     <B>ns</B>: not specified (e.g. node switched off)
+                     <B>ok</B>: ok
+                     <B>us</B>: unspecified
+
+              <I>HOST</I><B>_</B><I>NAME</I> is the host name of the controlled node, not the  host
+              name of the PC running <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>.
+
+   <B>Published</B> <B>DIM</B> <B>Commands:</B>
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/power_switch
+              Accepts,  as argument, a NULL-terminated string which can be one
+              of the following:
+
+              <B>on</B>:    Power up the node
+
+              <B>off</B>:   Power down the node into soft  off  (S4/S5  state).  This
+                     command does not initiate a clean shutdown of the operat-
+                     ing system prior to powering down the system.
+
+              <B>cycle</B>: Power down and then power up the node, providing a  power
+                     off interval of at least 1 second. No action should occur
+                     if the node power is in S4/S5 state.
+
+              <B>soft_off</B>:
+                     Initiate a soft-shutdown of the OS via ACPI. This can  be
+                     done  in  a  number  of  ways,  commonly by simulating an
+                     overtemperture or by simulating a power button press.  It
+                     is necessary to have OS support for ACPI and some sort of
+                     daemon watching for soft power events.
+
+              <B>hard_reset</B>:
+                     Pulse the system reset signal.
+
+              <B>pulse_diag</B>:
+                     Pulse a diagnostic interrupt (NMI) directly to  the  pro-
+                     cessor(s).  This is typically used to cause the operating
+                     system to do a diagnostic dump (OS dependent).
+
+              <I>HOST</I><B>_</B><I>NAME</I> is the host name of the controlled node, not the  host
+              name of the PC running <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>.
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information  on how to get the FMC (Farm Monitoring and Control System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development Homepage &lt;https://lhcbweb.bo.infn.it/twiki/bin/
+       view.cgi/LHCbBologna/FmcLinux&gt;.
+
+       CERN ITCOBE: FW Farm Monitor and Control &lt;http://itcobe.web.cern.ch/
+       itcobe/Projects/Framework/Download/Components/SystemOverview/fwFMC/wel-
+       come.html&gt;.
+
+       LHCb Online RPMs &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/
+       index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  ipmiSrv.c,v 3.32 2012/11/29 15:52:27 galli
+       Source:  ipmiUtils.c,v 2.4 2008/12/02 15:38:55 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO:</H2><PRE>
+       <B><A HREF="../../htmlMan/man1/pwStatus.1.html">pwStatus(1)</A></B>, <B><A HREF="../../htmlMan/man1/ipmiViewer.1.html">ipmiViewer(1)</A></B>, <B><A HREF="../../htmlMan/man1/pwSwitch.1.html">pwSwitch(1)</A></B>.
+       <B><A HREF="../../htmlMan/man1/ipmitool.1.html">ipmitool(1)</A></B>.
+
+FMC-3.9.14                        2012-12-19                        <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

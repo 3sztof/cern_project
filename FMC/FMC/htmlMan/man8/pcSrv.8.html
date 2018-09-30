@@ -1,0 +1,606 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>                          FMC Servers                         <B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>pcSrv</B> <B>-</B> FMC Process Controller Server
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>pcSrv</B> [<B>-N</B> | <B>--dim_dns_node</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-l</B> | <B>--logger</B> <I>LOGGER</I>]
+             [<B>--no-authentication</B>] [<B>--start-time-max-size</B> <I>MAX</I><B>_</B><I>SIZE</I>]
+             [<B>-u</B> | <B>--dflt_user</B> <I>DEFAULT</I><B>_</B><I>USER</I>] [<B>-g</B> | <B>--dflt_group</B> <I>DEFAULT</I><B>_</B><I>GROUP</I>]
+             [<B>-c</B> | <B>--conf-file</B> <I>CONF</I><B>_</B><I>FILE</I>] [<B>-s</B> | <B>--init-file</B> <I>INIT</I><B>_</B><I>FILE</I>]
+
+       <B>pcSrv</B> { <B>-h</B> | <B>--help</B> }
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The FMC <B>Process</B> <B>Controller</B> is a tool in charge of <I>keeping</I> <I>a</I> <I>dynamically</I>
+       <I>manageable</I> <I>list</I> <I>of</I> <I>applications</I> <I>up</I> <I>and</I> <I>running</I> on the farm nodes.
+
+       The  Process  Controller Server (<B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>) tipically runs on a few con-
+       trol PCs (each one watching ~200 farm nodes) and performs its  task  by
+       maintaining  the <I>list</I> <I>of</I> <I>the</I> <I>scheduled</I> <I>applications</I> for each controlled
+       farm node  and  by  interacting  with  the  FMC  Task  Manager  Servers
+       (<B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>)  running on each farm node to start processes, to obtain the
+       notification of the process termination, to re-start the untimely  ter-
+       minated processes ("respawn"), and to stop processes.
+
+       The  list  of  the  controlled farm nodes is read from the Process Con-
+       troller configuration file <I>CONF</I><B>_</B><I>FILE</I> (by default: "/etc/pcSrv.conf").
+
+       At runtime, processes can be added to the list for one or more nodes by
+       means of the <B><A HREF="../../htmlMan/man3/pcAdd.3.html">pcAdd(3)</A></B> command and removed from the list for one or more
+       nodes by means of the <B><A HREF="../../htmlMan/man3/pcRm.3.html">pcRm(3)</A></B> command. The  commands  <B><A HREF="../../htmlMan/man3/pcLs.3.html">pcLs(3)</A></B>,  <B><A HREF="../../htmlMan/man3/pcLl.3.html">pcLl(3)</A></B>
+       and  <B><A HREF="../../htmlMan/man3/pcLss.3.html">pcLss(3)</A></B>  provide  several  information  about the controlled pro-
+       cesses.
+
+       At <B>pcSrv</B> start-up the file <I>INIT</I><B>_</B><I>FILE</I> (by default: "/etc/pcSrv.init") is
+       read and the <B><A HREF="../../htmlMan/man3/pcAdd.3.html">pcAdd(3)</A></B> commands contained in the file are executed.
+
+       By  default the Process Controller implements a rhosts-like authentica-
+       tion: only the couples user@host which match at least one of  the  pat-
+       terns  user_pattern@host_pattern  listed in the file "/etc/pcSrv.allow"
+       are allowed to issue <B><A HREF="../../htmlMan/man3/pcAdd.3.html">pcAdd(3)</A></B> and <B><A HREF="../../htmlMan/man3/pcRm.3.html">pcRm(3)</A></B> commands to the Process  Con-
+       troller  Server.  In turn the <B><A HREF="../../htmlMan/man3/tmStart.3.html">tmStart(3)</A></B> and <B><A HREF="../../htmlMan/man3/tmStop.3.html">tmStop(3)</A></B> commands sent by
+       the Process Controller Server to the Task Manager  Servers  include  by
+       default  an  authentication string containing, as host, the hostname of
+       the PC running <B>pcSrv</B> and, as user, the real user ID of the  <B>pcSrv</B>  pro-
+       cess. The authentication can be disabled by means of the <B>--no-authenti-</B>
+       <B>cation</B> command-line switch: in this case all the  users  from  all  the
+       hosts  are  allowed  to  send send <B><A HREF="../../htmlMan/man3/pcAdd.3.html">pcAdd(3)</A></B> and <B><A HREF="../../htmlMan/man3/pcRm.3.html">pcRm(3)</A></B> commands to the
+       Process Controller Server and the  <B><A HREF="../../htmlMan/man3/tmStart.3.html">tmStart(3)</A></B>  and  <B><A HREF="../../htmlMan/man3/tmStop.3.html">tmStop(3)</A></B>  commands
+       sent  by  the  Process Controller Server to the Task Manager Servers do
+       not contain the authentication string.
+
+       The DIM Name Server, looked up by <B>pcSrv</B> to register  the  provided  DIM
+       services, can be chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file "<B>/etc/sysconfig/dim</B>".
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B> <B>--help</B>
+              Get basic usage help from the command line.
+
+       <B>-N</B> <B>--dim_dns_node</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-l</B> <B>--logger</B> <I>LOGGER</I> <I>(integer)</I>
+              Use the logger units defined in the <I>LOGGER</I> mask to send diagnos-
+              tic and information messages. The <I>LOGGER</I> mask can be the bitwise
+              <I>OR</I> of the following logger units:
+
+              0x1    the default FMC Message Logger (fifo: /tmp/logSrv.fifo);
+
+              0x2    the standard error stream;
+
+              0x4    the operating system syslog facility.
+
+              <B>Default</B>: <I>LOGGER</I> = 0x1.
+
+       <B>--no-authentication</B>
+              Do  not check the permission of the user and host which sent the
+              command.  <B>Default</B>: do check the permission.
+
+       <B>--starttime-max-size</B> <I>MAX</I><B>_</B><I>SIZE</I> <I>(integer)</I>
+              Set the maximum number of (re)start times for each process  kept
+              stored  in  a  buffer (to be shown by means of the <B><A HREF="../../htmlMan/man3/pcLss.3.html">pcLss(3)</A></B> com-
+              mand) to <I>MAX</I><B>_</B><I>SIZE</I>.  <B>Default</B>: 50.
+
+       <B>-u</B> <B>--dflt_user</B> <I>DEFAULT</I><B>_</B><I>USER</I> <I>(string)</I>
+              Assign  the  started  processes,  by  default,   to   the   user
+              <I>DEFAULT</I><B>_</B><I>USER</I>.  <B>Default</B>: <I>DEFAULT</I><B>_</B><I>USER</I> = "nobody".
+
+       <B>-u</B> <B>--dflt_group</B> <I>DEFAULT</I><B>_</B><I>GROUP</I> <I>(string)</I>
+              Assign   the   started  processes,  by  default,  to  the  group
+              <I>DEFAULT</I><B>_</B><I>GROUP</I>.  <B>Default</B>: <I>DEFAULT</I><B>_</B><I>GROUP</I> = "nobody".
+
+       <B>-c</B> <B>--conf-file</B> <I>CONF</I><B>_</B><I>FILE</I> <I>(string)</I>
+              Read the configuration (i.e. the list of the nodes  to  be  con-
+              trolled  by  this  Process  Controller) from the file <I>CONF</I><B>_</B><I>FILE</I>.
+              <B>Default</B>: <I>CONF</I><B>_</B><I>FILE</I> = "/etc/pcSrv.conf".
+
+       <B>-s</B> <B>--init-file</B> <I>INIT</I><B>_</B><I>FILE</I> <I>(string)</I>
+              Read from file <I>INIT</I><B>_</B><I>FILE</I> a list of  commands  to  add  scheduled
+              processes  to  the  list,  as  soon as the Process Controller is
+              ready.  <B>Default</B>: <I>INIT</I><B>_</B><I>FILE</I>  =  "/etc/pcSrv.init".   Anyhow  pro-
+              cesses can be added later by using the <B><A HREF="../../htmlMan/man3/pcAdd.3.html">pcAdd(3)</A></B> command.
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must  include  the  path to the libraries "libdim" and "libFMCu-
+              tils".
+
+       <B>deBug</B> (integer, optional)
+              Debug mask. Can be set to 0x00...0xff. The meaning of  the  mask
+              bit are:
+
+              0x01:  print PcTmSeeker diagnostics;
+
+              0x02:  print PcTmWatcher diagnostics;
+
+              0x04:  print PcAcl diagnostics;
+
+              0x08:  print PcProcess diagnostics;
+
+              0x10:  print PcNode diagnostics;
+
+              0x20:  print PcCluster diagnostics;
+
+              <B>Default</B>: <I>deBug</I> = 0.
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Start  the FMC Process Controller Server without authentication, defin-
+       ing the user "online" as the <I>DEFAULT</I><B>_</B><I>USER</I> and the group  "onliners"  as
+       the <I>DEFAULT</I><B>_</B><I>GROUP</I>, and sending messages to the default FMC Message Log-
+       ger:
+
+       <I>bash$</I> <B>/opt/FMC/sbin/pcSrv</B> <B>-u</B> <B>online</B> <B>-g</B> <B>onliners</B> <B>--no-auth</B>
+
+       Start the FMC Process Controller Server without authentication,  defin-
+       ing  the user "online" as the <I>DEFAULT</I><B>_</B><I>USER</I> and the default group of the
+       user "online" as the <I>DEFAULT</I><B>_</B><I>GROUP</I>, and sending messages to the default
+       FMC Message Logger:
+
+       <I>bash$</I> <B>/opt/FMC/sbin/pcSrv</B> <B>-u</B> <B>online</B> <B>--no-auth</B>
+
+
+</PRE>
+<H2>FILES</H2><PRE>
+       <I>/etc/pcSrv.conf</I>
+       <I>/etc/pcSrv.init</I>
+       <I>/etc/pcSrv.allow</I>
+
+   <B>Configuration</B> <B>File</B>
+       <I>/etc/pcSrv.conf</I>
+
+       <B>Description:</B>
+       The file <I>CONF</I><B>_</B><I>FILE</I> (by default "/etc/pcSrv.conf") must contain the list
+       of the hostnames of the nodes  controlled  by  the  Process  Controller
+       Server running on this node.
+
+       <B>File</B> <B>format:</B>
+       One  hostname  per  record. Records are separated using '\n' (new-line,
+       line-feed, LF, ASCII 0x0a). Blank records as well  as  comment  records
+       (i.e. records starting with the '#' character) are skipped.
+
+       <B>Record</B> <B>format:</B>
+       hostname (without domain).
+
+       <B>Record</B> <B>Examples:</B>
+       farm0101
+       farm0102
+       farm0103
+
+   <B>Initalization</B> <B>File</B>
+       <I>/etc/pcSrv.init</I>
+
+       <B>Description:</B>
+       The  file  <I>INIT</I><B>_</B><I>FILE</I>  (by  default "/etc/pcSrv.init") must contains the
+       list of the processes to be started at the start-up of the Process Con-
+       troller  Server.  Further processes can be added at runtime to the list
+       by means of the <B><A HREF="../../htmlMan/man3/pcAdd.3.html">pcAdd(3)</A></B> command. Processes can  be  removed  from  the
+       list by means of the <B><A HREF="../../htmlMan/man3/pcRm.3.html">pcRm(3)</A></B> command.
+
+       <B>File</B> <B>format:</B>
+       One  process  entry  per record. Records are separated using '\n' (new-
+       line, line-feed, LF, ASCII 0x0a). Blank  records  as  well  as  comment
+       records (i.e. records starting with the '#' character) are skipped.
+
+       <B>Record</B> <B>format:</B>
+       The same format of the <B><A HREF="../../htmlMan/man3/pcAdd.3.html">pcAdd(3)</A></B> command (excepting <B>-v</B>, <B>-N</B>, <B>-C</B> and <B>--no-</B>
+       <B>authentication</B> options), i.e.:
+
+       [<B>-m</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]  [<B>-c</B>] [<B>-D</B> <I>NAME=value...</I>]  [<B>-s</B> <I>SCHEDULER</I>]
+       [<B>-p</B> <I>NICE</I><B>_</B><I>LEVEL</I>] [<B>-r</B> <I>RT</I><B>_</B><I>PRIORITY</I>] [<B>-a</B> <I>CPU</I><B>_</B><I>NUM...</I>]  [<B>-d</B>] [<B>-n</B> <I>USER</I><B>_</B><I>NAME</I>]
+       [<B>-g</B> <I>GROUP</I><B>_</B><I>NAME</I>] [<B>-w</B> <I>WD</I>] [<B>-o</B>] [<B>-e</B>] [<B>-O</B> <I>OUT</I><B>_</B><I>FIFO</I>] [<B>-E</B> <I>ERR</I><B>_</B><I>FIFO</I>] [<B>-A</B>]
+       [<B>-M</B> <I>MAX</I><B>_</B><I>START</I><B>_</B><I>N</I>] [<B>-K</B> <I>CHECK</I><B>_</B><I>PERIOD</I>] [<B>-X</B> <I>DIS</I><B>_</B><I>PERIOD</I>] <B>-u</B> <I>UTGID</I> <I>PATH</I>
+       [<I>ARG...</I>]
+
+       <B>Parameter</B> <B>Expansion:</B>
+       The string "${RUN_NODE}" is replaced by the hostname  of  the  node  on
+       which  the  process  is  started,  in the fields: <I>UTGID</I>, <I>PATH</I>, <I>ARG</I>, <I>WD</I>,
+       <I>NAME=value</I>, <I>OUT</I><B>_</B><I>FIFO</I> and <I>ERR</I><B>_</B><I>FIFO</I>.
+
+       <B>Record</B> <B>Examples:</B>
+       -m * -e -o -c -u memSrv_u /opt/FMC/sbin/memSrv -l 1
+       -m * -e -o -c -u fsSrv_u -n root /opt/FMC/sbin/fsSrv -l 1 -a
+       -m * -c -u gaudiLog /opt/FMC/sbin/logSrv -S 100  -p  /tmp/logGaudi.fifo
+       -s gaudi
+
+   <B>Access</B> <B>Control</B> <B>File</B>
+       <I>/etc/pcSrv.allow</I>
+
+       <B>Description:</B>
+       The  file <I>/etc/pcSrv.allow</I> must contain the list of the couples of pat-
+       terns <B>user_pattern@hostname_pattern</B> allowed to issue  commands  to  the
+       Process Controller Server running on the current node.
+
+       <B>File</B> <B>format:</B>
+       One  couple <B>user_pattern@hostname_pattern</B> per record. Records are sepa-
+       rated using '\n' (new-line, line-feed, LF, ASCII 0x0a).  Blank  records
+       as  well as comment records (i.e. records starting with the '#' charac-
+       ter) are skipped.
+
+       <B>Record</B> <B>format:</B>
+       <B>user_pattern@hostname_pattern</B>.
+       user_pattern and host_pattern are separated by the '@' (at)  character.
+
+       <B>Fields</B> <B>description:</B>
+
+       <B>user_pattern</B>
+              User name wildcard pattern (see <B><A HREF="../../htmlMan/man7/glob.7.html">glob(7)</A></B>).
+
+       <B>host_pattern</B>
+              Host name wildcard pattern (see <B><A HREF="../../htmlMan/man7/glob.7.html">glob(7)</A></B>).
+
+       <B>Record</B> <B>Examples:</B>
+       online@farm0101.mydomain
+       *@farm0101.mydomain
+       online@*
+       *@*
+       online@farm01??.mydomain
+       online@farm01?[0-9].mydomain
+       online@farm01[0-9][0-9].mydomain
+
+
+</PRE>
+<H2>DIM INFORMATION</H2><PRE>
+   <B>DIM</B> <B>Server</B> <B>Name</B>
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/process_controller
+              where  <I>HOST</I><B>_</B><I>NAME</I> is the host name of the current PC, as returned
+              by the command "hostname -s", but written in upper case  charac-
+              ters.
+
+   <B>Published</B> <B>DIM</B> <B>Services</B>
+       /FMC/<I>HOSTNAME</I>/process_controller/ls (string)
+              Publishes  a  NULL-terminated  string containing the list of the
+              scheduled UTGIDs, node by node, with the format:
+
+              host_1:N_1:utgid_1,utgid_2,...,utgid_N_1.\n
+              host_2:N_2:utgid_1,utgid_2,...,utgid_N_2.\n
+              ...
+
+              Example:
+
+              farm0101:2:counter_1,counter_0.\n
+              farm0102:1:counter_0.\n
+
+       /FMC/<I>HOSTNAME</I>/process_controller/ll (string)
+              Publishes a NULL-terminated string containing the  list  of  the
+              scheduled  UTGIDs,  node  by  node,  with  the  start-up details
+              (s_1,d_2,...) between parentheses, with the format:
+
+              host_1:N_1:utgid_1(d_1,d_2,...),...,utgid_N_1(d_1,d_2,...).\n
+              host_2:N_2:utgid_1(d_1,d_2,...),...,utgid_N_2(d_1,d_2,...).\n
+              ...
+
+              Example:
+
+              farm0101:2:counter_1(wd="/opt/FMC/tests",path="./counter",
+              clearEnv,LD_LIBRARY_PATH=/opt/dim/linux:/opt/FMC/lib,
+              DIM_DNS_NODE=lhcbsrv.bo.infn.it,daemon,SCHED_FIFO,nice=0,rt-
+              prio=1,affMask=0x00000007,user="online",rdrStderr,rdrStdout,
+              maxStartN=20,disPeriod=60s,checkPeriod=30s),counter_0(
+              wd="/opt/FMC/tests",path="./counter",clearEnv,LD_LI-
+              BRARY_PATH=/opt/dim/linux:/opt/FMC/lib,DIM_DNS_NODE=lhcb-
+              srv.bo.infn.it,daemon,SCHED_OTHER,nice=-12,rtprio=0,
+              affMask=0x00000007,user="online",rdrStderr,rdrStdout,maxS-
+              tartN=20,disPeriod=60s,checkPeriod=30s).\n
+              farm0102:1:counter_0(wd="/opt/FMC/tests",path="./counter",
+              clearEnv,LD_LIBRARY_PATH=/opt/dim/linux:/opt/FMC/lib,
+              DIM_DNS_NODE=lhcbsrv.bo.infn.it,daemon,SCHED_OTHER,nice=-12,rt-
+              prio=0,affMask=0x00000007,user="online",rdrStderr,rdrStdout,
+              maxStartN=20,disPeriod=60s,checkPeriod=30s).\n
+
+       /FMC/<I>HOSTNAME</I>/process_controller/lss (string)
+              Publishes  a  NULL-terminated  string containing the list of the
+              scheduled UTGIDs, node by node,  with  the  possible  "disabled"
+              state  and  the  (re)start  times  [t_1,t_2,...] between squared
+              brackets, with the format:
+
+              host_1:N_1:utgid_1[(re)start=t_1,t_2,...],...,utgid_N_1
+              [(re)start=t_1,t_2,...].\n
+              host_2:N_2:utgid_1[disabled,(re)start=t_1,t_2,...],...,utgid_N_2
+              [(re)start=t_1,t_2,...].\n
+              ...
+
+              Example:
+
+              farm0101:2:counter_1[disabled,(re)start=3:Aug21-12:10:59.867288,
+              Aug21-12:10:58.867369,Aug21-12:10:57.867647],counter_0
+              [(re)start=1:Aug21-12:12:59.865047].\n
+              farm0102:1:counter_0[(re)start=1:Aug21-12:10:59.867797].\n
+              farm0103:2:counter_0[(re)start=0:(no start)],counter_1
+              [(re)start=0:(nostart)].\n
+
+       /FMC/<I>HOSTNAME</I>/process_controller/server_version (string)
+              Publishes  a  NULL-terminated string containing the RCS revision
+              label of the <B>pcSrv.C</B> source code of the current <B>pcSrv</B>  instance,
+              as  returned  by the command "ident /opt/FMC/sbin/pcSrv"; in the
+              present case:
+
+              "pcSrv.C,v 3.28 2012/12/13 16:21:24 galli".
+
+       /FMC/<I>HOSTNAME</I>/process_controller/fmc_version (string)
+              Publishes a NULL-terminated string containing the revision label
+              of  the FMC package which includes the current <B>pcSrv</B> executable,
+              in the present case:
+
+              "3.9.14".
+
+       /FMC/<I>HOSTNAME</I>/process_controller/success (int)
+              Always publishes the integer 1. This dummy services can be  used
+              to  check  whether  the current instance of <B>pcSrv</B> is up and run-
+              ning.
+
+   <B>Published</B> <B>DIM</B> <B>Commands:</B>
+       /FMC/<I>HOSTNAME</I>/process_controller/add
+              Accepts, as argument, a NULL-terminated  string  containing  the
+              <I>PATH</I>  to  the executable image to be added to the list, the com-
+              mand line arguments (<I>ARG</I>), and the Start and Respawn Control op-
+              tions, in the format:
+
+              [<B>-m</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]  [<B>-c</B>] [<B>-D</B> <I>NAME=value...</I>]  [<B>-s</B> <I>SCHEDULER</I>]
+              [<B>-p</B> <I>NICE</I><B>_</B><I>LEVEL</I>] [<B>-r</B> <I>RT</I><B>_</B><I>PRIORITY</I>] [<B>-a</B> <I>CPU</I><B>_</B><I>NUM...</I>]
+              [<B>-k</B> <I>OOM</I><B>_</B><I>SCORE</I><B>_</B><I>ADJ</I>] [<B>-d</B>] [<B>-n</B> <I>USER</I><B>_</B><I>NAME</I>] [<B>-g</B> <I>GROUP</I><B>_</B><I>NAME</I>] [<B>-w</B> <I>WD</I>]
+              [<B>-o</B>] [<B>-e</B>] [<B>-O</B> <I>OUT</I><B>_</B><I>FIFO</I>] [<B>-E</B> <I>ERR</I><B>_</B><I>FIFO</I>] [<B>-A</B>] [<B>-M</B> <I>MAX</I><B>_</B><I>START</I><B>_</B><I>N</I>]
+              [<B>-K</B> <I>CHECK</I><B>_</B><I>PERIOD</I>] [<B>-X</B> <I>DIS</I><B>_</B><I>PERIOD</I>] <B>-u</B> <I>UTGID</I> <I>PATH</I> [<I>ARG...</I>]
+
+              <B>DIM</B> <B>Command</B> <B>Options</B>
+
+              <B>-m</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+                     Add  the  process  <I>PATH</I>  to the list for the nodes (among
+                     those controlled by the  current  <B>pcSrv</B>  instance)  whose
+                     hostname  matches  the wildcard pattern <I>NODE</I><B>_</B><I>PATTERN</I> (<B>de-</B>
+                     <B>fault</B>: add process to the list for  all  the  nodes  con-
+                     trolled by the current <B>pcSrv</B> instance).
+
+              <B>-c</B>     Clear the <B>environment</B> inherited by the Task Manager.  <B>De-</B>
+                     <B>fault</B>: inherit the Task Manager environment.
+
+              <B>-D</B> <I>NAME=VALUE</I> <I>(string,</I> <I>repeatable)</I>
+                     Set the <B>environment</B> variable <I>NAME</I> to the value <I>VALUE</I>.
+
+              <B>-s</B> <I>SCHEDULER</I> <I>(integer</I> <I>in</I> <I>the</I> <I>range</I> <I>0..2)</I>
+                     Set the process scheduler to <I>SCHEDULER</I>, which can be:
+
+                     <B>0</B> (<B>SCHED_OTHER</B>)
+                             The default Linux <B>time-sharing</B> scheduler, with  a
+                             <B>dynamic</B> <B>priority</B> based on the <I>NICE</I><B>_</B><I>LEVEL</I>.
+
+                     <B>1</B> (<B>SCHED_FIFO</B>)
+                             The  <B>static-priority</B>  Linux <B>real-time</B> <B>fifo</B> sched-
+                             uler, without time slicing. A <B>SCHED_FIFO</B>  process
+                             runs  until  either  it  is blocked by an I/O re-
+                             quest, it is preempted by a higher priority  pro-
+                             cess, or it calls <B><A HREF="../../htmlMan/man2/sched_yield.2.html">sched_yield(2)</A></B>.
+
+                     <B>2</B> (<B>SCHED_RR</B>)
+                             The  <B>static-priority</B>  Linux <B>real-time</B> <B>Round-Robin</B>
+                             scheduler.  It differs  from  <B>SCHED_FIFO</B>  because
+                             each process is only allowed to run for a maximum
+                             time quantum. If a <B>SCHED_RR</B> process has been run-
+                             ning  for  a  time period equal to or longer than
+                             the time quantum, it will be put at  the  end  of
+                             the list for its priority.
+
+                     <B>Default</B>: 0 (SCHED_OTHER).
+
+              <B>-p</B> <I>NICE</I><B>_</B><I>LEVEL</I> <I>(integer</I> <I>in</I> <I>the</I> <I>range</I> <I>-20..19)</I>
+                     If  <I>SCHEDULER</I>=<B>SCHED_OTHER</B>, set the <B>nice</B> <B>level</B> of the pro-
+                     cess to  <I>NICE</I><B>_</B><I>LEVEL</I>.  The  <B>nice</B>  <B>level</B>  is  used  by  the
+                     <B>SCHED_OTHER</B>  time-sharing  Linux scheduler to compute the
+                     <B>dynamic</B> <B>priority</B>. Allowed values for  <I>NICE</I><B>_</B><I>LEVEL</I>  are  in
+                     the  range -20..19 (-20 corresponds to the most favorable
+                     scheduling;  19  corresponds  to  the   least   favorable
+                     scheduling).  The  <B>nice</B>  <B>level</B> can be lowered by the Task
+                     Manager even for processes which run as a user  different
+                     from root.
+
+              <B>-r</B> <I>RT</I><B>_</B><I>PRIORITY</I> <I>(integer</I> <I>in</I> <I>the</I> <I>range</I> <I>0..99)</I>
+                     Set  the  <B>static</B>  (real-time)  <B>priority</B> of the process to
+                     <I>RT</I><B>_</B><I>PRIORITY</I>. Only value 0 (zero) for <I>RT</I><B>_</B><I>PRIORITY</I>  is  al-
+                     lowed  for  scheduler  <B>SCHED_OTHER</B>.  For  <B>SCHED_FIFO</B>  and
+                     <B>SCHED_RR</B> real-time schedulers, allowed values are in  the
+                     range 1..99 (1 is the least favorable priority, 99 is the
+                     most favorable priority).
+
+              <B>-a</B> <I>CPU</I><B>_</B><I>NUM</I> <I>(integer,</I> <I>repeatable)</I>
+                     Add the CPU number <I>CPU</I><B>_</B><I>NUM</I> to the <B>process-to-CPU</B> <B>affinity</B>
+                     <B>mask</B>.  More  than  one of these options can be present in
+                     the same command to add more than one CPU to the affinity
+                     mask.  Started process is allowed to run only on the CPUs
+                     specified in the affinity  mask.  Omitting  this  option,
+                     process is allowed to run on any CPU of the node. Allowed
+                     <I>CPU</I><B>_</B><I>NUM</I> depend on the PC architecture
+
+              <B>-k</B> <I>OOM</I><B>_</B><I>SCORE</I><B>_</B><I>ADJ</I> <I>(integer</I> <I>in</I> <I>the</I> <I>range</I> <I>-999..1000)</I>
+                     Set the <B>Out</B> <B>Of</B> <B>Memory</B>  <B>Killer</B>  <B>Adjust</B>  <B>Parameter</B>  of  the
+                     started  process (<B>oom_score_adj</B>) to <I>OOM</I><B>_</B><I>SCORE</I><B>_</B><I>ADJ</I>. If the
+                     kernel version is less than 2.6.36 then the value is con-
+                     verted  in  the  range -16..15 for the <B>oom_adj</B> parameter.
+                     The process to be killed in an out-of-memory situation is
+                     selected based on its badness score. The badness score is
+                     reflected in /proc/&lt;pid&gt;/oom_score. This value is  deter-
+                     mined  on  the  basis  that  the system loses the minimum
+                     amount of work done, recovers a large amount  of  memory,
+                     doesn't  kill any innocent process eating tons of memory,
+                     and kills the minimum number of  processes  (if  possible
+                     limited  to one). The badness score is computed using the
+                     original memory size of the process, its CPU time  (utime
+                     +  stime),  the  run  time  (uptime - start time) and its
+                     oom_adj/oom_score_adj value.  The  <B>higher</B>  the  parameter
+                     <I>OOM</I><B>_</B><I>SCORE</I><B>_</B><I>ADJ</I>, <B>more</B> <B>likely</B> the process is to be <B>killed</B> by
+                     <B>OOM-killer</B>. The value <I>OOM</I><B>_</B><I>SCORE</I><B>_</B><I>ADJ</I>=-1000 is reserved for
+                     the  Task  Manager  process  and  is  not allowed for the
+                     started processes.
+
+              <B>-d</B>     Start the process as  <B>daemon</B>:  the  process  <B>umask</B>  (user
+                     file-creation mask) is changed into 0 (zero) and the pro-
+                     gram is run in a new <B>session</B> as <B>process</B> <B>group</B> <B>leader</B>.
+
+              <B>-n</B> <I>USER</I><B>_</B><I>NAME</I> <I>(string)</I>
+                     Set the <B>effective</B> <B>UID</B> (User IDentifier), the <B>real</B> <B>UID</B> and
+                     the  <B>saved</B> <B>UID</B> of the process to the <B>UID</B> corresponding to
+                     the user <I>USER</I><B>_</B><I>NAME</I>.
+
+              <B>-g</B> <I>GROUP</I><B>_</B><I>NAME</I> <I>(string)</I>
+                     Set the <B>effective</B> <B>GID</B> (Group IDentifier),  the  <B>real</B>  <B>GID</B>
+                     and the <B>saved</B> <B>GID</B> of the process to the <B>GID</B> corresponding
+                     to the group <I>GROUP</I><B>_</B><I>NAME</I>.
+
+              <B>-w</B> <I>WD</I> <I>(string)</I>
+                     Set the process <B>working</B> <B>directory</B> to <I>WD</I>. File open by the
+                     process without path specification are sought by the pro-
+                     cess in this directory. Process <B>relative</B> <B>file</B> <B>path</B>  start
+                     from this directory.
+
+              <B>-e</B>     Redirect  the  process  <B>stderr</B> (standard error stream) to
+                     the default FMC Message Logger. Omitting <B>-e</B> or <B>-E</B> <I>ERR</I><B>_</B><I>FI-</I>
+                     <I>FO</I>  options,  the  standard  error  stream  is  thrown in
+                     /dev/null.
+
+              <B>-o</B>     Redirect the process <B>stdout</B> (standard output  stream)  to
+                     the default FMC Message Logger. Omitting <B>-o</B> or <B>-O</B> <I>OUT</I><B>_</B><I>FI-</I>
+                     <I>FO</I> options, the  standard  output  stream  is  thrown  in
+                     /dev/null.
+
+              <B>-E</B> <I>ERR</I><B>_</B><I>FIFO</I> <I>(string)</I>
+                     Redirect  the  process  <B>stderr</B>  to the FMC Message Logger
+                     which uses the FIFO (named pipe) <I>ERR</I><B>_</B><I>FIFO</I>. Omitting <B>-e</B> or
+                     <B>-E</B>  <I>ERR</I><B>_</B><I>FIFO</I> options, the standard error stream is thrown
+                     in /dev/null.
+
+              <B>-O</B> <I>OUT</I><B>_</B><I>FIFO</I> <I>(string)</I>
+                     Redirect the process <B>stdout</B> to  the  FMC  Message  Logger
+                     which uses the FIFO (named pipe) <I>OUT</I><B>_</B><I>FIFO</I>. Omitting <B>-o</B> or
+                     <B>-O</B> <I>OUT</I><B>_</B><I>FIFO</I> options, the standard output stream is thrown
+                     in /dev/null.
+
+              <B>-A</B>     In  conjunction with <B>-E</B> <I>ERR</I><B>_</B><I>FIFO</I> and <B>-O</B> <I>OUT</I><B>_</B><I>FIFO</I> options,
+                     this option forces the <B>no-drop</B> policy for the  FIFO.  <B>De-</B>
+                     <B>fault</B>:  the <B>congestion-proof</B> policy is used for the FIFO.
+
+              <B>-M</B> <I>MAX</I><B>_</B><I>START</I><B>_</B><I>N</I> <I>(integer)</I>
+              <B>-K</B> <I>CHECK</I><B>_</B><I>PERIOD</I> <I>(integer)</I>
+              <B>-X</B> <I>DIS</I><B>_</B><I>PERIOD</I> <I>(integer)</I>
+                     Respawn control parameters. If a process  is  (re)started
+                     more than <I>MAX</I><B>_</B><I>START</I><B>_</B><I>N</I> times in <I>CHECK</I><B>_</B><I>PERIOD</I> seconds, then
+                     the process respawn is disabled for  <I>DIS</I><B>_</B><I>PERIOD</I>  seconds.
+                     <B>Default</B>   values   are:  <I>MAX</I><B>_</B><I>START</I><B>_</B><I>N</I>  =  10,  <I>CHECK</I><B>_</B><I>PERI-</I>
+                     <I>OD</I> = 120 s and <I>DIS</I><B>_</B><I>PERIOD</I> = 300 s. If <I>MAX</I><B>_</B><I>START</I><B>_</B><I>N</I>  =  -1,
+                     then the respawn control is excluded, i.e. process can be
+                     restarted indefinitely. If <I>DIS</I><B>_</B><I>PERIOD</I> = -1, then the pro-
+                     cess restart for the process, once disabled, is never re-
+                     enabled.
+
+              <B>-u</B> <I>UTGID</I> <I>(string,</I> <I>mandatory)</I>
+                     Set the process <B>utgid</B> (User assigned unique Thread  Group
+                     Identifier) to <I>UTGID</I>.
+
+              <I>PATH</I>   The path to the executable image to be started
+
+              [<I>ARGS</I>] The path to the executable image to be started
+
+              <B>Parameter</B> <B>Expansion:</B>
+              The string "${RUN_NODE}" is replaced by the hostname of the node
+              on which the process is started, in  the  fields:  <I>UTGID</I>,  <I>PATH</I>,
+              <I>ARG</I>, <I>WD</I>, <I>NAME=value</I>, <I>OUT</I><B>_</B><I>FIFO</I> and <I>ERR</I><B>_</B><I>FIFO</I>.
+
+       /FMC/<I>HOSTNAME</I>/process_controller/rm
+              Accepts,  as  argument,  a NULL-terminated string containing the
+              Stop options and the UTGID wildcard pattern of the process to be
+              removed from the list and stopped, in the format:
+
+              [<B>-m</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]  [<B>-s</B> <I>SIGNAL</I>] [<B>-d</B> <I>KILL</I><B>_</B><I>9</I><B>_</B><I>DELAY</I>] <I>UT-</I>
+              <I>GID</I><B>_</B><I>PATTERN</I>
+
+              <B>DIM</B> <B>Command</B> <B>Options</B>
+
+              <B>-m</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+                     Remove  the  process(es)  which  match  the  pattern  <I>UT-</I>
+                     <I>GID</I><B>_</B><I>PATTERN</I> from the list for the nodes (among those con-
+                     trolled by the current  <B>pcSrv</B>  instance)  whose  hostname
+                     matches  the  wildcard pattern <I>NODE</I><B>_</B><I>PATTERN</I> (<B>default</B>: re-
+                     move process(es) from the list for  all  the  nodes  con-
+                     trolled by the current <B>pcSrv</B> instance).
+
+              <B>-s</B> <I>SIGNAL</I> <I>(integer)</I>
+                     Send  the  signal  <I>SIGNAL</I> as the first signal to stop the
+                     process(es) (<B>default</B>: signal 15, <B>SIGTERM</B>).
+
+              <B>-d</B> <I>KILL</I><B>_</B><I>9</I><B>_</B><I>DELAY</I> <I>(integer)</I>
+                     Wait <I>KILL</I><B>_</B><I>9</I><B>_</B><I>DELAY</I> seconds before sending the second  sig-
+                     nal  (which  is always the signal 9, <B>SIGKILL</B>). <B>Default</B>: 4
+                     s.
+
+              <I>UTGID</I><B>_</B><I>PATTERN</I>
+                     The UTGID wildcard pattern of the processes to be removed
+                     from the list and stopped.
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information  on how to get the FMC (Farm Monitoring and Control System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development Homepage
+       &lt;http://lhcbweb2.bo.infn.it/bin/view/LHCbBologna/FmcLinux&gt;.
+
+       CERN Engineering Department, JCOP, FMC
+       &lt;http://j2eeps.cern.ch/wikis/display/EN/
+       JCOP+Framework+Farm+Monitoring+and+Control+Tool&gt;.
+
+       LHCb Online RPMs
+       &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  pcSrv.C,v 3.28 2012/12/13 16:21:24 galli
+
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO:</H2><PRE>
+       <B><A HREF="../../htmlMan/man1/pcAdd.1.html">pcAdd(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcRm.1.html">pcRm(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcLs.1.html">pcLs(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcLl.1.html">pcLl(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcLss.1.html">pcLss(1)</A></B>.
+       <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/tmStart.1.html">tmStart(1)</A></B>, <B><A HREF="../../htmlMan/man1/tmStop.1.html">tmStop(1)</A></B>, <B><A HREF="../../htmlMan/man1/tmLs.1.html">tmLs(1)</A></B>.
+       <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/cmSet.1.html">cmSet(1)</A></B>, <B><A HREF="../../htmlMan/man1/cmUnset.1.html">cmUnset(1)</A></B>, <B><A HREF="../../htmlMan/man1/cmGet.1.html">cmGet(1)</A></B>.
+       <B><A HREF="../../htmlMan/man8/init.8.html">init(8)</A></B>, <B><A HREF="../../htmlMan/man5/inittab.5.html">inittab(5)</A></B>.
+
+FMC-3.9.14                        2012-12-20                          <B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

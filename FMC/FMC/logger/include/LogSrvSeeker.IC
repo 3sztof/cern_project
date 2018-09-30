@@ -1,0 +1,69 @@
+/* ######################################################################### */
+/*
+ * $Log: LogSrvSeeker.IC,v $
+ * Revision 1.5  2012/11/29 15:52:27  galli
+ * Compatibility with gcc/g++ 4.4.6
+ *
+ * Revision 1.4  2009/02/26 20:51:28  galli
+ * Handles server error condition
+ *
+ * Revision 1.3  2009/02/17 16:50:25  galli
+ * added variables watcherList, knownLogSrvNames
+ * added prototype for methods addLogSrv(), rmLogSrv(), getLoggerName()
+ *
+ * Revision 1.2  2009/02/11 14:15:59  galli
+ * Use <vector> for hostPttnLs, logPttnLs and svcPttnLs
+ *
+ * Revision 1.1  2009/02/09 16:29:49  galli
+ * Initial revision
+ */
+/* ######################################################################### */
+#ifndef _LOG_SRV_SEEKER_IC
+#define _LOG_SRV_SEEKER_IC 1
+/* ######################################################################### */
+#include <list>
+#include <vector>
+#include <string>
+/* ------------------------------------------------------------------------- */
+#include <fnmatch.h> /* fnmatch(), FNM_NOMATCH */
+/* ------------------------------------------------------------------------- */
+/* in include */
+#include "fmcPar.h"
+#include "fmcVersion.h" /* SVC_HEAD */
+/* ------------------------------------------------------------------------- */
+/* in utils/include */
+#include "fmcMsgUtils.h"   /* INFO, mPrintf() */
+/* ------------------------------------------------------------------------- */
+#include "LogWriter.IC"
+#include "LogSettingsWatcher.IC"
+/* ######################################################################### */
+using namespace std;
+/* ######################################################################### */
+class LogSrvSeeker: public DimInfo
+{
+  vector<string> svcPttnLs;                            /* got by constructor */
+  list<LogWriter*> loggerList;
+  list<LogSettingsWatcher*> watcherList;
+  vector<string> knwnLogSrvNames;
+  /***************************************************************************/
+  /* called when a Logger server is added or removed */
+  void infoHandler();
+  void getService(char* s, string& svc, string& node);
+  string getLoggerName(const string& svc);
+  int matchSvcPattern(string svc);
+  void addLogSrv(const string &svc, const string &node);
+  void rmLogSrv(const string &svc, const string &node, char status);
+  /***************************************************************************/
+  public:
+  /***************************************************************************/
+  /* constructor */
+  LogSrvSeeker(const char* dnsSrvLsSvcPath, vector<string>& svcPttnLs);
+  /***************************************************************************/
+  /* destructor                                                              */
+  virtual ~LogSrvSeeker() {}
+  /***************************************************************************/
+};
+/* ######################################################################### */
+#endif                                                 /* _LOG_SRV_SEEKER_IC */
+/* ######################################################################### */
+

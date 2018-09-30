@@ -1,0 +1,172 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/fmcVersionViewer.1.html">fmcVersionViewer(1)</A></B>            FMC User Commands           <B><A HREF="../../htmlMan/man1/fmcVersionViewer.1.html">fmcVersionViewer(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>fmcVersionViewer</B> <B>-</B> Print the revision tag of the main source file and
+                          the version tag of the FMC package of the FMC
+                          Servers currently running
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>fmcVersionViewer</B> [<B>-v...</B>]  [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-m</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]  [<B>-C</B>]
+                        [<B>-M</B>] [<B>-s</B> <I>SERVER</I><B>_</B><I>NAME...</I>]
+
+       <B>fmcVersionViewer</B> <B>-h</B>
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The command <B><A HREF="../../htmlMan/man1/fmcVersionViewer.1.html">fmcVersionViewer(1)</A></B> is a FMC debugging tool which prints to
+       the  standard  output  stream the <B>revision</B> <B>tag</B> (RCS header) of the <B>main</B>
+       <B>source</B> <B>file</B> and the <B>version</B> <B>tag</B> of the <B>FMC</B> <B>package</B> of the  FMC  servers
+       registered with the DIM Name Server running on the node <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>.
+
+       Contacted  FMC  servers are: <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>,
+       <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B>,   <B><A HREF="../../htmlMan/man8/coalSrv.8.html">coalSrv(8)</A></B>,   <B><A HREF="../../htmlMan/man8/cpuinfoSrv.8.html">cpuinfoSrv(8)</A></B>,    <B><A HREF="../../htmlMan/man8/cpustatSrv.8.html">cpustatSrv(8)</A></B>,    <B><A HREF="../../htmlMan/man8/fsSrv.8.html">fsSrv(8)</A></B>,
+       <B><A HREF="../../htmlMan/man8/irqSrv.8.html">irqSrv(8)</A></B>,   <B><A HREF="../../htmlMan/man8/memSrv.8.html">memSrv(8)</A></B>,  <B><A HREF="../../htmlMan/man8/nifSrv.8.html">nifSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/osSrv.8.html">osSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/smartSrv.8.html">smartSrv(8)</A></B> and
+       <B><A HREF="../../htmlMan/man8/tcpipSrv.8.html">tcpipSrv(8)</A></B>.
+
+       The DIM Name Server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>, looked up to seek  for  FMC  Servers,
+       can be chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file "<B>/etc/sysconfig/dim</B>".
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B>     Get basic usage help from the command line, then terminate.
+
+       <B>-v</B>     Increase verbosity for debugging.
+
+       <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-m</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Print only the version of the servers running on the nodes whose
+              hostname  matches  at  least  one  of  the   wildcard   patterns
+              <I>NODE</I><B>_</B><I>PATTERN</I>  (<B>default</B>: print the version of the servers running
+              on  all  the  nodes  registered  with  the   DIM   Name   Server
+              <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>).
+
+       <B>-s</B> <I>SERVER</I><B>_</B><I>NAME</I> <I>(string,</I> <I>repeatable)</I>
+              Print  only  the  version  of  server <I>SERVER</I><B>_</B><I>NAME</I>. More than one
+              server can be specified by repeating the <B>-s</B> option. <B>Default</B>  (if
+              no  option  <B>-s</B>  is  specified): print the version of all the FMC
+              servers. Available <I>SERVER</I><B>_</B><I>NAME</I>s are:
+
+                     <B>log</B>     FMC Message Logger Server;
+                     <B>tm</B>      FMC Task Manager Server;
+                     <B>pc</B>      FMC Process Controller Server;
+                     <B>ipmi</B>    FMC Power Manager Server;
+                     <B>cm</B>      FMC Configuration Manager Server;
+                     <B>coal</B>    FMC Network Inteface Coalescence Monitor Server;
+                     <B>cpuinfo</B> FMC CPU Static Information Monitor Server;
+                     <B>cpustat</B> FMC CPU state information Monitor Server;
+                     <B>fs</B>      FMC File System Monitor Server;
+                     <B>irq</B>     FMC Interrupt Monitor Server;
+                     <B>mem</B>     FMC Memory Monitor Server;
+                     <B>nif</B>     FMC Network Interface Monitor Server;
+                     <B>os</B>      FMC Operating System Monitor Server;
+                     <B>ps</B>      FMC Process Monitor Server;
+                     <B>smart</B>   FMC Disk health Monitor Server;
+                     <B>tcpip</B>   FMC TCP/IP Stack Monitor Server.
+
+       <B>-C</B>     Print only the version of the Control Servers. Equivalent to "<B>-s</B>
+              <I>log</I> <B>-s</B> <I>tm</I> <B>-s</B> <I>pc</I> <B>-s</B> <I>ipmi</I> <B>-s</B> <I>cm</I>".
+
+       <B>-M</B>     Print only the version of the Monitor Servers. Equivalent to "<B>-s</B>
+              <I>coal</I> <B>-s</B> <I>cpuinfo</I> <B>-s</B> <I>cpustat</I> <B>-s</B> <I>fs</I> <B>-s</B> <I>irq</I> <B>-s</B> <I>mem</I> <B>-s</B> <I>nif</I> <B>-s</B>  <I>os</I>  <B>-s</B>
+              <I>ps</I> <B>-s</B> <I>smart</I> <B>-s</B> <I>tcpip</I>".
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must  include  the  path to the libraries "libdim" and "libFMCu-
+              tils".
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Print the version of all the FMC servers registered with the  DIM  Name
+       Server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>:
+
+       <I>bash$</I> <B>fmcVersionViewer</B>
+
+       Print  the  version  of all the FMC control servers registered with the
+       DIM Name Server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>:
+
+       <I>bash$</I> <B>fmcVersionViewer</B> <B>-C</B>
+
+       Print the version of the FMC servers Task Manager servers and  Configu-
+       ration Manager servers running on nodes farm0101 and farm0102:
+
+       <I>bash$</I> <B>fmcVersionViewer</B> <B>-m</B> <B>farm0101</B> <B>-m</B> <B>farm0102</B> <B>-s</B> <B>tm</B> <B>-s</B> <B>cm</B>
+
+       Use wildcard patterns to select the nodes:
+
+       <I>bash$</I> <B>fmcVersionViewer</B> <B>-m</B> <B>"farm01??"</B> <B>-m</B> <B>"farm02??"</B> <B>-s</B> <B>tm</B> <B>-s</B> <B>cm</B>
+       <I>bash$</I> <B>fmcVersionViewer</B> <B>-m</B> <B>"farm010[1-3]"</B>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information  on how to get the FMC (Farm Monitoring and Control System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development  Homepage  &lt;https://lhcbweb.bo.infn.it/twiki/bin/
+       view.cgi/LHCbBologna/FmcLinux&gt;.
+
+       CERN  ITCOBE:  FW  Farm Monitor and Control &lt;http://itcobe.web.cern.ch/
+       itcobe/Projects/Framework/Download/Components/SystemOverview/fwFMC/wel-
+       come.html&gt;.
+
+       LHCb Online RPMs &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/
+       index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  fmcVersionViewer.C,v 1.20 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO:</H2><PRE>
+   <B>FMC</B> <B>debugging</B> <B>tools:</B>
+       <B><A HREF="../../htmlMan/man1/fmcSrvViewer.1.html">fmcSrvViewer(1)</A></B>.
+
+   <B>FMC</B> <B>Control</B> <B>Servers:</B>
+       <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B>.
+
+   <B>FMC</B> <B>Monitor</B> <B>Servers:</B>
+       <B><A HREF="../../htmlMan/man8/coalSrv.8.html">coalSrv(8)</A></B>,   <B><A HREF="../../htmlMan/man8/cpuinfoSrv.8.html">cpuinfoSrv(8)</A></B>,   <B><A HREF="../../htmlMan/man8/cpustatSrv.8.html">cpustatSrv(8)</A></B>,   <B><A HREF="../../htmlMan/man8/fsSrv.8.html">fsSrv(8)</A></B>,    <B><A HREF="../../htmlMan/man8/irqSrv.8.html">irqSrv(8)</A></B>,
+       <B><A HREF="../../htmlMan/man8/memSrv.8.html">memSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/nifSrv.8.html">nifSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/osSrv.8.html">osSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/smartSrv.8.html">smartSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/tcpipSrv.8.html">tcpipSrv(8)</A></B>.
+
+FMC-3.9.14                        2012-12-19               <B><A HREF="../../htmlMan/man1/fmcVersionViewer.1.html">fmcVersionViewer(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

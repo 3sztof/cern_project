@@ -1,0 +1,151 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/fmcSrvViewer.1.html">fmcSrvViewer(1)</A></B>                FMC User Commands               <B><A HREF="../../htmlMan/man1/fmcSrvViewer.1.html">fmcSrvViewer(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>fmcSrvViewer</B> <B>-</B> Print the execution status (on/off) of the FMC Servers
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>fmcSrvViewer</B> [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-m</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]  [<B>-C</B>] [<B>-M</B>]
+
+       <B>fmcSrvViewer</B> <B>-h</B>
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The  command  <B><A HREF="../../htmlMan/man1/fmcSrvViewer.1.html">fmcSrvViewer(1)</A></B>  is a FMC debugging tool which prints the
+       <B>execution</B> <B>status</B> (on/off) of the FMC Servers which are supposed  to  be
+       running on the farm nodes registered with the DIM Name Server in execu-
+       tion on the node <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>.
+
+       FMC servers are classified in  <I>Control</I>  <I>Servers</I>  [<B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>,  <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>,
+       <B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B>] and <I>Monitor</I> <I>Servers</I> [<B><A HREF="../../htmlMan/man8/coalSrv.8.html">coalSrv(8)</A></B>, <B>cpuin-</B>
+       <B><A HREF="../../htmlMan/man8/foSrv.8.html">foSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/cpustatSrv.8.html">cpustatSrv(8)</A></B>,  <B><A HREF="../../htmlMan/man8/fsSrv.8.html">fsSrv(8)</A></B>,  <B><A HREF="../../htmlMan/man8/irqSrv.8.html">irqSrv(8)</A></B>,  <B><A HREF="../../htmlMan/man8/memSrv.8.html">memSrv(8)</A></B>,  <B><A HREF="../../htmlMan/man8/nifSrv.8.html">nifSrv(8)</A></B>,
+       <B><A HREF="../../htmlMan/man8/osSrv.8.html">osSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/smartSrv.8.html">smartSrv(8)</A></B> and <B><A HREF="../../htmlMan/man8/tcpipSrv.8.html">tcpipSrv(8)</A></B>].
+
+       The  DIM  Name  Server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>, looked up to seek for FMC Servers,
+       can be chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file "<B>/etc/sysconfig/dim</B>".
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B>     Get basic usage help from the command line, then terminate.
+
+       <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-m</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Print only the status of the servers running on the nodes  whose
+              hostname   matches   at  least  one  of  the  wildcard  patterns
+              <I>NODE</I><B>_</B><I>PATTERN</I> (<B>default</B>: print the status of the  servers  running
+              on   all   the   nodes  registered  with  the  DIM  Name  Server
+              <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>).
+
+       <B>-C</B>     Print  only  the  status  of  the  Control  Servers  [<B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>,
+              <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>,  <B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>,  <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>,  <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B>]. <B>Default</B>: print the
+              status all the FMC servers.
+
+       <B>-M</B>     Print only the status of the Monitor Servers [<B><A HREF="../../htmlMan/man8/coalSrv.8.html">coalSrv(8)</A></B>, <B>cpuin-</B>
+              <B><A HREF="../../htmlMan/man8/foSrv.8.html">foSrv(8)</A></B>,  <B><A HREF="../../htmlMan/man8/cpustatSrv.8.html">cpustatSrv(8)</A></B>,  <B><A HREF="../../htmlMan/man8/fsSrv.8.html">fsSrv(8)</A></B>,  <B><A HREF="../../htmlMan/man8/irqSrv.8.html">irqSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/memSrv.8.html">memSrv(8)</A></B>, <B>nif-</B>
+              <B><A HREF="../../htmlMan/man8/Srv.8.html">Srv(8)</A></B>,  <B><A HREF="../../htmlMan/man8/osSrv.8.html">osSrv(8)</A></B>,  <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>,  <B><A HREF="../../htmlMan/man8/smartSrv.8.html">smartSrv(8)</A></B>   and   <B><A HREF="../../htmlMan/man8/tcpipSrv.8.html">tcpipSrv(8)</A></B>].
+              <B>Default</B>: print the status all the FMC servers.
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must  include  the  path to the libraries "libdim" and "libFMCu-
+              tils".
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Print the status of all the FMC servers registered with  the  DIM  Name
+       Server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>:
+
+       <I>bash$</I> <B>fmcSrvViewer</B>
+
+       Print the status of all the FMC control servers registered with the DIM
+       Name Server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>:
+
+       <I>bash$</I> <B>fmcSrvViewer</B> <B>-C</B>
+
+       Print the status of all the FMC monitor servers registered with the DIM
+       Name Server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>:
+
+       <I>bash$</I> <B>fmcSrvViewer</B> <B>-M</B>
+
+       Print  the  status of the FMC control servers running on nodes farm0101
+       and farm0102:
+
+       <I>bash$</I> <B>fmcSrvViewer</B> <B>-m</B> <B>farm0101</B> <B>-m</B> <B>farm0102</B> <B>-C</B>
+
+       Use wildcard patterns to select the nodes:
+
+       <I>bash$</I> <B>fmcSrvViewer</B> <B>-m</B> <B>"farm01??"</B> <B>-m</B> <B>"farm02??"</B> <B>-C</B>
+       <I>bash$</I> <B>fmcSrvViewer</B> <B>-m</B> <B>"farm010[1-3]"</B>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information on how to get the FMC (Farm Monitoring and Control  System)
+       package and related information is available at the web sites:
+
+       FMC  Linux  Development Homepage &lt;https://lhcbweb.bo.infn.it/twiki/bin/
+       view.cgi/LHCbBologna/FmcLinux&gt;.
+
+       CERN ITCOBE: FW Farm Monitor  and  Control  &lt;http://itcobe.web.cern.ch/
+       itcobe/Projects/Framework/Download/Components/SystemOverview/fwFMC/wel-
+       come.html&gt;.
+
+       LHCb Online RPMs &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/
+       index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  fmcSrvViewer.C,v 1.10 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO:</H2><PRE>
+   <B>FMC</B> <B>debugging</B> <B>tools:</B>
+       <B><A HREF="../../htmlMan/man1/fmcVersionViewer.1.html">fmcVersionViewer(1)</A></B>.
+
+   <B>FMC</B> <B>Control</B> <B>Servers:</B>
+       <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B>.
+
+   <B>FMC</B> <B>Monitor</B> <B>Servers:</B>
+       <B><A HREF="../../htmlMan/man8/coalSrv.8.html">coalSrv(8)</A></B>,    <B><A HREF="../../htmlMan/man8/cpuinfoSrv.8.html">cpuinfoSrv(8)</A></B>,   <B><A HREF="../../htmlMan/man8/cpustatSrv.8.html">cpustatSrv(8)</A></B>,   <B><A HREF="../../htmlMan/man8/fsSrv.8.html">fsSrv(8)</A></B>,   <B><A HREF="../../htmlMan/man8/irqSrv.8.html">irqSrv(8)</A></B>,
+       <B><A HREF="../../htmlMan/man8/memSrv.8.html">memSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/nifSrv.8.html">nifSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/osSrv.8.html">osSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/smartSrv.8.html">smartSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/tcpipSrv.8.html">tcpipSrv(8)</A></B>.
+
+FMC-3.9.14                        2012-12-19                   <B><A HREF="../../htmlMan/man1/fmcSrvViewer.1.html">fmcSrvViewer(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

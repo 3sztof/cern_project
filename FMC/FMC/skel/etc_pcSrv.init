@@ -1,0 +1,60 @@
+# /etc/pcSrv.init
+# FMC Process Controller (pcSrv) Initialization File.
+# Since FMC 3.7.0
+#
+# Description:
+#      The file INIT_FILE (by default "/etc/pcSrv.init")  must  contains  the
+#      list  of  the  processes  to be started at the start-up of the Process
+#      Controller Server. Further processes can be added at  runtime  to  the
+#      list  by  means of the pcAdd(3) command. Processes can be removed from
+#      the list by means of the pcRm(3) command.
+#
+# File format:
+#      One process entry per record. Records are separated using  '\n'  (new-
+#      line,  line-feed,  LF,  ASCII  0x0a). Blank records as well as comment
+#      records (i.e. records starting with the '#' character) are skipped.
+#
+# Record format:
+#      The same format of the pcAdd(3) command  (excepting  -v,  -N,  -C  and
+#      --no-authentication options), i.e.:
+#
+#      [-m NODE_PATTERN...]  [-c] [-D NAME=value...]  [-s SCHEDULER]
+#      [-p NICE_LEVEL] [-r RT_PRIORITY] [-a CPU_NUM...] [-k OOM_SCORE_ADJ] [-d] #      [-n USER_NAME] [-g GROUP_NAME] [-w WD] [-o] [-e] [-O OUT_FIFO]
+#      [-E ERR_FIFO] [-A] [-M MAX_START_N] [-K CHECK_PERIOD]
+#      [-X DIS_PERIOD] -u UTGID PATH [ARG...]
+#
+# Parameter Expansion:
+#      The  string  "${RUN_NODE}"  is replaced by the hostname of the node on
+#      which the process is started, in the fields:  UTGID,  PATH,  ARG,  WD,
+#      NAME=value, OUT_FIFO and ERR_FIFO.
+#
+# Record Examples:
+#      -m * -e -o -k -900 -c -u memSrv_u /opt/FMC/sbin/memSrv -l 1
+#      -m * -e -o -k -900 -c -u fsSrv_u -n root /opt/FMC/sbin/fsSrv -l 1 -a
+#
+# coalSrv
+-m * -e -o -c -u coalSrv_u -n root -g root /opt/FMC/sbin/coalSrv -l 1
+# cpuinfoSrv
+-m * -e -o -c -u cpuinfoSrv_u /opt/FMC/sbin/cpuinfoSrv -l 1
+# cpustatSrv
+-m * -e -o -c -u cpustatSrv_u /opt/FMC/sbin/cpustatSrv -l 1
+# irqSrv
+-m * -e -o -c -u irqSrv_u /opt/FMC/sbin/irqSrv  -l 1
+# memSrv
+-m * -e -o -c -u memSrv_u /opt/FMC/sbin/memSrv -l 1
+# nifSrv
+-m * -e -o -c -u nifSrv_u -n root -g root /opt/FMC/sbin/nifSrv -l 1 -u 10
+# psSrv
+-m * -e -o -c -u psSrv_u -n root -g root /opt/FMC/sbin/psSrv -l 1
+# tcpipSrv
+-m * -e -o -c -u tcpipSrv_u /opt/FMC/sbin/tcpipSrv -l 1
+# smartSrv
+-m * -e -o -c -u smartSrv_u -n root -g root /opt/FMC/sbin/smartSrv -l 1
+# fsSrv
+-m * -e -o -c -u fsSrv_u /opt/FMC/sbin/fsSrv -l 1
+# osSrv
+-m * -e -o -c -u osSrv_u /opt/FMC/sbin/osSrv -l 1
+# gaudi logger
+-m * -c -u gaudiLog /opt/FMC/sbin/logSrv -S 100 -p /tmp/logGaudi.fifo -s gaudi
+# system logger
+-m * -c -u sysLog /opt/FMC/sbin/logSrv -S 100 -p /tmp/logSys.fifo -s sys

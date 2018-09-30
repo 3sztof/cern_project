@@ -1,0 +1,333 @@
+
+
+
+ FFMMCC LLiinnuuxx CCoonnffiigguurraattiioonn FFiilleess
+===============================================================================
+_F_M_C_ _L_i_n_u_x_ _H_o_m_e_ _P_a_g_e
+    * _T_h_e_ _f_i_l_e_ _/_e_t_c_/_s_y_s_c_o_n_f_i_g_/_d_i_m
+    * _T_h_e_ _f_i_l_e_ _/_e_t_c_/_s_y_s_c_o_n_f_i_g_/_f_m_c
+    * _T_h_e_ _f_i_l_e_ _/_e_t_c_/_c_m_S_r_v_._c_o_n_f
+    * _T_h_e_ _f_i_l_e_ _/_e_t_c_/_c_m_S_r_v_._a_l_l_o_w
+    * _T_h_e_ _f_i_l_e_ _/_e_t_c_/_t_m_S_r_v_._a_l_l_o_w
+    * _T_h_e_ _f_i_l_e_ _/_e_t_c_/_p_c_S_r_v_._c_o_n_f
+    * _T_h_e_ _f_i_l_e_ _/_e_t_c_/_p_c_S_r_v_._i_n_i_t
+    * _T_h_e_ _f_i_l_e_ _/_e_t_c_/_p_c_S_r_v_._a_l_l_o_w
+    * _T_h_e_ _f_i_l_e_ _/_e_t_c_/_i_p_m_i_S_r_v_._c_o_n_f
+ TThhee ffiillee //eettcc//ssyyssccoonnffiigg//ddiimm
+  Description
+      This file must contain one record (line) which defines the node on which
+      the DDIIMM NNaammee SSeerrvveerr is running. The file is accessed by many servers and
+      clients which need to contact the DIM Name Server to publish services
+      (servers) or to subscribe to services (typically clients).
+  Record format
+      DDIIMM__DDNNSS__NNOODDEE==<<//nnooddee..ddoommaaiinn//>>
+      with no spaces ahead or behind of the == (equal sign).
+Example:
+DIM_DNS_NODE=ctrl00.daq.lhcb
+_t_o_ _t_o_p
+ TThhee ffiillee //eettcc//ssyyssccoonnffiigg//ffmmcc
+  Description
+      This file must contain the lliisstt of the FFMMCC CCoonnttrrooll SSeerrvveerrss to be started
+      at system start-up by the ssyysstteemm VV ssttaarrtt--uupp ssccrriippttss and their ccoommmmaanndd--
+      lliinnee aarrgguummeennttss.
+  Record format
+      Can be one of the following:
+          * LLOOGG__SSRRVV==<<yyeess||nnoo>>
+          * TTMM__SSRRVV==<<yyeess||nnoo>>
+          * CCMM__SSRRVV==<<yyeess||nnoo>>
+          * PPCC__SSRRVV==<<yyeess||nnoo>>
+          * IIPPMMII__SSRRVV==<<yyeess||nnoo>>
+          * LLOOGG__AARRGGSS==""<<llooggSSrrvv aarrgguummeennttss>>""
+          * TTMM__AARRGGSS==""<<ttmmSSrrvv aarrgguummeennttss>>""
+          * CCMM__AARRGGSS==""<<ccmmSSrrvv aarrgguummeennttss>>""
+          * PPCC__AARRGGSS==""<<ppccSSrrvv aarrgguummeennttss>>""
+          * IIPPMMII__AARRGGSS==""<<iippmmiiSSrrvv aarrgguummeennttss>>""
+Examples:
+Typical WWoorrkkeerr NNooddee configuration (see _l_o_g_S_r_v_(_8_), _t_m_S_r_v_(_8_), _c_m_S_r_v_(_8_), _p_c_S_r_v_(_8_)
+and _i_p_m_i_S_r_v_(_8_) for a description of the the command-line arguments):
+# -----------------------------------------------------------------------------
+# tools to be started
+# LOG_SRV=yes                                    # Message Logger Server
+# TM_SRV=yes                                     # Task Manager Server
+# CM_SRV=yes                                     # Configuration Manager Server
+# PC_SRV=no                                      # Process Controller Server
+# IPMI_SRV=no                                    # Power Manager Server
+# -----------------------------------------------------------------------------
+# command-line arguments
+# see /opt/FMC/man/man8
+LOG_ARGS="-S 200"
+TM_ARGS="-p 2 -u online -U root --no-auth"
+CM_ARGS=""
+PC_ARGS="-u online -g online --no-auth"
+IPMI_ARGS="-t 0"
+# -----------------------------------------------------------------------------
+Typical CCoonnttrrooll NNooddee configuration (see _l_o_g_S_r_v_(_8_), _t_m_S_r_v_(_8_), _c_m_S_r_v_(_8_), _p_c_S_r_v_(_8_)
+and _i_p_m_i_S_r_v_(_8_) for a description of the the command-line arguments):
+# -----------------------------------------------------------------------------
+# tools to be started
+# LOG_SRV=yes                                    # Message Logger Server
+# TM_SRV=yes                                     # Task Manager Server
+# CM_SRV=yes                                     # Configuration Manager Server
+# PC_SRV=yes                                     # Process Controller Server
+# IPMI_SRV=yes                                   # Power Manager Server
+# -----------------------------------------------------------------------------
+# command-line arguments
+# see /opt/FMC/man/man8
+LOG_ARGS="-S 200"
+TM_ARGS="-p 2 -u online -U root --no-auth"
+CM_ARGS=""
+PC_ARGS="-u online -g online --no-auth"
+IPMI_ARGS="-t 0"
+# -----------------------------------------------------------------------------
+_t_o_ _t_o_p
+ TThhee ffiillee //eettcc//ccmmSSrrvv..ccoonnff
+  Description
+      The file //eettcc//ccmmSSrrvv..ccoonnff must contain the lliisstt ooff tthhee ffiilleess that can be
+      ccrreeaatteedd, rreeaadd, mmooddiiffiieedd and ddeelleetteedd by the FFMMCC CCoonnffiigguurraattiioonn MMaannaaggeerr
+      SSeerrvveerr (_c_m_S_r_v_(_8_)) running on the current node. This file is ignored if
+      the FMC Configuration Manager Server is started with the ----nnoo--
+      aauutthheennttiiccaattiioonn command line option. In this case all the files in the
+      file system can be created, modified and deleted by the FMC Configuration
+      Manager Server running on this node.
+  File format
+      File is made of an arbitrary number of rreeccoorrddss. Records are separated by
+      the character ’’\\nn’’ (new-line, line-feed, LF, ASCII 0x0a). Blank records
+      as well as comment records (i.e. records starting with the ’’##’’ character)
+      are skipped. If a record contains the ’’##’’ character, all characters
+      following the ’’##’’ character (including the ’’##’’ itself) are ignored.
+  Record format
+      ((ppeerrmmiissssiioonn)) ffiillee__nnaammee
+Record fields description:
+        ppeerrmmiissssiioonn
+            The access permission, which can be rroo (read only) or rrww (read and
+            write).
+        ffiillee__nnaammee
+            The absolute path of the file, which must not contain blanks.
+  N.B.
+      Do NNOOTT add records ""((rrww)) //eettcc//ccmmSSrrvv..aallllooww"" and ""((rrww)) //eettcc//ccmmSSrrvv..ccoonnff""
+      unless you understand well what you are doing!
+Record Examples:
+(rw) /etc/sysconfig/fmc
+(rw) /etc/tmSrv.allow
+(rw) /etc/ipmiSrv.conf
+(rw) /etc/pcSrv.conf
+(rw) /etc/pcSrv.init
+(rw) /etc/pcSrv.allow
+(rw) /tmp/test.conf
+(ro) *
+_t_o_ _t_o_p
+ TThhee ffiillee //eettcc//ccmmSSrrvv..aallllooww
+  Description
+      The file //eettcc//ccmmSSrrvv..aallllooww must contain the lliisstt of the ccoouupplleess of
+      wwiillddccaarrdd ppaatttteerrnnss uusseerr__ppaatttteerrnn@@hhoossttnnaammee__ppaatttteerrnn aalllloowweedd ttoo iissssuuee ccoommmmaannddss
+      to the CCoonnffiigguurraattiioonn MMaannaaggeerr SSeerrvveerr (_c_m_S_r_v_(_8_)) running on the current
+      node.
+  File format
+      One couple uusseerr__ppaatttteerrnn@@hhoossttnnaammee__ppaatttteerrnn per rreeccoorrdd. Records are
+      separated using ’’\\nn’’ (new-line, line-feed, LF, ASCII 0x0a). Blank records
+      as well as comment records (i.e. records starting with the ’’##’’ character)
+      are skipped.
+  Record format
+      uusseerr__ppaatttteerrnn@@hhoossttnnaammee__ppaatttteerrnn (uusseerr__ppaatttteerrnn and hhoosstt__ppaatttteerrnn are
+      separated by the ’’@@’’ (at) character).
+Record fields description:
+  uusseerr__ppaatttteerrnn
+      user-name wildcard pattern (see _g_l_o_b_(_7_)).
+  hhoosstt__ppaatttteerrnn
+      host-name wildcard pattern (see _g_l_o_b_(_7_)).
+Record Examples:
+online@farm0101.mydomain
+*@farm0101.mydomain
+online@*
+*@*
+online@farm01??.mydomain
+online@farm01?[0-9].mydomain
+online@farm01[0-9][0-9].mydomain
+_t_o_ _t_o_p
+ TThhee ffiillee //eettcc//ttmmSSrrvv..aallllooww
+  Description
+      The file //eettcc//ttmmSSrrvv..aallllooww must contain the lliisstt of the ccoouupplleess of
+      wwiillddccaarrdd ppaatttteerrnnss uusseerr__ppaatttteerrnn@@hhoossttnnaammee__ppaatttteerrnn aalllloowweedd ttoo iissssuuee ccoommmmaannddss
+      to the TTaasskk MMaannaaggeerr SSeerrvveerr (_t_m_S_r_v_(_8_)) running on the current node and is
+      needed only if the Task Manager Server is running in authenticated mode
+      (option ----nnoo--aauutthheennttiiccaattiioonn nnoott chosen).
+  File format
+      One couple uusseerr__ppaatttteerrnn@@hhoossttnnaammee__ppaatttteerrnn per rreeccoorrdd. Records are
+      separated using ’’\\nn’’ (new-line, line-feed, LF, ASCII 0x0a). Blank records
+      as well as comment records (i.e. records starting with the ’’##’’ character)
+      are skipped.
+  Record format
+      uusseerr__ppaatttteerrnn@@hhoossttnnaammee__ppaatttteerrnn (uusseerr__ppaatttteerrnn and hhoosstt__ppaatttteerrnn are
+      separated by the ’’@@’’ (at) character).
+Record fields description:
+  uusseerr__ppaatttteerrnn
+      user-name wildcard pattern (see _g_l_o_b_(_7_)).
+  hhoosstt__ppaatttteerrnn
+      host-name wildcard pattern (see _g_l_o_b_(_7_)).
+Record Examples:
+online@farm0101.mydomain
+*@farm0101.mydomain
+online@*
+*@*
+online@farm01??.mydomain
+online@farm01?[0-9].mydomain
+online@farm01[0-9][0-9].mydomain
+_t_o_ _t_o_p
+ TThhee ffiillee //eettcc//ppccSSrrvv..ccoonnff
+  Description
+      The file //eettcc//ppccSSrrvv..ccoonnff must contain the lliisstt of the hhoosstt nnaammeess of the
+      nodes controlled by the PPrroocceessss CCoonnttrroolllleerr SSeerrvveerr (_p_c_S_r_v_(_8_)) running on
+      the current node.
+  File format
+      One hhoossttnnaammee per rreeccoorrdd. Records are separated using ’’\\nn’’ (new-line,
+      line-feed, LF, ASCII 0x0a). Blank records as well as comment records
+      (i.e. records starting with the ’’##’’ character) are skipped.
+  Record format
+      hhoossttnnaammee (without domain).
+Record examples:
+farm0101
+farm0102
+farm0103
+farm0104
+_t_o_ _t_o_p
+ TThhee ffiillee //eettcc//ppccSSrrvv..iinniitt
+  Description
+      The file //eettcc//ppccSSrrvv..iinniitt must contain the lliisstt of the pprroocceesssseess to be
+      ssttaarrtteedd at the ssttaarrtt--uupp of the the Process Controller Server (_p_c_S_r_v_(_8_))
+      running on the current node. Further processes can be added at run time
+      to the list by means of the _p_c_A_d_d_(_1_) command. Processes can be removed
+      from the list by means of the _p_c_R_m_(_1_) command.
+  File format
+      One pprroocceessss eennttrryy per rreeccoorrdd. Records are separated using ’’\\nn’’ (new-line,
+      line-feed, LF, ASCII 0x0a). Blank records as well as comment records
+      (i.e. records starting with the ’’##’’ character) are skipped.
+  Record format
+      the same format of the _p_c_A_d_d_(_1_) command (excepting --vv, --NN, --CC and ----nnoo--
+      aauutthheennttiiccaattiioonn options), i.e:
+      [[--mm NNOODDEE__PPAATTTTEERRNN......]] [[--cc]] [[--DD NNAAMMEE==VVAALLUUEE......]] [[--ss SSCCHHEEDDUULLEERR]] [[--
+      pp NNIICCEE__LLEEVVEELL]] [[--rr RRTT__PPRRIIOORRIITTYY]] [[--aa CCPPUU__NNUUMM......]] [[--dd]] [[--nn UUSSEERR__NNAAMMEE]] [[--
+      gg GGRROOUUPP__NNAAMMEE]] [[--ww WWDD]] [[--oo]] [[--ee]] [[--OO OOUUTT__FFIIFFOO]] [[--EE EERRRR__FFIIFFOO]] [[--AA]] [[--
+      NN MMAAXX__SSTTAARRTT__NN]] [[--KK CCHHEECCKK__PPEERRIIOODD]] [[--XX DDIISS__PPEERRIIOODD]] --uu UUTTGGIIDD PPAATTHH [[AARRGG......]]
+  Parameter Expansion
+      The string ""$${{RRUUNN__NNOODDEE}}"" is replaced by the hhoossttnnaammee of the node on which
+      the process is started, in the fields: UUTTGGIIDD, PPAATTHH, AARRGG, WWDD, NNAAMMEE==vvaalluuee,
+      OOUUTT__FFIIFFOO and EERRRR__FFIIFFOO.
+Record examples:
+-u counter /opt/FMC/tests/counter
+-m * -e -o -c -u memSrv_u /opt/FMC/sbin/memSrv -l 1
+-m * -e -o -c -u fsSrv_u -n root /opt/FMC/sbin/fsSrv -l 1 -a
+-m * -c -u gaudiLog /opt/FMC/sbin/logSrv -S 100 -p /tmp/logGaudi.fifo -s gaudi
+-m * -e -o -u counter_${RUN_NODE} /opt/FMC/tests/counter -a ${RUN_NODE}
+_t_o_ _t_o_p
+ TThhee ffiillee //eettcc//ppccSSrrvv..aallllooww
+  Description
+      The file //eettcc//ppccSSrrvv..aallllooww must contain the lliisstt of the ccoouupplleess of
+      wwiillddccaarrdd ppaatttteerrnnss uusseerr__ppaatttteerrnn@@hhoossttnnaammee__ppaatttteerrnn aalllloowweedd ttoo iissssuuee ccoommmmaannddss
+      to the PPrroocceessss CCoonnttrroolllleerr SSeerrvveerr (_p_c_S_r_v_(_8_)) running on the current node
+      and is needed only if the Process Controller Server is running in
+      authenticated mode (option ----nnoo--aauutthheennttiiccaattiioonn nnoott chosen).
+  File format
+      One couple uusseerr__ppaatttteerrnn@@hhoossttnnaammee__ppaatttteerrnn per rreeccoorrdd. Records are
+      separated using ’’\\nn’’ (new-line, line-feed, LF, ASCII 0x0a). Blank records
+      as well as comment records (i.e. records starting with the ’’##’’ character)
+      are skipped.
+  Record format
+      uusseerr__ppaatttteerrnn@@hhoossttnnaammee__ppaatttteerrnn (uusseerr__ppaatttteerrnn and hhoosstt__ppaatttteerrnn are
+      separated by the ’’@@’’ (at) character).
+Record fields description:
+  uusseerr__ppaatttteerrnn
+      user-name wildcard pattern (see _g_l_o_b_(_7_)).
+  hhoosstt__ppaatttteerrnn
+      host-name wildcard pattern (see _g_l_o_b_(_7_)).
+Record Examples:
+online@farm0101.mydomain
+*@farm0101.mydomain
+online@*
+*@*
+online@farm01??.mydomain
+online@farm01?[0-9].mydomain
+online@farm01[0-9][0-9].mydomain
+_t_o_ _t_o_p
+ TThhee ffiillee //eettcc//iippmmiiSSrrvv..ccoonnff
+  Description
+      The file //eettcc//iippmmiiSSrrvv..ccoonnff must contain both the GGlloobbaall CCoonnffiigguurraattiioonn
+      PPaarraammeetteerrss and the PPeerr--nnooddee CCoonnffiigguurraattiioonn PPaarraammeetteerrss of the PPoowweerr MMaannaaggeerr
+      SSeerrvveerr (_i_p_m_i_S_r_v_(_8_)) running on the current node.
+  File format
+      File is made of an arbitrary number of records, which can be either a
+      gglloobbaall ccoonnffiigguurraattiioonn rreeccoorrdd or a nnooddee ccoonnffiigguurraattiioonn rreeccoorrdd. Records are
+      separated by the character ’’\\nn’’ (new-line, line-feed, LF, ASCII 0x0a).
+      Blank records as well as comment records (i.e. records starting with the
+      ’’##’’ character) are skipped. If a record contains the ’’##’’ character, all
+      characters following the ’’##’’ character (including the ’’##’’ itself) are
+      ignored.
+  GGlloobbaall configuration record format
+      Can have one of the following three formats (where the strings need to be
+      quoted, by double quotation marks, only if they include spaces):
+        IIPPMMII__UUSSEERR==ssttrriinngg
+            Set the default username (mandatory).
+        IIPPMMII__PPAASSSSWWDD==ssttrriinngg
+            Set the default password (mandatory).
+        IIPPMMII__CCMMDD==ssttrriinngg
+            Set the path to the ipmitool executable image (optional).
+  PPeerr--nnooddee configuration record format
+      The per-node record is made of 7 fields, separated by the character '',,''
+      (comma), in the sequence:
+      hhoossttNNaammee,,uusseerrNNaammee,,ppaassssWWoorrdd,,ppoorrtt,,aauutthhTTyyppee,,pprriivvLLvvll,,ooeemmTTyyppee.
+      The first field (hhoossttNNaammee) is mandatory; the following fields can be
+      omitted. The last fields can be omitted simply avoid writing them.
+      Intermediate fields can be omitted by writing the string ""NNUULLLL"" (see
+      examples below).
+PPeerr--nnooddee configuration field description:
+        hhoossttNNaammee (mandatory)
+            Hostname (IPMI interface) of the controlled node.
+        uusseerrNNaammee (optional)
+            Username sent to the controlled node for the IPMI authentication.
+            Can be nnooUUsseerr if no username has to be sent.
+        ppaassssWWoorrdd (optional)
+            Password sent to the controlled node for the IPMI authentication.
+        ppoorrtt (optional)
+            UDP port contacted on the controlled node. Default port: 623.
+        aauutthhTTyyppee (optional)
+            Authentication type to use during IPMIv1.5 lan session activation
+            on the controlled node. Supported types are: NNOONNEE, PPAASSSSWWOORRDD, MMDD22,
+            MMDD55, or OOEEMM.
+        pprriivvLLvvll (optional)
+            Force session privilege level on the controlled node. Allowed
+            level: CCAALLLLBBAACCKK, UUSSEERR, OOPPEERRAATTOORR, AADDMMIINNIISSTTRRAATTOORR. Default level:
+            AADDMMIINNIISSTTRRAATTOORR.
+        ooeemmTTyyppee (optional)
+            Select OEM type to support on the controlled node. This usually
+            involves minorhacks in place in the code to work around quirks in
+            various BMCs from various manufacturers. Supported types are:
+            ssuuppeerrmmiiccrroo, iinntteellwwvv22, iinntteellpplluuss, iiccttss, iibbmm.
+See _i_p_m_i_t_o_o_l_(_1_) for more details.
+Example:
+# -----------------------------------------------------------------------------
+# Sample configuration file /etc/ipmiSrv.conf
+# -----------------------------------------------------------------------------
+# Global configuration records
+IPMI_USER=root         # default user
+IPMI_PASSWD=my_passwd  # default password
+# -----------------------------------------------------------------------------
+# Per-node configuration records
+# hostName,userName,passWord,port,authType,privLvl,oemType
+farm0101
+farm0102,myuser
+farm0102,noUser
+farm0103,noUser,mypassword
+farm0104,myuser,mypassword,1623
+farm0105,myuser,mypassword,1623,MD2,OPERATOR,intelwv2
+farm0106,NULL,NULL,NULL,MD2,OPERATOR,intelwv2
+# -----------------------------------------------------------------------------
+_t_o_ _t_o_p
+===============================================================================
+_F_M_C_ _L_i_n_u_x_ _H_o_m_e_ _P_a_g_e
+===============================================================================
+-- _D_o_m_e_n_i_c_o_G_a_l_l_i, 30 Oct 2008 - 14:11
+
+Revision: r1.4 - 30 Oct 2008 - 14:11 - _D_o_m_e_n_i_c_o_G_a_l_l_i
+_L_H_C_b_B_o_l_o_g_n_a > FmcConfigFiles
+Copyright © 1999-2009 by the contributing authors. All material on this
+collaboration platform is the property of the contributing authors.
+Ideas, requests, problems regarding TWiki? _S_e_n_d_ _f_e_e_d_b_a_c_k

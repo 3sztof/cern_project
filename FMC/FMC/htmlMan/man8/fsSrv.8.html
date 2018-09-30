@@ -1,0 +1,320 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man8/fsSrv.8.html">fsSrv(8)</A></B>                          FMC Servers                         <B><A HREF="../../htmlMan/man8/fsSrv.8.html">fsSrv(8)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>fsSrv</B> <B>-</B> FMC Filesystem Monitor Server
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>fsSrv</B> [<B>-d</B> <I>DEBUG</I><B>_</B><I>MASK</I>] [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-l</B> <I>LOGGER</I>] [<B>-a</B>] [<B>-D</B>]
+             [<B>-u</B> <I>REFRESH</I><B>_</B><I>TIME</I><B>_</B><I>INTERVAL</I>]
+       <B>fsSrv</B> <B>-h</B>
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The FMC Filesystem Monitor Server, <B><A HREF="../../htmlMan/man8/fsSrv.8.html">fsSrv(8)</A></B> retrieves information  con-
+       cerning  the  file system disk space usage on the current farm node and
+       publishes them using DIM.
+
+       The DIM Name Server, looked up by <B>fsSrv</B> to register  the  provided  DIM
+       services, can be chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file <B>/etc/sysconfig/dim</B>.
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B>     Get basic usage help from the command line then exit.
+
+       <B>-d</B> <I>DEBUG</I><B>_</B><I>MASK</I> <I>(hexadecimal</I> <I>integer)</I>
+              Set  debug  mask to <I>DEBUG</I><B>_</B><I>MASK</I>. Can be set to 0x000...0x7ff. The
+              <I>DEBUG</I><B>_</B><I>MASK</I> is the bitwise <I>OR</I> of the following integers with  one
+              bit set:
+
+              0x0001 print in/out functions;
+              0x0002 print active threads after timeout;
+              0x0004 print file system data;
+              0x0008 print update handler calls;
+
+       <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-l</B> <I>LOGGER</I> <I>(integer)</I>
+              Use the logger units defined in the <I>LOGGER</I> mask to send diagnos-
+              tic and information messages. The <I>LOGGER</I> mask can be the bitwise
+              <I>OR</I> of the following logger units:
+
+              0x1    the default FMC Message Logger (fifo: /tmp/logSrv.fifo);
+
+              0x2    the standard error stream;
+
+              0x4    the operating system syslog facility.
+
+              <B>Default</B>: <I>LOGGER</I> = 0x1.
+
+       <B>-a</B>     Include  also  remote  filesystems (e.g.: nfs, afs, gpfs, etc.).
+              <B>Default</B>: includes only local filesystems.
+
+       <B>-D</B>     Include also  dummy  filesystems  (e.g.:  proc,  sysfs,  devpts,
+              etc.). <B>Default</B>: includes only "real" filesystems.
+
+       <B>-u</B> <I>REFRESH</I><B>_</B><I>TIME</I><B>_</B><I>INTERVAL</I> <I>(integer)</I>
+              Set  the  data  refresh period to <I>REFRESH</I><B>_</B><I>TIME</I><B>_</B><I>INTERVAL</I> seconds.
+              (must be in the range [0,3600]s). <B>Default</B>: 20 s.
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries  "libdim",  "libFMCutils"
+              and "libFMCsensors".
+
+       <B>UTGID</B> (string, optional)
+              UTGID of the <B><A HREF="../../htmlMan/man8/fsSrv.8.html">fsSrv(8)</A></B> process.
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Start the FMC Filesystem Monitor Server, sending diagnostic messages to
+       the default FMC Message Logger and showing only local filesystems:
+
+       <I>bash$</I> <B>/opt/FMC/sbin/fsSrv</B>
+
+       Start the FMC Filesystem Monitor Server, sending diagnostic messages to
+       the  default  FMC Message Logger and to the system syslog facility, and
+       showing only local filesystems:
+
+       <I>bash$</I> <B>/opt/FMC/sbin/fsSrv</B> <B>-l</B> <B>0x5</B>
+
+       Set the delay time interval between two subsequent refresh to four sec-
+       onds:
+
+       <I>bash$</I> <B>/opt/FMC/sbin/fsSrv</B> <B>-u</B> <B>4</B>
+
+       Show both local and network (afs, nfs, gpfs, etc.) filesystems:
+
+       <I>bash$</I> <B>/opt/FMC/sbin/fsSrv</B> <B>-a</B>
+
+       Show local, network filesystems and "dummy" filesystems (procfs, sysfs,
+       devpts, tmpfs, rpc_pipefs, binfmt_misc, etc.):
+
+       <I>bash$</I> <B>/opt/FMC/sbin/fsSrv</B> <B>-a</B> <B>-D</B>
+
+
+</PRE>
+<H2>DIM INFORMATION</H2><PRE>
+   <B>DIM</B> <B>Server</B> <B>Name</B>
+       /FMC/<I>HOSTNAME</I>/filesystems
+              where <I>HOSTNAME</I> is the host name of the current PC,  as  returned
+              by  the command "hostname -s", but written in upper case charac-
+              ters.
+
+   <B>Published</B> <B>DIM</B> <B>Services</B>
+       <B>Generic</B> <B>SVCs</B>
+
+       /FMC/<I>HOSTNAME</I>/filesystems/server_version
+              <B>Output</B> <B>format</B>: "C" (NULL-terminated string).
+              Publishes a NULL-terminated string containing the  RCS  revision
+              label  of  the  <B>fsSrv.c</B>  source code of the current <B><A HREF="../../htmlMan/man8/fsSrv.8.html">fsSrv(8)</A></B> in-
+              stance, as returned by the command "ident  /opt/FMC/sbin/fsSrv";
+              in the present case:
+
+              "fsSrv.c,v 2.4 2011/11/08 15:27:47 galli".
+
+       /FMC/<I>HOSTNAME</I>/filesystems/sensor_version
+              <B>Output</B> <B>format</B>: "C" (NULL-terminated string).
+              Publishes  a  NULL-terminated string containing the RCS revision
+              label of the <B>getFS.c</B> source code used in  the  current  <B><A HREF="../../htmlMan/man8/fsSrv.8.html">fsSrv(8)</A></B>
+              instance, as returned by the command "ident /opt/FMC/lib/libFMC-
+              sensors*"; in the present case:
+
+              "getFS.c,v 2.4 2011/11/08 15:26:22 galli".
+
+       /FMC/<I>HOSTNAME</I>/filesystems/fmc_version
+              <B>Output</B> <B>format</B>: "C" (NULL-terminated string).
+              Publishes a NULL-terminated string containing the revision label
+              of  the  FMC  package  which  includes the current <B><A HREF="../../htmlMan/man8/fsSrv.8.html">fsSrv(8)</A></B> exe-
+              cutable, in the present case:
+
+              "3.9.14".
+
+       /FMC/<I>HOSTNAME</I>/filesystems/success
+              <B>Output</B> <B>format</B>: "I" (integer).
+
+               1:    OK;
+
+              -2:    At least 1 <B><A HREF="../../htmlMan/man2/statfs.2.html">statfs(2)</A></B> call returned error;
+
+              -4:    At least 1 <B><A HREF="../../htmlMan/man2/statfs.2.html">statfs(2)</A></B> call hung;
+
+              -6:    At least 1 <B><A HREF="../../htmlMan/man2/statfs.2.html">statfs(2)</A></B> call returned error and at  least  1
+                     <B><A HREF="../../htmlMan/man2/statfs.2.html">statfs(2)</A></B> call hung;
+
+       /FMC/<I>HOSTNAME</I>/filesystems/devices
+              <B>Output</B> <B>format</B>: "C" (a sequence of NULL-terminated strings).
+              The file system identifiers in the current node:
+              "fs_00" "fs_01" "fs_02" ...
+
+       <B>Summary</B> <B>SVCs</B>
+
+       /FMC/<I>HOSTNAME</I>/filesystems/summary/labels
+              <B>Output</B> <B>format</B>: "C" (a sequence of 4 NULL-terminated strings).
+              Publishes  the labels referring to the data published in the SVC
+              ".../summary/fs_XX/data":
+              "TotalRoot" "UseU%" "Filesystem" "Mounted on".
+
+       /FMC/<I>HOSTNAME</I>/filesystems/summary/units
+              <B>Output</B> <B>format</B>: "C" (a sequence of 4 NULL-terminated strings).
+              Publishes the units referring to the data published in  the  SVC
+              ".../summary/fs_XX/data":
+              "KiB" "%" "" "".
+
+       /FMC/<I>HOSTNAME</I>/filesystems/summary/<I>DEVICE</I>/data
+              <B>Output</B> <B>format</B>: "F:2;C;C".
+              Publishes the data of the filesystem <I>DEVICE</I>.
+              The data sequence is the following:
+
+              <B>TotalRoot</B> (float)
+                     The  total  size of the filesystem accessible by the user
+                     "root" in KiB.
+
+              <B>UseU%</B> (float)
+                     Used percentage of the total filesystem  size  accessible
+                     by a non-privileged user (=Used*100/TotalUser).
+
+              <B>Filesystem</B> (NULL-terminated string)
+                     The filesystem device name.
+
+              <B>Mounted</B> <B>on</B> (NULL-terminated string)
+                     The filesystem mount point.
+
+       <B>Detailed</B> <B>SVCs</B>
+
+       /FMC/<I>HOSTNAME</I>/filesystems/details/labels
+              <B>Output</B> <B>format</B>: "C" (a sequence of 12 NULL-terminated strings).
+              Publishes  the labels referring to the data published in the SVC
+              ".../details/fs_XX/data":
+              "Minfree" "TotalRoot" "TotalUser" "Used" "AvailRoot" "AvailUser"
+              "UseR%"  "UseU%"  "Filesystem"  "Type" "Mounted on" "Time" "Sta-
+              tus".
+
+       /FMC/<I>HOSTNAME</I>/filesystems/details/labels
+              <B>Output</B> <B>format</B>: "C" (a sequence of 12 NULL-terminated strings).
+              Publishes the units referring to the data published in  the  SVC
+              ".../details/fs_XX/data":
+              "KiB"  "KiB" "KiB" "KiB" "KiB" "KiB" "%" "%" "" "" "" "mmmdd-HH-
+              MMSS" "".
+
+       /FMC/<I>HOSTNAME</I>/filesystems/details/<I>DEVICE</I>/data
+              <B>Output</B> <B>format</B>: "X:6;F:2;C;C;C;C;C".
+              Publishes the data of the filesystem <I>DEVICE</I>.
+              The data sequence is the following:
+
+              <B>Minfree</B> (uint64_t)
+                     The size (in KiB) of the filesystem  space  available  to
+                     the  user  "root"  but  unavailable to any non-privileged
+                     users (=TotalRoot-Used-AvailUser).
+
+              <B>TotalRoot</B> (uint64_t)
+                     The total size of the filesystem available  to  the  user
+                     "root" in KiB.
+
+              <B>TotalUser</B> (uint64_t)
+                     The  total size of the filesystem available to non-privi-
+                     leged users in KiB (=Used+AvailUser).
+
+              <B>Used</B> (uint64_t)
+                     The size of the used filesystem space in KiB.
+
+              <B>AvailRoot</B> (uint64_t)
+                     Size of the filesystem space available to the user "root"
+                     in KiB (=TotalRoot-Used).
+
+              <B>AvailUser</B> (uint64_t)
+                     Size  of the filesystem space available to non-privileged
+                     users in KiB.
+
+              <B>UseR%</B> (float)
+                     Used percentage of the total filesystem  size  accessible
+                     by the user "root" (=Used*100/TotalRoot).
+
+              <B>UseU%</B> (float)
+                     Used  percentage  of the total filesystem size accessible
+                     by a non-privileged user (=Used*100/TotalUser).
+
+              <B>Filesystem</B> (NULL-terminated string)
+                     The filesystem device name.
+
+              <B>Type</B> (NULL-terminated string)
+                     The filesystem type (e.g.: ext3, nfs, afs, etc.).
+
+              <B>Mounted</B> <B>on</B> (NULL-terminated string)
+                     The filesystem mount point.
+
+              <B>Time</B> (NULL-terminated string)
+                     The time corresponding to the last data access.
+
+              <B>Status</B> (NULL-terminated string)
+                     The filesystem status at the last data access. Can be:
+                     "<B>OK</B>";
+                     "<B>STALLED</B> <B>since</B> <B>&lt;N&gt;</B> <B>s</B>";
+                     "<B>ERROR:</B> <B>&lt;error</B> <B>message&gt;</B>".
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information on how to get the FMC (Farm Monitoring and Control  System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development Homepage &lt;https://lhcbweb.bo.infn.it/twiki/bin/
+       view.cgi/LHCbBologna/FmcLinux&gt;.
+
+       CERN ITCOBE: FW Farm Monitor and Control &lt;http://itcobe.web.cern.ch/
+       itcobe/Projects/Framework/Download/Components/SystemOverview/fwFMC/wel-
+       come.html&gt;.
+
+       LHCb Online RPMs &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/
+       index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  fsSrv.c,v 2.4 2011/11/08 15:27:47 galli
+       Source:  getFS.c,v 2.4 2011/11/08 15:26:22 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO</H2><PRE>
+       <B><A HREF="../../htmlMan/man1/fsViewer.1.html">fsViewer(1)</A></B>,
+       <B><A HREF="../../htmlMan/man3/setmntent.3.html">setmntent(3)</A></B>, <B><A HREF="../../htmlMan/man3/getmntent_r.3.html">getmntent_r(3)</A></B>, <B><A HREF="../../htmlMan/man3/endmntent.3.html">endmntent(3)</A></B>, <B><A HREF="../../htmlMan/man2/statfs.2.html">statfs(2)</A></B>,
+       <B><A HREF="../../htmlMan/man1/df.1.html">df(1)</A></B>.
+
+FMC-3.9.14                        2012-12-19                          <B><A HREF="../../htmlMan/man8/fsSrv.8.html">fsSrv(8)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

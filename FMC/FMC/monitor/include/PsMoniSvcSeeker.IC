@@ -1,0 +1,82 @@
+/* ######################################################################### */
+/*
+ * $Log: PsMoniSvcSeeker.IC,v $
+ * Revision 1.4  2009/03/19 07:59:30  galli
+ * when SERVICE_LIST return the complete list do not unsubscribe active SVCs
+ *
+ * Revision 1.3  2009/03/17 14:43:50  galli
+ * added prototype for method rmAllPsSvc();
+ *
+ * Revision 1.2  2009/02/26 20:18:37  galli
+ * first working version
+ *
+ * Revision 1.1  2009/02/24 10:47:35  galli
+ * Initial revision
+ */
+/* ######################################################################### */
+/* Class which inherits from DimInfo and subscribes to a DIM service         */
+/* "/FMC/<HOST>/ps/SERVICE_LIST". Instantiated once per each running psSrv.  */
+/* ######################################################################### */
+#ifndef _PS_MONI_SVC_SEEKER_IC
+#define _PS_MONI_SVC_SEEKER_IC 1
+/* ######################################################################### */
+#include <list>
+#include <vector>
+#include <string>
+/* ------------------------------------------------------------------------- */
+#include <fnmatch.h> /* fnmatch(), FNM_NOMATCH */
+/* ------------------------------------------------------------------------- */
+#include <dic.hxx>
+/* ------------------------------------------------------------------------- */
+/* in include */
+#include "fmcPar.h"
+#include "fmcMacro.h"    /* unlikely() */
+#include "fmcMacro.H"    /* METHOD */
+#include "fmcVersion.h" /* SVC_HEAD */
+/* ------------------------------------------------------------------------- */
+/* in utils/include */
+#include "fmcMsgUtils.h"   /* INFO, mPrintf() */
+#include "FmcUtils.IC"
+/* ------------------------------------------------------------------------- */
+/* in logger/include */
+#include "psSrv.h"                                    /* BUF_SIZE, SRV_NAME */
+#include "PsMoniSvcWatcher.IC"
+/* ######################################################################### */
+using namespace std;
+/* ######################################################################### */
+class PsMoniSvcSeeker: public DimInfo
+{
+  string psSrvSvcLsSvcPath;                            /* got by constructor */
+  vector<string> cmdPttnLs;                            /* got by constructor */
+  vector<string> utgidPttnLs;                          /* got by constructor */
+  string srvName;
+  list<PsMoniSvcWatcher*> psSvcLs;
+  vector<string> knwnPsSvcNames;
+  /***************************************************************************/
+  /* called when a Logger server is added or removed */
+  void infoHandler();
+  int matchSvcPattern(string srv);
+  void addPsSvc(const string svc);
+  void rmPsSvc(const string svc);
+  void setAllPsSvcInactive(void);
+  void rmInactivePsSvc(void);
+  /***************************************************************************/
+  public:
+  /***************************************************************************/
+  string getSrvPath(void)
+  {
+    return string(psSrvSvcLsSvcPath);
+  }
+  /***************************************************************************/
+  /* constructor */
+  PsMoniSvcSeeker(const char* psSrvSvcLsSvcPath,vector<string>& cmdPttnLs,
+                  vector<string>& utgidPttnLs);
+  /***************************************************************************/
+  /* destructor */
+  virtual ~PsMoniSvcSeeker();
+  /***************************************************************************/
+};
+/* ######################################################################### */
+#endif                                             /* _PS_MONI_SVC_SEEKER_IC */
+/* ######################################################################### */
+

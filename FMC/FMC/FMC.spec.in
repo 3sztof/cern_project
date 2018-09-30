@@ -1,0 +1,346 @@
+Summary: Farm Monitoring and Control System for the LHCb on-line farm 
+Name: FMC
+Version: ___version___
+Release: ___release___
+License: GPL
+Group: LHCb/Online
+URL: http://lhcbweb2.bo.infn.it/bin/view/LHCbBologna/FmcLinux
+Source0: ___source0___
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+BuildArch: ___buildarch___
+Prefix: /opt
+Packager: Domenico Galli
+Distribution: ___distribution___
+# *****************************************************************************
+# $Id: FMC.spec.in,v 1.8 2012/12/10 15:25:33 galli Exp $
+# *****************************************************************************
+%description
+The aim of the Farm Monitoring and Control System (FMC) is to monitor and control each PC and to supervise the overall status of the on-line farm of the LHCb experiment at CERN.
+
+The FMC System is composed of the following tools: (1) The Message Logger collects messages sent by the applications running on the farm nodes. (2) The Power Manager can switch off and on the farm nodes; moreover it monitors the physical parameters (temperatures, fan speeds, power supply voltages, etc.). (3) The Task Manager can start and stop processes on the farm nodes from a central console;  moreover it provides a real-time notification upon process terminations. (4) The Process Controller is in charge of keeping a list of applications running on the farm nodes, by interacting with the Task Manager and re-spawning the terminated processes if requested. (5) The Monitor System supervises the farm node operation (CPU and the memory load, network interface and TCP/IP stack parameters, rates of the interrupts raised by the network interface card and detailed status of the running processes).
+
+The FMC is based on DIM (Distributed Information Management System) as network communication layer, it is accessible both through a command line interface and through the PVSS (Prozessvisualisierungs und Steuerungssystem) graphical interface, and it is interfaced to the Finite State Machine (FSM) of the LHCb Experiment Control System (ECS) in order to manage anomalous farm conditions.
+
+The FMC is an integral part of the ECS, which is in charge of monitoring and controlling all on-line components; it uses the same tools (DIM, PVSS, FSM, etc.) to guarantee its complete integration and a coherent look and feel throughout the whole control system.
+# *****************************************************************************
+%prep
+%setup -q -n %{name}-%{version}-%{release}.%{buildarch}
+# *****************************************************************************
+%build
+make clean
+make
+# *****************************************************************************
+%install
+rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT/opt/FMC
+make INST_MAIN_DIR=$RPM_BUILD_ROOT/opt/FMC-%{version} install
+# *****************************************************************************
+%clean
+rm -rf $RPM_BUILD_ROOT
+# *****************************************************************************
+%files
+%defattr(-,root,root,-)
+/opt/FMC-%{version}
+/opt/FMC
+%doc
+# *****************************************************************************
+# REMEMBER:
+# Install:
+#   Run %pre of new package ($1=1)
+#   Install new files
+#   Run %post of new package ($1=1)
+# Delete:
+#   Run %preun of old package ($1=0)
+#   Delete files
+#   Run %postun of old package ($1=0)
+# Upgrade
+#   Run %pre of new package ($1=2)
+#   Install new files
+#   Run %post of new package ($1=2)
+#   Run %preun of old package ($1=1)
+#   Delete any old files not overwritten by newer ones
+#   Run %postun of old package ($1=1)
+# *****************************************************************************
+%pre
+# create the "online" user if it does not exist
+grep -q online /etc/passwd
+if [ $? -ne 0 ]; then                              # online user does not exist
+  /usr/sbin/useradd online
+fi
+# remove FMC entries from /etc/inittab if any
+grep '^fmc' /etc/inittab >/dev/null
+if [ $? -eq 0 ]; then                   # there are some entries in the inittab
+  cp /etc/inittab /etc/.inittab.rpmold
+  sed '/FMC/d' /etc/.inittab.rpmold > /etc/inittab
+  # re-read inittab and stop old FMC daemons if any
+  /sbin/telinit q || /bin/true
+  /bin/sleep 1 || /bin/true
+  # kill old processes if any
+  FMC_PSS="logViewer ipmiSrv pcSrv cmSrv tmSrv logSrv"
+  for fmc_ps in ${FMC_PSS[@]} ; do
+    /usr/bin/pkill $fmc_ps || /bin/true
+  done
+  /bin/sleep 1 || /bin/true
+fi
+FMC_PSS="osSrv coalSrv cpuinfoSrv cpustatSrv fsSrv irqSrv memSrv nifSrv psSrv rlSrv smartSrv tcpipSrv"
+for fmc_ps in ${FMC_PSS[@]} ; do
+  /usr/bin/pkill $fmc_ps || /bin/true
+done
+FMC_PSS="oldCoalSrv oldCpuinfoSrv oldCpustatSrv oldIrqSrv oldPsSrv oldFsSrv oldNifSrv oldMemSrv"
+for fmc_ps in ${FMC_PSS[@]} ; do
+  /usr/bin/pkill $fmc_ps || /bin/true
+done
+# now no FMC processes are running
+/bin/sleep 1 || /bin/true
+# *****************************************************************************
+%post
+if [ "$1" = "1" ] ; then                                 # install, not upgrade
+  # add FMC library directory to the shared library path
+  ldConfFile="/etc/ld.so.conf.d/fmc.conf"
+  if [ ! -f ${ldConfFile} ] ; then
+    echo $RPM_INSTALL_PREFIX/FMC/lib > ${ldConfFile}
+  fi
+fi                                                       # install, not upgrade
+# new library version can be found in $RPM_INSTALL_PREFIX/FMC/lib
+/sbin/ldconfig 
+# -----------------------------------------------------------------------------
+# give setuid permission to tmSrv and pcSrv
+/bin/chown root:root $RPM_INSTALL_PREFIX/FMC/sbin/tmSrv || /bin/true
+/bin/chown root:root $RPM_INSTALL_PREFIX/FMC/sbin/pcSrv || /bin/true
+# rwsr-sr-x
+/bin/chmod 6755 $RPM_INSTALL_PREFIX/FMC/sbin/tmSrv || /bin/true
+/bin/chmod 6755 $RPM_INSTALL_PREFIX/FMC/sbin/pcSrv || /bin/true
+# -----------------------------------------------------------------------------
+# Configuration files needed:
+#   1. /etc/sysconfig/dim   both worker-nodes and control-nodes, set by DIM RPM
+#   2. /etc/sysconfig/fmc   both worker-nodes and control-nodes
+#   3. /etc/rc.d/init.d/fmc both worker-nodes and control-nodes
+#   4. /etc/tmSrv.allow     both worker-nodes and control-nodes
+#   5. /etc/cmSrv.conf      both worker-nodes and control-nodes
+#   6. /etc/cmSrv.allow     both worker-nodes and control-nodes
+#   7. /etc/ipmiSrv.conf    only control-nodes
+#   8. /etc/pcSrv.conf      only control-nodes
+#   9. /etc/pcSrv.init      only control-nodes
+#  10. /etc/pcSrv.allow     only control-nodes
+# -----------------------------------------------------------------------------
+# write FMC sys V start-up configuration file
+sysVcfgFile="/etc/sysconfig/fmc"
+oldString="PC_ARGS=\"-u online -g online --no-auth\""
+newString="PC_ARGS=\"-u root -g root --no-auth\""
+if [ -f $sysVcfgFile ] ; then
+  newSysVcfgFile="/etc/sysconfig/fmc.rpmnew"
+  cp $RPM_INSTALL_PREFIX/FMC/skel/etc_sysconfig_fmc $newSysVcfgFile
+  echo "$newSysVcfgFile created."
+  grep "${oldString}" "${sysVcfgFile}" >/dev/null
+  if [ $? -eq 0 ]; then
+    cp -p ${sysVcfgFile} ${sysVcfgFile}.rpmold
+    cat ${sysVcfgFile}.rpmold | sed "s/${oldString}/${newString}/g" > ${sysVcfgFile}
+  fi
+else
+  cp $RPM_INSTALL_PREFIX/FMC/skel/etc_sysconfig_fmc $sysVcfgFile
+  echo "$sysVcfgFile created."
+fi
+/bin/chown root:root $sysVcfgFile || /bin/true
+/bin/chmod 0644 $sysVcfgFile || /bin/true
+# .............................................................................
+# write FMC sys V start-up script
+newFile="/etc/rc.d/init.d/fmc"
+cp $RPM_INSTALL_PREFIX/FMC/skel/etc_rc.d_init.d_fmc $newFile
+echo "File \"$newFile\" created."
+/bin/chown root:root $newFile || /bin/true
+/bin/chmod 0755 $newFile || /bin/true
+# .............................................................................
+# write FMC shell start-up script
+newFile="/etc/profile.d/fmc.sh"
+cp $RPM_INSTALL_PREFIX/FMC/skel/etc_profile.d_fmc.sh $newFile
+echo "File \"$newFile\" created."
+/bin/chown root:root $newFile || /bin/true
+/bin/chmod 0755 $newFile || /bin/true
+# .............................................................................
+# write sample Configuration Manager Server configuration file
+newFile="/etc/cmSrv.conf"
+cp $RPM_INSTALL_PREFIX/FMC/skel/etc_cmSrv.conf $newFile
+echo "File \"$newFile\" created."
+/bin/chown root:root $newFile || /bin/true
+/bin/chmod 0600 $newFile || /bin/true
+# ...........................................................................
+# write sample Configuration Manager Server access control file
+newFile="/etc/cmSrv.allow"
+cp $RPM_INSTALL_PREFIX/FMC/skel/etc_cmSrv.allow $newFile
+echo "root@`hostname`" >> $newFile
+echo "online@`hostname`" >> $newFile
+echo "File \"$newFile\" created."
+/bin/chown root:root $newFile || /bin/true
+/bin/chmod 0600 $newFile || /bin/true
+# -----------------------------------------------------------------------------
+# write sample Task Manager Server access control file
+newFile="/etc/tmSrv.allow"
+if [ -f $newFile ] ; then
+  newFile="/etc/tmSrv.allow.rpmnew"
+fi
+cp $RPM_INSTALL_PREFIX/FMC/skel/etc_tmSrv.allow $newFile
+echo "root@`hostname`" >> $newFile
+echo "online@`hostname`" >> $newFile
+echo "File \"$newFile\" created."
+/bin/chown root:root $newFile || /bin/true
+/bin/chmod 0600 $newFile || /bin/true
+# .............................................................................
+# write sample Process Controller Server configuration file
+newFile="/etc/pcSrv.conf"
+if [ -f $newFile ] ; then
+  newFile="/etc/pcSrv.conf.rpmnew"
+fi
+cp $RPM_INSTALL_PREFIX/FMC/skel/etc_pcSrv.conf $newFile
+hostname|cut -d "." -f 1 >> $newFile
+echo "File \"$newFile\" created."
+/bin/chown root:root $newFile || /bin/true
+/bin/chmod 0600 $newFile || /bin/true
+# .............................................................................
+# write sample Process Controller Server initalization file
+# overwritten by the new one. Old saved as rpmsave
+newFile="/etc/pcSrv.init"
+if [ -f $newFile ] ; then
+  oldFile="/etc/pcSrv.init.rpmsave"
+  mv $newFile $oldFile
+  echo "Old file \"$newFile\" moved to \"$oldFile\"."
+fi
+cp $RPM_INSTALL_PREFIX/FMC/skel/etc_pcSrv.init $newFile
+echo "New file \"$newFile\" created."
+/bin/chown root:root $newFile || /bin/true
+/bin/chmod 0600 $newFile || /bin/true
+# .............................................................................
+# write sample Process Controller Server access control file
+newFile="/etc/pcSrv.allow"
+if [ -f $newFile ] ; then
+  newFile="/etc/pcSrv.allow.rpmnew"
+fi
+cp $RPM_INSTALL_PREFIX/FMC/skel/etc_pcSrv.allow $newFile
+echo "root@`hostname`" >> $newFile
+echo "online@`hostname`" >> $newFile
+echo "File \"$newFile\" created."
+/bin/chown root:root $newFile || /bin/true
+/bin/chmod 0600 $newFile || /bin/true
+# .............................................................................
+# write sample Power Manager configuration files
+newFile="/etc/ipmiSrv.conf"
+oldFile="/etc/ipmiSrv.conf.rpmold"
+oldGlobFile="/etc/FMC.conf"
+if [ -f $oldFile ] ; then
+  mv $oldFile ${oldFile}er
+  echo "File \"$oldFile\" moved to \"${oldFile}er\"."
+fi
+if [ -f $newFile ] ; then
+  mv $newFile $oldFile
+  echo "File \"$newFile\" moved to \"$oldFile\"."
+fi
+if [ -f $oldGlobFile ] ; then
+  mv $oldGlobFile ${oldGlobFile}.rpmold
+  echo "File \"$oldGlobFile\" moved to \"${oldGlobFile}.rpmold\"."
+  oldGlobFile=${oldGlobFile}.rpmold
+fi
+cp $RPM_INSTALL_PREFIX/FMC/skel/etc_ipmiSrv.conf $newFile
+echo "File \"$newFile\" created."
+/bin/chown root:root $newFile || /bin/true
+/bin/chmod 0600 $newFile || /bin/true
+# .............................................................................
+# retrieve old Power Manager configuration
+if [ "$1" = "2" ] ; then                                 # upgrade, not install
+  grep -q IPMI_USER $oldFile 
+  if [ $? -eq 0 ]; then                            # IPMI_USER found in oldFile
+     mv $oldFile $newFile
+     echo "File \"$oldFile\" moved to \"$newFile\"."
+  else                                         # IPMI_USER not found in oldFile
+    if [ -f $oldGlobFile ] ; then                        # oldGlobFile existing
+      # append old global IPMI config entries to new configuration file
+      echo "# Global configuration records:" >> $newFile
+      cat $oldGlobFile | /bin/egrep -v "^#" >> $newFile || /bin/true
+      echo "Old file \"$oldGlobFile\" appended to \"$newFile\"."
+      echo "# !!! THIS FILE IS OBSOLETE !!!" >> $oldGlobFile
+      echo "# !!! DATA MOVED TO \"$newFile\" !!!" >> $oldGlobFile
+    fi                                                   # oldGlobFile existing
+    if [ -f $oldFile ] ; then                                # oldFile existing
+      # append old per-node IPMI config entries to new configuration file
+      echo "# Per-node configuration records:" >> $newFile
+      cat $oldFile | /bin/egrep -v "^#" >> $newFile || /bin/true
+      echo "Old file \"$oldFile\" appended to \"$newFile\"."
+    fi                                                       # oldFile existing
+  fi                                           # IPMI_USER not found in oldFile
+fi                                                       # upgrade, not install
+# .............................................................................
+/etc/rc.d/init.d/fmc condrestart
+/bin/sleep 1 || /bin/true
+# -----------------------------------------------------------------------------
+echo "FMC installation terminated."
+if [ "$1" = "1" ] ; then                                 # install, not upgrade
+  echo "Before starting the FMC tools, create the user \"online\" and customize"
+  echo "the following files:"
+  echo " 1 - /etc/sysconfig/dim (define DIM_DNS_NODE)."
+  echo " 2 - /etc/sysconfig/fmc (select FMC tools to start and define options)"
+  echo "    (see manpages for logSrv, tmSrv, cmSrv, pcSrv and ipmiSrv)."
+  echo " 3 - /etc/ipmiSrv.conf (IPMI configuration)."
+  echo " 4 - /etc/pcSrv.conf (Process Controller configuration)."
+  echo " 5 - /etc/pcSrv.init (Monitor Servers to be started)."
+  echo " 6 - /etc/cmSrv.conf (Configuration Manager configuration)."
+  echo " 7 - /etc/cmSrv.allow (Configuration Manager access control list)."
+  echo "To run FMC daemons with authentication, remove the \"--no-auth\" options"
+  echo "in /etc/sysconfig/fmc and customize also the following files:"
+  echo " 8 - /etc/tmSrv.allow (Task Manager access control list)."
+  echo " 9 - /etc/pcSrv.allow (Process Controller access control list)."
+  echo "To start FMC tools immediately, type:"
+  echo "   service fmc start"
+  echo "To start the FMC tools at bootstrap, using chkconfig, type:"
+  echo "   chkconfig --levels 345 fmc on"
+  echo "   chkconfig --levels 0126 fmc off"
+fi
+# *****************************************************************************
+#%preun
+# stop old processes
+#/etc/rc.d/init.d/fmc stop
+#/bin/sleep 1 || /bin/true
+# *****************************************************************************
+%postun
+#set -x
+if [ "$1" = "0" ] ; then                                  # delete, not upgrade
+  # stop old processes
+  /etc/rc.d/init.d/fmc stop
+  /bin/sleep 1 || /bin/true
+  # remove FMC library directory from the shared library path
+  slpfx=$(echo $RPM_INSTALL_PREFIX/FMC/lib | sed 's!/!\\/!g')
+  grep -q $RPM_INSTALL_PREFIX/FMC/lib /etc/ld.so.conf
+  if [ $? -eq 0 ]; then
+    cp /etc/ld.so.conf /etc/.ld.so.conf.rpmold
+    sed "/$slpfx/d" /etc/.ld.so.conf.rpmold > /etc/ld.so.conf
+    /sbin/ldconfig 
+    rm /etc/.ld.so.conf.rpmold
+  fi
+  # rename FMC configuration files as rpmold
+  if [ -f /etc/cmSrv.conf ] ; then
+    mv /etc/cmSrv.conf /etc/cmSrv.conf.rpmold
+  fi
+  if [ -f /etc/cmSrv.allow ] ; then
+    mv /etc/cmSrv.allow /etc/cmSrv.allow.rpmold
+  fi
+  if [ -f /etc/tmSrv.allow ] ; then
+    mv /etc/tmSrv.allow /etc/tmSrv.allow.rpmold
+  fi
+  if [ -f /etc/ipmiSrv.conf ] ; then
+    mv /etc/ipmiSrv.conf /etc/ipmiSrv.conf.rpmold
+  fi
+  if [ -f /etc/pcSrv.conf ] ; then
+    mv /etc/pcSrv.conf /etc/pcSrv.conf.rpmold
+  fi
+  if [ -f /etc/pcSrv.init ] ; then
+    mv /etc/pcSrv.init /etc/pcSrv.init.rpmold
+  fi
+  if [ -f /etc/pcSrv.allow ] ; then
+    mv /etc/pcSrv.allow /etc/pcSrv.allow.rpmold
+  fi
+  if [ -f /etc/rc.d/init.d/fmc ] ; then
+    rm -f /etc/rc.d/init.d/fmc
+    rm -f /etc/rc.d/rc?.d/???fmc || /bin/true
+  fi
+  if [ -f /etc/sysconfig/fmc ] ; then
+    mv /etc/sysconfig/fmc /etc/sysconfig/fmc.rpmold
+  fi
+fi                                                        # delete, not upgrade
+# *****************************************************************************

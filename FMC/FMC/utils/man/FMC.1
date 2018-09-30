@@ -1,0 +1,685 @@
+.ig
+FMC.1
+
+..
+.
+.\" --------------------------------------------------------------------
+.\" Setup
+.\" --------------------------------------------------------------------
+.
+.mso www.tmac
+.
+.\" set adjust to both
+.ad b
+.
+.\" fonts of fixed length
+.
+.if n \{\
+.  mso tty-char.tmac
+.  ftr CR R
+.  ftr CI I
+.  ftr CB B
+.\}
+.
+.if '\*[.T]'dvi' \
+.  ftr CB CW
+.
+.\" --------------------------------------------------------------------
+." String definitions
+.
+.ds @- "\-\"
+.ds @-- "\-\^\-\"
+.
+.ds Ellipsis .\|.\|.\"
+.
+.
+.\" --------------------------------------------------------------------
+.\" Begin of macro definitions
+.de c
+.\" this is like a comment request when escape mechanism is off
+..
+.eo
+.
+.c --------------------------------------------------------------------
+.de TP+
+.br
+.ns
+.TP \$1
+..
+.c --------------------------------------------------------------------
+.c Like TP, but if specified indent is more than half
+.c the current line-length - indent, use the default indent.
+.de Tp
+.  ie \n[.$]=0:((0\$1)*2u>(\n.lu-\n(.iu)) .TP
+.  el .TP "\$1"
+..
+.c --------------------------------------------------------------------
+.de Text
+.  nop \)\$*
+..
+.c --------------------------------------------------------------------
+.de Synopsis
+.  ds @arg1 \$1\"
+.  nr @old_indent \n[.i]
+.  ad l
+.  in +\w'\f[B]\*[@arg1]\0'u
+.  ti \n[@old_indent]u
+.  B \*[@arg1]\0\c
+.  rr @old_indent
+.  rm @arg1
+..
+.c --------------------------------------------------------------------
+.de EndSynopsis
+.  ad
+.  in
+..
+.c --------------------------------------------------------------------
+.c ShortOpt[]  (name [arg])
+.c
+.c short option in synopsis
+.c
+.de ShortOpt[]
+.  if \n[.$]=0 \
+.    return
+.  ds @opt \$1\"
+.  shift
+.  ie \n[.$]=0 \
+.    Text \f[R][\f[]\f[CB]\*[@-]\*[@opt]\f[]\f[R]]\f[]
+.  el \
+.    Text \f[R][\f[]\f[CB]\*[@-]\*[@opt]\~\f[]\f[I]\/\$*\f[]\f[R]]\f[]
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c LongOpt[]  (name [arg])
+.c
+.c short option in synopsis
+.c
+.de LongOpt[]
+.  if \n[.$]=0 \
+.    return
+.  ds @opt \$1\"
+.  shift
+.  ie \n[.$]=0 \
+.    Text \f[R][\f[]\f[CB]\*[@--]\*[@opt]\f[]\f[R]]\f[]
+.  el \
+.    Text \f[R][\f[]\f[CB]\*[@--]\*[@opt]\~\f[]\f[I]\/\$*\f[]\f[R]]\f[]
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c DoubleOpt[]  (names namel [arg])
+.c
+.c long option in synopsis
+.c
+.de DoubleOpt[]
+.  if \n[.$]=0 \
+.    return
+.  ds @opt \$1\"
+.  shift
+.  ds @optl \$1\"
+.  shift
+.  ie \n[.$]=0 \
+.    Text \f[R][\f[]\f[CB]\*[@-]\*[@opt]\f[R]\~|\~\f[]\*[@--]\*[@optl]\f[]\f[R]]\f[]
+.  el \
+.    Text \f[R][\f[]\f[CB]\*[@-]\*[@opt]\f[R]\~|\~\f[]\*[@--]\*[@optl]\~\f[]\f[I]\/\$*\f[]\f[R]]\f[]
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c Option in synopsis (short option)
+.de SynOpt
+.  if \n[.$]=0 \
+.    return
+.  ds @opt \$1\"
+.  shift
+.  ie \n[.$]=0 \
+.    Text \f[R][\f[]\f[CB]\*[@-]\*[@opt]\f[]\f[R]]\f[]
+.  el \
+.    Text \f[R][\f[]\f[CB]\*[@-]\*[@opt]\~\f[]\f[I]\/\$*\f[]\f[R]]\f[]
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c ShortOpt ([char [punct]])
+.c
+.c `-c' somewhere in the text 
+.c second arg is punctuation
+.c
+.de ShortOpt
+.  ds @opt \$1\"
+.  shift
+.  Text \f[CB]\*[@-]\*[@opt]\f[]\/\$*
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c LongOpt  ([name [punct]])
+.c
+.c `--name' somewhere in the text 
+.c second arg is punctuation
+.c
+.de LongOpt
+.  ds @opt \$1\"
+.  shift
+.  Text \f[CB]\*[@--]\f[]\f[B]\*[@opt]\f[]\/\$*
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c OptDef  (shortopt [longopt [argument]])
+.c
+.c option documentation
+.c args : `shortopt', `longopt' can be 
+.c
+.de OptDef
+.  ds @short
+.  ds @long
+.  ds @arg
+.  if \n[.$]>=1 \{\
+.    ds @arg1 "\$1\"
+.    if !'\*[@arg1]'' \
+.      ds @short "\f[CB]\*[@-]\*[@arg1]\f[]\"
+.    if \n[.$]>=2 \{\
+.      if !'\*[@short]'' \
+.        as @short \f[CW]\0\f[]
+.      ds @arg2 "\$2\"
+.      if !'\*[@arg2]'' \
+.        ds @long "\f[CB]\*[@--]\f[]\f[B]\*[@arg2]\f[]\"
+.      if \n[.$]>=3 \{\
+.        if !'\*[@long]'' \
+.          as @long \|\~\|\"
+.        shift 2
+.        ds @arg \f[I]\$*\"
+.      \}
+.    \}
+.  \}
+.  IP "\f[R]\*[@short]\*[@long]\*[@arg]\f[]"
+.  rm @arg
+.  rm @arg1
+.  rm @arg2
+.  rm @short
+.  rm @long
+..
+.c --------------------------------------------------------------------
+.c Continuation of an OptDef header.
+.de OptDef+
+.  br
+.  ns
+.  OptDef \$@
+..
+.c --------------------------------------------------------------------
+.c Environment variable
+.de EnvVar
+.  SM
+.  BR \$1 \$2
+..
+.c --------------------------------------------------------------------
+.c a shell command line
+.de ShellCommand
+.  nr @font \n[.f]
+.  c replace argument separator by unbreakable space
+.  ds @args \$1\""
+.  shift
+.  while (\n[.$]>0) \{\
+.    ds @args \*[@args]\~\$1
+.    shift
+.  \}
+.  br
+.  ad l
+.  nh
+.  Text \f[I]bash$\h'1m'\f[P]\f[B]\*[@args]\f[P]\&\"
+.  ft R
+.  ft P
+.  hy
+.  ad
+.  ft \n[@font]
+.  br
+.  rr @font
+.  rm @args
+..
+.c --------------------------------------------------------------------
+.c `char or string'
+.de Quoted
+.  ft CR
+.  Text \[oq]\$*\[cq]
+.  ft
+..
+.c --------------------------------------------------------------------
+.c End of macro definitions
+.ec
+.
+.hw hostname NODE_PATTERN
+.TH FMC 1  ___now___ "___fmcVer___" "FMC User Commands"
+.SH NAME
+.Synopsis FMC\ \-
+Farm Monitoring and Control System
+.EndSynopsis
+.
+.
+.SH INTRODUCTION
+.
+The FMC (\fBFarm Monitoring and Control\fP) System has been designed to monitor
+and control each PC of the online Event Filter Farm of the LHCb Experiment at
+CERN, composed of ~2000 PCs and to supervise the overall status of the farm.
+.PP
+The FMC is based on DIM (Distributed Information Management System) as network
+communication layer. It is accessible both through a command line interface and
+through the PVSS (Prozessvisualisierungs und Steuerungssystem, a commercial
+SCADA system adopted by CERN) graphical interface, and it is interfaced to the
+\fBFinite State Machine\fP (FSM) of the \fBExperiment Control System\fP (ECS)
+in order to manage anomalous farm conditions.
+.PP
+The FMC is an integral part of the ECS, which is in charge of monitoring and
+controlling all on-line components; it uses the same tools (DIM, PVSS, FSM,
+etc.) to guarantee its complete integration and a coherent look and feel
+throughout the whole control system.
+.
+.
+.SH OVERVIEW
+.
+The FMC System is composed of the following tools:
+.TP
+The \fBMessage Logger\fP
+collects messages sent by the applications running on the farm nodes.
+.TP
+The \fBPower Manager\fP
+can switch off and on the farm nodes; moreover it monitors the physical
+parameters (temperatures, fan speeds, power supply voltages, etc.).
+.TP
+The \fBTask Manager\fP
+can start and stop processes on the farm nodes from a central console;
+moreover it provides a real-time notification upon process terminations.
+.TP
+The \fBProcess Controller\fP
+is in charge of keeping a list of applications up and running on the farm
+nodes, by interacting with the Task Managers and re-spawning the terminated
+processes if requested.
+.TP
+The \fBConfiguration Manager\fP
+is a tool to read, write and remove configuration files (more generally, ASCII files) to/from the farm nodes.
+.TP
+The \fBMonitor System\fP
+supervises the farm node operation.
+.PP
+Excepting the Process Controller, which depends on the Task Manager, all the
+other tools listed above are \fBindependent\fP each-other and can be used
+\fBstand-alone\fP.  All the FMC tools can send their diagnostic messages to the
+Message Logger (but can also send them to the standard error stream or to the
+system log service) and the Task Manager is able to redirect to the Message
+Logger the standard output and error streams of the started processes.
+.PP
+Since \fBfault-tolerance\fP is an important requirement of the system, the
+software was designed in order to be kept as simple as possible, to exploit as
+far as possible the existing OS kernel services -- since they are certainly
+reliable and optimized --, to handle and log every occurrence of envisaged
+exception and to be able to \fBsurvive the restart of each component\fP.  In
+the event of a Task Manager restart, a mechanism exploiting the process table
+of the Linux kernel, allows the new Task Manager instance to take control on
+every running process started by the previous instance.  Finally, the system
+servers are automatically restarted, either by the Linux \fIinit\fP process or
+by the FMC Process Controller, in case of unexpected termination.
+.PP
+The FMC consists in \fBlight-weight\fP servers running on the farm nodes, which
+communicate, by means of the \fIDIM\fP network layer, with an arbitrary number
+of clients running on different PCs, which can be command line clients or
+graphical PVSS clients. In particular, the PVSS clients interface the FMC with
+the experiment FSM to induce the transition of a state machine to an alarm
+state when the monitored parameters indicate abnormal farm conditions, and to
+execute actions (system reboot and power on/off, process start/stop) triggered
+by a state machine transition.
+.PP
+To guarantee a \fBcoherent look and feel\fP throughout the whole control
+system, the FMC PVSS clients are fully integrated into the LHCb ECS, in charge
+of monitoring and controlling all the on-line components: the data acquisition
+and the trigger (timing, front-end electronics, Level-0 trigger electronics,
+readout network, EFF, etc.), the detector operations (gases, high voltages, low
+voltages, temperatures, etc.), the experimental infrastructure (magnet,
+cooling, ventilation, power distribution, detector safety, etc.) and the
+interaction with other outside control systems (LHC accelerator, CERN safety
+system, CERN technical services, etc.).
+.PP
+In a typical installation the \fIMessage Logger\fP, \fITask Manager\fP and
+\fIMonitor System\fP servers run on \fBeach farm node\fP, the \fIPower
+Manager\fP and \fIProcess Controller\fP servers run on a few \fBcontrol PCs\fP,
+each one watching ~200 farm nodes, and all the \fIclients\fP can run on one or
+more \fBmonitor PCs\fP.
+.
+.
+.SH FMC USER COMMANDS AND LIBRARY CALLS
+This section summarises the \fBcommand-line\fP version of the FMC
+\fBfront-end\fP. It is made of \fBDIM clients\fP which are commands that can be
+issued by the users.
+.
+.SS Installation Check
+.TP
+\fBfmcSrvViewer\fP(1)
+Print the execution status (on/off) of the FMC Servers.
+.TP
+\fBfmcVersionViewer\fP(1)
+Print the revision tag of the main source file and the version tag of the FMC
+package of the FMC Servers currently running.
+.
+.SS Message Logger
+.TP
+\fBlogViewer\fP(1)
+FMC Message Logger displayer, saver and forwarder.
+.TP
+\fBlogGetProperties\fP(1)
+Get the Properties of one or more FMC Message Logger Server(s).
+.TP
+\fBlogSetProperties\fP(1)
+Set the Properties of one or more FMC Message Logger Server(s).
+.TP
+\fBmPrint\fP(1)
+Send a message to the FMC Message Logger Server.
+.TP
+\fBdfltLoggerOpen\fP(3)
+Open the access for writing to the default FMC Message Logger.
+.TP
+\fBgetDfltFifoFD\fP(3)
+Get the file descriptor of the default FMC Message Logger FIFO.
+.TP
+\fBmPrintf\fP(3)
+Send a formatted message with header to the default FMC Message Logger and/or
+to the standard error stream and/or to the OS syslog facility.
+.TP
+\fBrPrintf\fP(3)
+Send a formatted message without header to the default FMC Message Logger
+and/or to the standard error stream and/or to the OS syslog facility.
+.TP
+\fBdfltLoggerClose\fP(3)
+Close the access for writing to the default FMC Message Logger.
+.TP
+\fBloggerOpen\fP(3)
+Open the access for writing to a FMC Message Logger.
+.TP
+\fBmfPrintf\fP(3)
+Send a formatted message with header to a FMC Message Logger.
+.TP
+\fBrfPrintf\fP(3)
+Send a formatted message without header to a FMC Message Logger.
+.TP
+\fBloggerClose\fP(3)
+Close the access for writing to a FMC Message Logger.
+.
+.SS Task Manager
+.TP
+\fBtmStart\fP(1)
+Start a process on one or more farm node(s) using the FMC Task Manager.
+.TP
+\fBtmKill\fP(1)
+Send a signal to one or more process(es) running on one or more node(s) using
+the FMC Task Manager.
+.TP
+\fBtmStop\fP(1)
+Terminate one or more process(es) running on one or more node(s) using the FMC
+Task Manager.
+.TP
+\fBtmLs\fP(1)
+List the process(es) started by FMC Task Manager (short list).
+.TP
+\fBtmLl\fP(1)
+List the process(es) started by FMC Task Manager (long list, including: TGID,
+CMD, UTGID and STATUS).
+.
+.SS Process Controller
+.TP
+\fBpcAdd\fP(1)
+Add a new process to the FMC Process Controller and start it on the farm nodes.
+.TP
+\fBpcRm\fP(1)
+Remove one or more process(es) from the FMC Process Controller and stop them on
+the farm nodes.
+.TP
+\fBpcLs\fP(1)
+Show the processes in the list of the FMC Process Controller.
+.TP
+\fBpcLl\fP(1)
+Show the processes in the list of the FMC Process Controller with their start
+parameters.
+.TP
+\fBpcLss\fP(1)
+Show the processes in the list of the FMC Process Controller with the number of
+their (re)starts and the date and the time of each (re)start.
+.
+.SS Power Manager
+.TP
+\fBpwStatus\fP(1)
+Print the Power Status (on/off) of the farm PC(s), got by means of the FMC
+Power Manager Server.
+.TP
+\fBipmiViewer\fP(1)
+Print the Power Status (on/off) and the Sensor Status (temperatures, fan
+speeds, etc.) of the farm PC(s), got by means of the FMC Power Manager Server.
+.TP
+\fBpwSwitch\fP(1)
+Issue an IPMI Power Command (power on, power off, power cycle, etc.) to the
+farm PC(s) through the FMC Power Manager Server.
+.
+.SS Configuration Manager
+.TP
+\fBcmSet\fP(1)
+Write a file to one or more farm nodes through the FMC Configuration Manager.
+.TP
+\fBcmUnset\fP(1)
+Remove a file from one or more farm nodes through the FMC Configuration
+Manager.
+.TP
+\fBcmGet\fP(1)
+Read a file from one or more farm nodes through the FMC Configuration Manager.
+.
+.SS Monitor
+.TP
+\fBosViewer\fP(1)
+Get Operating System information from the FMC OS Servers.
+.TP
+\fBcouinfoViewer\fP(1)
+Get CPU static information from the FMC CPU Info Monitor Servers.
+.TP
+\fBcpustatViewer\fP(1)
+Get CPU state information from the FMC CPU state Monitor Servers.
+.TP
+\fBmemViewer\fP(1)
+Get memory usage statistic information from the FMC Memory Monitor Servers.
+.TP
+\fBirqViewer\fP(1)
+Get interrupt rates information from the FMC IRQ Monitor Servers.
+.TP
+\fBirqReset\fP(1)
+Reset the interrupt counters of the FMC Interrupt Monitor Servers.
+.TP
+\fBpsViewer\fP(1)
+Get processes information from the FMC Process Monitor Servers.
+.TP
+\fBnifViewer\fP(1)
+Get network interface statistics from the FMC Network Interface Monitor
+Servers.
+.TP
+\fBnifReset\fP(1)
+Reset the counters of the FMC Network Interface Monitor Servers.
+.TP
+\fBcoalViewer\fP(1)
+Get network interrupt coalescence information from the FMC Coalescence Monitor
+Servers.
+.TP
+\fBcoalReset\fP(1)
+Reset the network interrupt coalescence counters of the FMC Coalescence Monitor
+Servers.
+.TP
+\fBtcpipViewer\fP(1)
+Get the TCP/IP stack statistics from the FMC TCP/IP Stack Monitor Servers.
+.TP
+\fBtcpipReset\fP(1)
+Reset the counters of the FMC TCP/IP stack Monitor Servers.
+.TP
+\fBfsViewer\fP(1)
+Get filesystem space usage from the DIM File System Monitor Servers.
+.TP
+\fBsmartViewer\fP(1)
+ Get the SMART (Self-Monitoring, Analysis and Reporting Technology) statistics
+from the FMC SMART Monitor Servers.
+.
+.
+.SH FMC SERVERS
+.
+.SS Control Servers
+This section summarises the FMC \fBback-end\fP, made of a few \fBDIM servers\fP
+which typically are started at computer start-up by the sysv-compatible init
+process.
+.TP
+\fBlogSrv\fP(8)
+FMC Message Logger Server.
+.TP
+\fBtmSrv\fP(8)
+FMC Task Manager Server.
+.TP
+\fBpcSrv\fP(8)
+FMC Process Controller Server.
+.TP
+\fBipmiSrv\fP(8)
+FMC Power Manager Server.
+.TP
+\fBcmSrv\fP(8)
+FMC Configuration Manager Server.
+.
+.SS Monitor Servers
+.TP
+\fBosSrv\fP(8)
+FMC Operating System Information Server.
+.TP
+\fBcpuinfoSrv\fP(8)
+FMC CPU Information Server.
+.TP
+\fBcpustatSrv\fP(8)
+FMC CPU Statistics Monitor Server.
+.TP
+\fBmemSrv\fP(8)
+ FMC Memory Monitor Server.
+.TP
+\fBirqSrv\fP(8)
+FMC Interrupt Monitor Server.
+.TP
+\fBpsSrv\fP(8)
+FMC Process Monitor Server.
+.TP
+\fBnifSrv\fP(8)
+FMC Network Interface Monitor Server.
+.TP
+\fBcoalSrv\fP(8)
+FMC Network Interrupt Coalescence Monitor Server.
+.TP
+\fBtcpipSrv\fP(8)
+FMC TCP/IP Stack Monitor Server.
+.TP
+\fBfsSrv\fP(8)
+FMC Filesystem Monitor Server.
+.TP
+\fBsmartSrv\fP(8)
+FMC SMART (Self-Monitoring, Analysis and Reporting Technology) Monitor Server.
+.
+.
+.SH FILES
+.
+.SS FMC Configuration Manager Server
+.I /etc/cmSrv.conf
+.br
+.I /etc/cmSrv.allow
+.
+.SS FMC Task Manager Server
+.I /etc/tmSrv.allow
+.
+.SS FMC Process Controller Server
+.I /etc/pcSrv.conf
+.br
+.I /etc/pcSrv.init
+.br
+.I /etc/pcSrv.allow
+.br
+.
+.SS FMC Power Manager Server
+.I /etc/ipmiSrv.conf
+___fmcRef___
+.
+.
+.SH VERSION
+.
+Package: ___fmcVer___
+.
+.
+.SH SEE ALSO:
+.ad l
+.SS Installation check
+.BR \%fmcSrvViewer (1),
+.BR \%fmcVersionViewer (1).
+.br
+.SS Message Logger
+.BR \%logSrv (8),
+.BR \%logViewer (1),
+.BR \%logGetProperties (1),
+.BR \%logSetProperties (1),
+.BR \%mPrint (1).
+.BR \%dfltLoggerOpen (3).
+.BR \%getDfltFifoFD (3).
+.BR \%mPrintf (3).
+.BR \%rPrintf (3).
+.BR \%dfltLoggerClose (3).
+.BR \%loggerOpen (3).
+.BR \%mfPrintf (3).
+.BR \%rfPrintf (3).
+.BR \%loggerClose (3).
+.br
+.SS Task Manager
+.BR \%tmSrv (8),
+.BR \%tmStart (1),
+.BR \%tmKill (1),
+.BR \%tmStop (1),
+.BR \%tmLs (1),
+.BR \%tmLl (1).
+.br
+.SS Process Controller
+.BR \%pcSrv (8),
+.BR \%pcAdd (1),
+.BR \%pcRm (1),
+.BR \%pcLs (1),
+.BR \%pcLl (1),
+.BR \%pcLss (1).
+.br
+.SS Power Manager
+.BR \%ipmiSrv (8),
+.BR \%pwSwitch (1),
+.BR \%pwStatus (1),
+.BR \%ipmiViewer (1).
+.br
+.SS Configuration Manager
+.BR \%cmSrv (8),
+.BR \%cmSet (1),
+.BR \%cmUnset (1),
+.BR \%cmGet (1).
+.br
+.SS Monitor
+.BR \%osSrv (8),
+.BR \%osViewer (1),
+.BR \%cpuinfoSrv (8),
+.BR \%couinfoViewer (1),
+.BR \%cpustatSrv (8),
+.BR \%cpustatViewer (1),
+.BR \%memSrv (8),
+.BR \%memViewer (1),
+.BR \%irqSrv (8),
+.BR \%irqViewer (1),
+.BR \%irqReset (1),
+.BR \%psSrv (8),
+.BR \%psViewer (1),
+.BR \%nifSrv (8),
+.BR \%nifViewer (1),
+.BR \%nifReset (1),
+.BR \%coalSrv (8),
+.BR \%coalViewer (1),
+.BR \%coalReset (1),
+.BR \%tcpipSrv (8),
+.BR \%tcpipViewer (1),
+.BR \%tcpipReset (1),
+.BR \%fsSrv (8),
+.BR \%fsViewer (1),
+.BR \%smartSrv (8),
+.BR \%smartViewer (1),
+.
+.
+.\" Local Variables:
+.\" mode: nroff
+.\" End:

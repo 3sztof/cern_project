@@ -1,0 +1,512 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/logViewer.1.html">logViewer(1)</A></B>                   FMC User Commands                  <B><A HREF="../../htmlMan/man1/logViewer.1.html">logViewer(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>logViewer</B> <B>-</B> FMC Message Logger displayer, archiver and forwarder
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>logViewer</B> [<B>-N</B> | <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>]
+                 [<B>-m</B> | <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]
+                 [<B>-s</B> | <B>--logger-name</B> <I>LOG</I><B>_</B><I>PATTERN...</I>]  [<B>-b</B> | <B>--no-color</B>]
+                 [<B>-S</B> | <B>--no-old-messages</B>]
+                 [<B>-l</B> | <B>--severity-threshold</B> <I>SEVERITY</I><B>_</B><I>THRESHOLD</I>]
+                 [<B>-o</B> | <B>--out-fifo</B> <I>FIFO</I><B>_</B><I>NAME</I>] [<B>-O</B> | <B>--out-file</B> <I>FILE</I><B>_</B><I>NAME</I>]
+                 [<B>-A</B> | <B>--no-drop</B>] [<B>-F</B> | <B>--filter-regex</B> <I>REGULAR</I><B>_</B><I>EXPRESSION</I>]
+                 [<B>-f</B> | <B>--filter-wildcard</B> <I>WILDCARD</I><B>_</B><I>PATTERN</I>]
+                 [<B>-X</B> | <B>--filter-out-regex</B> <I>REGULAR</I><B>_</B><I>EXPRESSION</I>]
+                 [<B>-x</B> | <B>--filter-out-wildcard</B> <I>WILDCARD</I><B>_</B><I>PATTERN</I>]
+                 [<B>-E</B> | <B>--suppress-ident</B> <I>0|1</I>]
+                 [<B>-L</B> | <B>--suppress-levenshtein-threshold</B> <I>LEV</I><B>_</B><I>DIST</I>]
+                 [<B>-W</B> | <B>--suppress-word-threshold</B> <I>WORD</I><B>_</B><I>DIST</I>]
+                 [<B>-n</B> | <B>--compared-message-num</B> <I>COMP</I><B>_</B><I>MSGS</I>]
+                 [<B>-c</B> | <B>--skip-char-num</B> <I>SKIP</I><B>_</B><I>NUM</I><B>_</B><I>COMP</I>]
+                 [<B>-C</B> | <B>--skip-char-list</B> <I>SKIP</I><B>_</B><I>CHAR</I><B>_</B><I>COMP</I>]
+
+       <B>logViewer</B> { <B>-V</B> | <B>--version</B> } [<B>-N</B> | <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>]
+                 [<B>-m</B> | <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]
+                 [<B>-s</B> | <B>--logger-name</B> <I>LOG</I><B>_</B><I>PATTERN...</I>]
+
+       <B>logViewer</B> { <B>-h</B> | <B>--help</B> }
+
+
+</PRE>
+<H2>INTRODUCTION</H2><PRE>
+       The <B>FMC</B> <B>Message</B> <B>Logger</B> is a tool to <I>collect</I>, <I>manage</I> (i.e. merge, dupli-
+       cate, filter, suppress duplicates) and <I>display</I> on a central console the
+       messages sent by the applications running on the farm  nodes.  It  uses
+       <I>DIM</I>  to  move messages throughout the network and a POSIX.1 <I>FIFO</I> (alias
+       <I>named</I> <I>pipe</I>) on each node as local buffer to collect message sent by the
+       application running on the same node.
+
+       The  FMC Message Logger is a <I>general</I> <I>purpose</I> utility, not tailored on a
+       specific application; it can even collect messages sent by the applica-
+       tions  to  their  <I>standard</I>  <I>output</I> and <I>error</I> streams by <B>redirecting</B> <B>the</B>
+       <B>streams</B> <B>to</B> <B>the</B> <B>FIFO</B> at the application start-up (the FMC  Task  Manager
+       provides  a  flag in the <B><A HREF="../../htmlMan/man1/tmStart.1.html">tmStart(1)</A></B> command to activate such a redirec-
+       tion).
+
+       The <B>FMC</B> <B>Message</B> <B>Logger</B> consists in the  server  <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>,  which  gets
+       messages  from  a  local FIFO and publish them using DIM, in the client
+       <B><A HREF="../../htmlMan/man1/logViewer.1.html">logViewer(1)</A></B>, which can display the messages got using DIM  or  forward
+       them  to  another <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>, and in the clients <B><A HREF="../../htmlMan/man1/logSetProperties.1.html">logSetProperties(1)</A></B> and
+       <B><A HREF="../../htmlMan/man1/logGetProperties.1.html">logGetProperties(1)</A></B> which can change and retrieve  the  <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>  set-
+       tings at run-time.
+
+       Besides,  the  <B>FMC</B>  <B>Message</B>  <B>Logger</B>  provides several utilities to help
+       sending formatted messages with header to a the FMC Message Logger: the
+       command  <B><A HREF="../../htmlMan/man1/mPrint.1.html">mPrint(1)</A></B> and the library calls <B><A HREF="../../htmlMan/man3/dfltLoggerOpen.3.html">dfltLoggerOpen(3)</A></B>, <B><A HREF="../../htmlMan/man3/mPrintf.3.html">mPrintf(3)</A></B>,
+       <B><A HREF="../../htmlMan/man3/rPrintf.3.html">rPrintf(3)</A></B>,   <B><A HREF="../../htmlMan/man3/dfltLoggerClose.3.html">dfltLoggerClose(3)</A></B>,   <B><A HREF="../../htmlMan/man3/getDfltFifoFD.3.html">getDfltFifoFD(3)</A></B>,    <B><A HREF="../../htmlMan/man3/loggerOpen.3.html">loggerOpen(3)</A></B>,
+       <B><A HREF="../../htmlMan/man3/mfPrintf.3.html">mfPrintf(3)</A></B>, <B><A HREF="../../htmlMan/man3/rfPrintf.3.html">rfPrintf(3)</A></B> and <B><A HREF="../../htmlMan/man3/loggerClose.3.html">loggerClose(3)</A></B>.
+
+       Look at section <I>WRITING</I> <I>TO</I> <I>THE</I> <I>FMC</I> <I>LOGGER</I> in the <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B> man page for
+       a comprehensive review of the ways  of  sending  messages  to  the  FMC
+       Message Logger.
+
+   <B>No-Drop</B> <B>and</B> <B>Congestion-Proof</B> <B>Behavior</B>
+       The  FMC  Message  Logger  can work either in <B>no-drop</B> or in <B>congestion-</B>
+       <B>proof</B> mode.
+
+       If the FIFO is completely filled (this could be due to a  network  con-
+       gestion  which  prevents  the  FIFO drain), any attempt to write to the
+       FIFO in <B>no-drop</B> mode <B>blocks</B> the writer application until a  message  is
+       pulled  out of the FIFO, while any attempt to write to the FIFO in <B>con-</B>
+       <B>gestion-proof</B> mode returns immediately the <I>EAGAIN</I> <B>error</B>, without block-
+       ing,  without  writing  (dropping  therefore  the  message) and without
+       injecting additional traffic into the network.
+
+   <B>The</B> <B>Message</B> <B>Filter</B>
+       Since very often an excess of messages hides the messages of  interest,
+       it  is  often  desirable  to  filter  the message flow. The FMC Message
+       Logger allows to filter the  message  flow  both  on  the  <I>server</I>  <I>side</I>
+       (<B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>) and on the <I>client</I> <I>side</I> (<B><A HREF="../../htmlMan/man1/logViewer.1.html">logViewer(1)</A></B>). The filtering can be
+       based, on both sides, on:
+
+       * the <I>severity</I> of the message, classified in six classes, (VERB, DEBUG,
+         INFO,  WARN, ERROR and FATAL) and recognized either by a conventional
+         message header or by means of a heuristic  method  based  on  regular
+         expressions, which can be changed at the server start-up;
+
+       * an arbitrary <I>wildcard</I> <I>pattern</I>;
+
+       * an arbitrary <I>extended</I> <I>regular</I> <I>expression</I>.
+
+   <B>The</B> <B>Suppression</B> <B>of</B> <B>Duplicates</B>
+       While  running  processes  on  a large farm, an anomalous condition can
+       trigger the same error message (or the same set of few error  messages)
+       on  all  the  nodes of the farm. If the same messages is sent more than
+       once by each node, the result is a <B>message</B> <B>storm</B> of thousands  of  mes-
+       sages  which  differ  at  most  for a few details (e.g. the name of the
+       sender, a serial number, etc.).
+
+       To avoid such a condition, the FMC  Message  Logger  can  suppress  the
+       duplicated  messages both on the <I>server</I> <I>side</I> and on the <I>client</I> <I>side</I>. To
+       recognize duplicates, it can compare the last <I>n</I> received messages (i.e.
+       can  suppress  repeated  messages  which are <B>interleaved</B> by zero to <I>n-1</I>
+       different messages) where the parameter <I>n</I> can be set  and  modified  at
+       run-time.
+
+       Three  different  comparison criteria can be used to distinguish dupli-
+       cates from different messages:
+
+       * <I>exact</I> <I>comparison</I>: two messages are considered different if  an  exact
+         string comparison between the two messages fails;
+
+       * <I>number</I>  <I>of</I> <I>different</I> <I>tokens</I>: two messages are considered different if
+         the number of tokens which are different in the two messages  exceeds
+         a given threshold;
+
+       * <I>Levenshtein</I>  <I>distance</I>:  two  message  are considered different if the
+         Levenshtein  distance  between  the  two  messages  exceeds  a  given
+         threshold.  The Levenshtein distance (also known as <I>edit</I> <I>distance</I>) is
+         a measurement of the similarity of the two strings,  defined  as  the
+         number  of  single  character edit operations (deletion, insertion or
+         substitution) required to transform one string into the other.
+
+       Moreover, the <B>header</B> of the message -- which contains the time and  the
+       node name, which are very often different -- can be <B>skipped</B> in the com-
+       parison to distinguish duplicates from different messages. Indeed,  the
+       FMC  Message  Logger allows to start the comparison either after a set-
+       tled number of characters from the beginning of the messages  or  after
+       the  occurrence  of  a  given  sequence of (not necessarily contiguous)
+       characters of the message.
+
+   <B>The</B> <B>Last</B> <B>Message</B> <B>Buffer</B>
+       When the message filter is tight, only the  severe  messages  are  dis-
+       played  on  the console, while all the other messages are discarded. If
+       something severe does happen, sometimes is desirable to  <B>retrieve</B>  <B>also</B>
+       <B>the</B> <B>less</B> <B>severe</B> <B>messages</B> <B>already</B> <B>discarded</B>.
+
+       To  this  aim the FMC Message Logger Server implements a buffer, on the
+       <I>server</I> <I>side</I>, containing the  <B>last</B>  <I>m</I>  <B>messages</B>  (before  filtering  and
+       duplicate  suppression),  where the parameter <I>m</I> can be set and modified
+       at <B>run-time</B>.  The whole buffer can be retrieved -- filtered and reduced
+       with  the  current settings -- through the DIM service <I>last</I><B>_</B><I>log</I>.  While
+       in normal operation the FMC Message Logger Client subscribes  only,  in
+       MONITORED mode, the DIM service <I>log</I> containing the last single message,
+       however, every time it detects a change in the filter or message reduc-
+       tion  settings  it accesses also the <I>last</I><B>_</B><I>log</I> DIM service, in ONCE_ONLY
+       mode, to download the last message buffer.
+
+       If something severe happens, the user can make the filter and reduction
+       cuts  looser  and the client, detecting a change in the settings, auto-
+       matically downloads the Last Message Buffer. This way, even less severe
+       messages  among  the  last <I>m</I> ones can be displayed to better understand
+       the fault.
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The <B>logViewer</B> is an application of the  <I>FMC</I>  <I>Message</I>  <I>Logger</I>  which  is
+       able:
+
+              1.  to  <B>display</B>  on  the <B>current</B> <B>terminal</B> the messages retrieved
+              from  one  or  more  selected   FMC   Message   Logger   Servers
+              (<B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>);
+
+              2.  to  <B>save</B>  in a <B>file</B> the messages retrieved  from one or more
+              selected FMC Message Logger Servers (<B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>);
+
+              3.  to  <B>forward</B> the messages retrieved from one or more selected
+              FMC Message Logger Servers (<B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>), through a  <B>FIFO</B>  (a.k.a.
+              named  pipe), to another FMC Message Logger Servers (<B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>),
+              which act as "collector".
+
+       The <B>logViewer</B> application terminates on <I>Ctrl-C</I>.
+
+       The  DIM Name Server, looked up to seek for Message Logger Servers, can
+       be chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file "<B>/etc/sysconfig/dim</B>".
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+   <B>General</B> <B>Options</B>
+       <B>-h</B> <B>--help</B>
+              Get basic usage help from the command line.
+
+       <B>-N</B> <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-V</B> <B>--version</B>
+              For each selected node  print  the  FMC  Message  Logger  Server
+              version and the FMC version, than exit.
+
+       <B>-m</B> <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Contact  FMC  Message  Logger  Servers  only  at the nodes whose
+              hostname matches the  wildcard  pattern  <I>NODE</I><B>_</B><I>PATTERN</I>  (<B>default</B>:
+              contact the FMC Logger Servers at all the nodes).
+
+       <B>-s</B> <B>--logger-name</B> <I>LOG</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Contact  only  FMC  Message  Logger  Servers  whose  logger name
+              matches the wildcard pattern <I>LOG</I><B>_</B><I>PATTERN</I>. <B>Default</B>:  contact  the
+              FMC Logger Servers with whatever logger name).
+
+       <B>-b</B> <B>--no-color</B>
+              Print  output in <I>black</I> <I>&amp;</I> <I>white</I> (do not include ANSI color escape
+              sequences). <B>Default</B>: include ANSI color escape sequences. Option
+              <B>-b</B> is implicitely activated setting options <B>-o</B> or <B>-O</B>.
+
+       <B>-S</B> <B>--no-old-messages</B>
+              Do not print the old messages stored on servers and published in
+              the DIM service <I>last</I><B>_</B><I>log</I>.
+
+   <B>Output</B> <B>Options</B>
+       <B>-O</B> <B>--out-file</B> <I>FILE</I><B>_</B><I>NAME</I> <I>(string)</I>
+              Send output to <B>file</B> <I>FILE</I><B>_</B><I>NAME</I>. <B>Default</B>: send output to stdout.
+
+       <B>-o</B> <B>--out-fifo</B> <I>FIFO</I><B>_</B><I>NAME</I> <I>(string)</I>
+              Send output to <B>FIFO</B> (named pipe) <I>FIFO</I><B>_</B><I>NAME</I>.  <B>Default</B>: send  out-
+              put to stdout.
+
+       <B>-A</B> <B>--no-drop</B>
+              Use  the  <B>no-drop</B> <B>policy</B> in writing to a <B>FIFO</B>.  <B>Default</B>: use the
+              <B>congestion-proof</B> policy.
+
+   <B>Filter</B> <B>Options</B>
+       <B>-l</B> <B>--severity-threshold</B> <I>SEVERITY</I><B>_</B><I>THRESHOLD</I> <I>(integer</I> <I>or</I> <I>string)</I>
+              Send to output only messages of <B>severity</B> &gt;=  <I>SEVERITY</I><B>_</B><I>THRESHOLD</I>.
+              As  string,  <B>ALL</B>  =  0, <B>VERB</B> = 1, <B>DEBUG</B> = 2, <B>INFO</B> = 3, <B>WARN</B> = 4,
+              <B>ERROR</B> = 5, <B>FATAL</B> =6 .  <B>Default</B>: <I>SEVERITY</I><B>_</B><I>THRESHOLD</I> = 1 = <B>VERB</B>.
+
+       <B>-F</B> <B>--filter-regex</B> <I>REGULAR</I><B>_</B><I>EXPRESSION</I> <I>(string)</I>
+              Filter <B>through</B> messages by using the extended regular expression
+              <I>REGULAR</I><B>_</B><I>EXPRESION</I>. <B>Default</B>: do not filter.
+
+       <B>-f</B> <B>--filter-wildcard</B> <I>WILDCARD</I><B>_</B><I>PATTERN</I> <I>(string)</I>
+              Filter   <B>through</B>   messages   by   using  the  wildcard  pattern
+              <I>WILDCARD</I><B>_</B><I>PATTERN</I>. <B>Default</B>: do not filter.
+
+       <B>-X</B> <B>--filter-out-regex</B> <I>REGULAR</I><B>_</B><I>EXPRESSION</I> <I>(string)</I>
+              Filter <B>out</B> messages by using  the  extended  regular  expression
+              <I>REGULAR</I><B>_</B><I>EXPRESION</I>. <B>Default</B>: do not filter.
+
+       <B>-x</B> <B>--filter-out-wildcard</B> <I>WILDCARD</I><B>_</B><I>PATTERN</I> <I>(string)</I>
+              Filter    <B>out</B>   messages   by   using   the   wildcard   pattern
+              <I>WILDCARD</I><B>_</B><I>PATTERN</I>. <B>Default</B>: do not filter.
+
+   <B>Duplicate</B> <B>Suppression</B> <B>Options</B>
+       <B>-E</B> <B>--suppress-ident</B> <I>0|1</I>
+              Suppress  repeated  messages  using   exact   comparison,   i.e.
+              suppress  messages  which  are  identical to at least one of the
+              previous <I>COMP</I><B>_</B><I>MSGS</I>-1 messages. <B>Default</B>: do not suppress repeated
+              messages.  <I>N.B.</I>:  the  behaviour with this option is affected by
+              <B>-c</B>, <B>-C</B> and <B>-n</B> options.
+
+       <B>-L</B> <B>--suppress-levenshtein-threshold</B> <I>LEV</I><B>_</B><I>DIST</I> <I>(integer)</I>
+              Suppress repeated messages using  Levenshtein  difference,  i.e.
+              suppress  messages  which  differ less than or equal to <I>LEV</I><B>_</B><I>DIST</I>
+              (inserted, deleted or substituted) characters from at least  one
+              of  the  previous <I>COMP</I><B>_</B><I>MSGS</I>-1 messages. <B>Default</B>: do not suppress
+              repeated messages. <I>N.B.</I>:  the  behaviour  with  this  option  is
+              affected by <B>-c</B>, <B>-C</B> and <B>-n</B> options.
+
+       <B>-W</B> <B>--suppress-word-threshold</B> <I>WORD</I><B>_</B><I>DIST</I> <I>(integer)</I>
+              Suppress repeated messages using word difference, i.e.  suppress
+              messages which differ less than or equal to <I>WORD</I><B>_</B><I>DIST</I> subsituted
+              word,  with  respect to at least one of the previous <I>COMP</I><B>_</B><I>MSGS</I>-1
+              messages. <B>Default</B>: do not suppress repeated messages. <I>N.B.</I>:  the
+              behaviour with this option is affected by <B>-c</B>, <B>-C</B> and <B>-n</B> options.
+
+       <B>-n</B> <B>--compared-message-num</B> <I>COMP</I><B>_</B><I>MSGS</I> <I>(integer)</I>
+              To suppress repeated messages, consider the last <I>COMP</I><B>_</B><I>MSGS</I>  mes-
+              sages,  i.e.  compare each message with the previous <I>COMP</I><B>_</B><I>MSGS</I>-1
+              messages. <B>Default</B>: 1 if  repeated  message  suppression  is  not
+              active,  2  if it is active. <I>N.B.</I>: affect the behaviour with <B>-E</B>,
+              <B>-L</B> and <B>-W</B> options.
+
+       <B>-c</B> <B>--skip-char-num</B> <I>SKIP</I><B>_</B><I>NUM</I><B>_</B><I>COMP</I> <I>(integer)</I>
+              In the comparison for the  repeated  message  suppression,  skip
+              <I>SKIP</I><B>_</B><I>NUM</I><B>_</B><I>COMP</I> characters in each string, i.e. start the compari-
+              son between a couple of string from the <I>SKIP</I><B>_</B><I>NUM</I><B>_</B><I>COMP</I>-th charac-
+              ter. Affect the behaviour with <B>-E</B>, <B>-L</B> and <B>-W</B> options.
+
+       <B>-C</B> <B>--skip-char-list</B> <I>SKIP</I><B>_</B><I>CHAR</I><B>_</B><I>COMP</I> <I>(string)</I>
+              In  the  comparison  for  the repeated message suppression, skip
+              characters in each string until all the characters listed in the
+              string  <I>SKIP</I><B>_</B><I>CHAR</I><B>_</B><I>COMP</I> are passed. Affect the behaviour with <B>-E</B>,
+              <B>-L</B> and <B>-W</B> options.
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries  "libdim"  and  "libFMCu-
+              tils".
+
+       <B>UTGID</B> (string, optional)
+              Printed  in  diagnostic messages, used to identify the <B>logViewer</B>
+              instance.
+
+       <B>deBug</B> (int, optional)
+              Debug level. Can be set to 0..0x2.
+
+              0x1: print signal received.
+
+              0x2: print diagnostics on repeated message suppression.
+
+       <B>verbRegExp</B> (string, optional)
+              Regular expression used to identify unformatted <B>VERB</B> messages.
+              <B>Default</B>: "\bverb(|ose)\b".
+
+       <B>debugRegExp</B> (string, optional)
+              Regular expression used to identify unformatted <B>DEBUG</B>  messages.
+              <B>Default</B>: "\bdebug(\b|[0-f]+\:\W+)".
+
+       <B>infoRegExp</B> (string, optional)
+              Regular expression used to identify unformatted <B>INFO</B> messages.
+              <B>Default</B>: "\binfo\b".
+
+       <B>warnRegExp</B> (string, optional)
+              Regular  expression  used  to  identify unformatted <B>WARNING</B> mes-
+              sages.
+              <B>Default</B>: "\bwarn(|ing)\b|\bunknown\b|\bincomplete\b|\bunusual\b|
+              \brepeated\b|\btoo\b|\binterrupted\b|\bbusy\b|\bexceeded\b|
+              \bexpired\b|\bcancelled\b|\bdeadlock\b|\bhalted\b|\breset\b|
+              \bcan(\W|_)*not\b|\bout(\W|_)*of(\W|_)*(range|domain)\b|
+              \bno(\W|_)*locks\b|\bno(\W|_)*space\b|\bno(\W|_)*such\b|
+              \bno(\W|_)+(\w+(\W|_)+){0,2}available\b|\btry(\W|_)*again\b|
+              \bnot(\W|_)*a\b|\bnot(\W|_)*attached\b|
+              \bnot(\W|_)*representable\b|\bnot(\W|_)*implemented\b|
+              \bnot(\W|_)*installed\b|\bnot(\W|_)*supported\b|
+              \bnot(\W|_)*permitted\b|\bnot(\W|_)*synchronized\b|
+              \bnot(\W|_)*available\b|\bunavailable\b|\binappropriate\b|
+              \baddress(\W|_)*required\b|\btimed(\W|_)*out\b".
+
+       <B>errorRegExp</B> (string, optional)
+              Regular  expression used to identify unformatted <B>ERROR</B> messages.
+              <B>Default</B>: "\berror\b|\bden(y|ied)\b|\billegal\b|\bfail(|ed)\b|
+              \brefuse(|d)\b|\breject(|ed)\b|\binvalid\b|\bunauthorized\b|
+              \bbad\b|\boverflow\b|\bhost(\W|_)+(\w+(\W|_)+){0,2}down\b|
+              \bnetwork(\W|_)+(\w+(\W|_)+){0,2}down\b|
+              \bnetwork(\W|_)+(\w+(\W|_)+){0,2}unreachable\b|
+              \bno(\W|_)*route(\W|_)*to(\W|_)*host\b|
+              \baddress(\W|_)*already(\W|_)*in(\W|_)*use\b|\bbroken\b|
+              \bwrong\b|\bcorrupt(|ed|ing)\b|\bstale\b".
+
+       <B>fatalRegExp</B> (string, optional)
+              Regular  expression used to identify unformatted <B>FATAL</B> messages.
+              <B>Default</B>: "\bfatal\b|\bpanic\b|\bsevere(|d)\b|\babort\b".
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Read messages from all the loggers:
+
+       <I>bash$</I> <B>logViewer</B>
+       <I>bash$</I> <B>logViewer</B> <B>-m</B> <B>"*"</B> <B>-s</B> <B>"*"</B>
+       <I>bash$</I> <B>logViewer</B> <B>-m</B> <B>\*</B> <B>-s</B> <B>\*</B>
+
+       Read messages only from the logger "gaudi" at the node "farm0101":
+
+       <I>bash$</I> <B>logViewer</B> <B>-m</B> <B>farm0101</B> <B>-s</B> <B>gaudi</B>
+
+       Read  messages  from  the  loggers  "gaudi"  and  "fmc"  at  the  nodes
+       "farm0101" and "farm0102":
+
+       <I>bash$</I> <B>logViewer</B> <B>-m</B> <B>farm0101</B> <B>-m</B> <B>farm0102</B> <B>-s</B> <B>gaudi</B> <B>-s</B> <B>fmc</B>
+
+       Use wildcard patterns to select names and nodes:
+
+       <I>bash$</I> <B>logViewer</B> <B>-m</B> <B>"farm010[123]"</B> <B>-m</B> <B>"farm020?"</B> <B>-s</B> <B>"*au*"</B> <B>-s</B> <B>"*mc"</B>
+       <I>bash$</I> <B>logViewer</B> <B>-m</B> <B>"farm0[0-2]0[0-9]"</B> <B>-m</B> <B>"farm120?"</B> <B>-s</B> <B>"*au*"</B> <B>-s</B> <B>"*mc"</B>
+
+       Filter through the lines containing the string "Srv":
+
+       <I>bash$</I> <B>logViewer</B> <B>-s</B> <B>gaudi</B> <B>-f</B> <B>"*Srv*"</B>
+       <I>bash$</I> <B>logViewer</B> <B>-s</B> <B>gaudi</B> <B>-F</B> <B>"Srv"</B>
+
+       Filter out the lines containing the string "Srv":
+
+       <I>bash$</I> <B>logViewer</B> <B>-s</B> <B>gaudi</B> <B>-x</B> <B>"*Srv*"</B>
+       <I>bash$</I> <B>logViewer</B> <B>-s</B> <B>gaudi</B> <B>-X</B> <B>"Srv"</B>
+
+       Filter  through  the  lines containing the word "word1" near and before
+       the word "word2" (at most 4 words between):
+
+       <I>bash$</I> <B>logViewer</B> <B>-F</B> <B>"\bword1\W+(\w+\W+){0,4}word2\b"</B>
+
+       Filter through the lines containing the  word  "word1"  near  the  word
+       "word2" (at most 4 words between) in any order:
+
+       <I>bash$</I> <B>logViewer</B> <B>-F</B> <B>"\bword1\W+(\w+\W+){0,4}word2\b|\bword2\W+(\w+\W+)</B>
+       <B>{0,4}word1\b"</B>
+
+       Filter through the lines containing a floating point number:
+
+       <I>bash$</I> <B>logViewer</B> <B>-F</B> <B>"[-+]?[0-9]*\.[0-9]+([eE][-+]?[0-9]+)?"</B>
+
+       Filter and send output to another FIFO:
+
+       <I>bash$</I> <B>logViewer</B> <B>-m</B> <B>"farm01*"</B> <B>-s</B> <B>fmc</B> <B>-o</B> <B>/tmp/log_f.fifo</B> <B>-F</B> <B>"ipmiSrv"</B>
+
+       Merge several message flows, filter and forward output to another FIFO:
+
+       <I>bash$</I> <B>logViewer</B> <B>-m</B> <B>"farm01*"</B> <B>-m</B> <B>"farm02*"</B> <B>-s</B> <B>fmc</B> <B>-s</B> <B>gaudi</B>
+       <B>-o</B> <B>/tmp/log_t.fifo</B> <B>-F</B> <B>"ipmiSrv"</B>
+
+       Forward severe Task Manager Messages on node "farm0101" involving "gau-
+       di.exe" also to the Gaudi Logger:
+
+       <I>bash$</I> <B>logViewer</B> <B>-m</B> <B>farm0101</B> <B>-s</B> <B>fmc</B> <B>-l</B> <B>WARN</B> <B>-o</B> <B>/tmp/logGaudi.fifo</B>
+       <B>-F</B> <B>"gaudi.exe"</B>
+
+       Suppress messages which are identical to the previous one:
+
+       <I>bash$</I> <B>logViewer</B> <B>-E</B> <B>1</B>
+
+       Suppress messages which are identical after the 30-th character to  the
+       previous one:
+
+       <I>bash$</I> <B>logViewer</B> <B>-E</B> <B>1</B> <B>-c</B> <B>30</B>
+
+       Suppress  messages which are identical after the 30-th character to one
+       of the previous 10 messages:
+
+       <I>bash$</I> <B>logViewer</B> <B>-E</B> <B>1</B> <B>-c</B> <B>30</B> <B>-n</B> <B>10</B>
+
+       Suppress messages which are identical, after  the  second  ":"  in  the
+       message, to one of the previous 10 messages:
+
+       <I>bash$</I> <B>logViewer</B> <B>-E</B> <B>1</B> <B>-C</B> <B>"::"</B> <B>-n</B> <B>10</B>
+
+       Suppress  messages  which  differ, in at most 2 words substituted after
+       the second ":" with respect to one of the previous 10 messages:
+
+       <I>bash$</I> <B>logViewer</B> <B>-W</B> <B>2</B> <B>-C</B> <B>"::"</B> <B>-n</B> <B>10</B>
+
+       Suppress messages which differs, in at most  6  character  substituted,
+       inserted  or  deleted  after  the second ":" with respect to one of the
+       previous 10 messages:
+
+       <I>bash$</I> <B>logViewer</B> <B>-L</B> <B>6</B> <B>-C</B> <B>"::"</B> <B>-n</B> <B>10</B>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information on how to get the FMC (Farm Monitoring and Control  System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development Homepage
+       &lt;http://lhcbweb2.bo.infn.it/bin/view/LHCbBologna/FmcLinux&gt;.
+
+       CERN Engineering Department, JCOP, FMC
+       &lt;http://j2eeps.cern.ch/wikis/display/EN/
+       JCOP+Framework+Farm+Monitoring+and+Control+Tool&gt;.
+
+       LHCb Online RPMs
+       &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  logViewer.C,v 3.35 2012/12/07 15:48:07 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO</H2><PRE>
+   <B>FMC</B> <B>Message</B> <B>Logger</B> <B>Server</B> <B>and</B> <B>User</B> <B>Commands</B>
+       <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/logGetProperties.1.html">logGetProperties(1)</A></B>, <B><A HREF="../../htmlMan/man1/logSetProperties.1.html">logSetProperties(1)</A></B>.
+
+   <B>UI</B> <B>for</B> <B>writing</B> <B>to</B> <B>an</B> <B>arbitrary</B> <B>FMC</B> <B>Message</B> <B>Logger</B> <B>from</B> <B>a</B> <B>shell</B> <B>script</B>
+       <B><A HREF="../../htmlMan/man1/mPrint.1.html">mPrint(1)</A></B>.
+
+   <B>API</B> <B>for</B> <B>formatted</B> <B>writing</B> <B>to</B> <B>the</B> <B>default</B> <B>FMC</B> <B>Message</B> <B>Logger</B>
+       <B><A HREF="../../htmlMan/man3/dfltLoggerOpen.3.html">dfltLoggerOpen(3)</A></B>, <B><A HREF="../../htmlMan/man3/getDfltFifoFD.3.html">getDfltFifoFD(3)</A></B>, <B><A HREF="../../htmlMan/man3/mPrintf.3.html">mPrintf(3)</A></B>, <B><A HREF="../../htmlMan/man3/rPrintf.3.html">rPrintf(3)</A></B>,
+       <B><A HREF="../../htmlMan/man3/dfltLoggerClose.3.html">dfltLoggerClose(3)</A></B>.
+
+   <B>API</B> <B>for</B> <B>formatted</B> <B>writing</B> <B>to</B> <B>an</B> <B>arbitrary</B> <B>FMC</B> <B>Message</B> <B>Logger</B>
+       <B><A HREF="../../htmlMan/man3/loggerOpen.3.html">loggerOpen(3)</A></B>, <B><A HREF="../../htmlMan/man3/mfPrintf.3.html">mfPrintf(3)</A></B>, <B><A HREF="../../htmlMan/man3/rfPrintf.3.html">rfPrintf(3)</A></B>, <B><A HREF="../../htmlMan/man3/loggerClose.3.html">loggerClose(3)</A></B>.
+
+   <B>Regular</B> <B>expression</B> <B>and</B> <B>wildcard</B> <B>pattern</B> <B>syntax</B>
+       <B><A HREF="../../htmlMan/man7/regex.7.html">regex(7)</A></B>, <B><A HREF="../../htmlMan/man7/glob.7.html">glob(7)</A></B>.
+
+FMC-3.9.14                        2012-12-19                      <B><A HREF="../../htmlMan/man1/logViewer.1.html">logViewer(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

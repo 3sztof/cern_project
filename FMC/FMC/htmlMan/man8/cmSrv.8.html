@@ -1,0 +1,315 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B>                          FMC Servers                         <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>cmSrv</B> <B>-</B> FMC Configuration Manager Server
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>cmSrv</B> [<B>-N</B> | <B>--dim_dns_node</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-l</B> | <B>--logger</B> <I>LOGGER</I>]
+             [<B>--no-authentication</B>]
+
+       <B>cmSrv</B> { <B>-h</B> | <B>--help</B> }
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The FMC <B>Configuration</B> <B>Manager</B> is a tool to <B>read</B>, <B>write</B> and <B>remove</B>  <B>con-</B>
+       <B>figuration</B>  <B>files</B> (more generally, ASCII files) to/from the farm nodes.
+
+       The Process Controller Server, <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B>, typically runs  on  each  farm
+       node and allows to access the files on the node it is running on.
+
+       The  Process  Controller  Clients <B><A HREF="../../htmlMan/man1/cmSet.1.html">cmSet(1)</A></B>, <B><A HREF="../../htmlMan/man1/cmUnset.1.html">cmUnset(1)</A></B> and <B><A HREF="../../htmlMan/man1/cmGet.1.html">cmGet(1)</A></B> can
+       contact one or more Process Controller Servers running on remote  nodes
+       to write files, remove files and read files respectively.
+
+       File  access  can be <B>restricted</B> in 2 different ways simultaneously: (a)
+       by means of a username/hostname access control and (b) by  means  of  a
+       filename  access  control.  The <B>--no-authentication</B> command line option
+       bypass both the controls and should never be used.
+
+   <B>Username/hostname</B> <B>access</B> <B>control</B>
+       Only the couples <I>user@host</I> which match at least  one  of  the  wildcard
+       patterns  <I>user</I><B>_</B><I>pattern@host</I><B>_</B><I>pattern</I> listed in the file <I>/etc/cmSrv.allow</I>
+       are allowed to issue <B><A HREF="../../htmlMan/man1/cmSet.1.html">cmSet(1)</A></B>, <B><A HREF="../../htmlMan/man1/cmUnset.1.html">cmUnset(1)</A></B> and <B><A HREF="../../htmlMan/man1/cmGet.1.html">cmGet(1)</A></B> commands to  the
+       Process Controller Server. See FILES section below.
+
+   <B>Filename</B> <B>access</B> <B>control</B>
+       Only  the  file paths which match at least one of the wildcard patterns
+       listed in the file <I>/etc/cmSrv.conf</I> can be read, writed  or  removed  by
+       the  Process  Controller  Server.  Read/write  access (rw) or read-only
+       access (ro) can be specified for each entry. See FILES section below.
+
+   <B>Setting</B> <B>the</B> <B>DIM</B> <B>Name</B> <B>Server</B>
+       The DIM Name Server, looked up by <B>cmSrv</B> to register  the  provided  DIM
+       services, can be chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file <B>/etc/sysconfig/dim</B>.
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B> <B>--help</B>
+              Get basic usage help from the command line then exit.
+
+       <B>-N</B> <B>--dim_dns_node</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-l</B> <B>--logger</B> <I>LOGGER</I> <I>(integer)</I>
+              Use the logger units defined in the <I>LOGGER</I> mask to send diagnos-
+              tic and information messages. The <I>LOGGER</I> mask can be the bitwise
+              <I>OR</I> of the following logger units:
+
+              0x1    the default FMC Message Logger (fifo: /tmp/logSrv.fifo);
+
+              0x2    the standard error stream;
+
+              0x4    the operating system syslog facility.
+
+              <B>Default</B>: <I>LOGGER</I> = 0x1.
+
+       <B>--no-authentication</B>
+              Do  not  check neither the permission of the usernames and host-
+              names which sent the command, nor the read/write  permission  of
+              the  files. Should never be used, since this allows everybody to
+              write and remove files. <B>Default</B>: do check both permissions.
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries  "libdim"  and  "libFMCu-
+              tils".
+
+       <B>deBug</B> (integer, optional)
+              Debug  mask.  Can be set to 0x00...0x1f. The meaning of the mask
+              bit are:
+
+              0x01:  print main() diagnostics;
+
+              0x02:  print CmAcl diagnostics;
+
+              0x04:  print CmSrvGetFileRpc diagnostics;
+
+              0x08:  print CmSrvSetFileRpc diagnostics;
+
+              0x10:  print CmSrvUnsetFileRpc diagnostics;
+
+              <B>Default</B>: <I>deBug</I> = 0.
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Start the FMC Configuration Manager with authentication,  sending  mes-
+       sages to the default FMC Message Logger:
+
+       <I>bash$</I> <B>/opt/FMC/sbin/cmSrv</B>
+
+       Start  the  FMC Configuration Manager with authentication, sending mes-
+       sages to the default FMC Message Logger and to the system syslog facil-
+       ity:
+
+       <I>bash$</I> <B>/opt/FMC/sbin/cmSrv</B> <B>-l</B> <B>0x5</B>
+
+
+</PRE>
+<H2>FILES</H2><PRE>
+       <I>/etc/cmSrv.conf</I>
+       <I>/etc/cmSrv.allow</I>
+
+   <B>Configuration</B> <B>File</B>
+       <I>/etc/cmSrv.conf</I>
+
+       <B>Description:</B>
+       The file <I>/etc/cmSrv.conf</I> must contain the list of the files that can be
+       created, read, modified and deleted by the  FMC  Configuration  Manager
+       Server  running  on  the  current node. This file is ignored if the FMC
+       Configuration Manager Server is started  with  the  <B>--no-authentication</B>
+       command  line  option. In this case all the files in the filesystem can
+       be created, modified and deleted by the FMC Configuration Manager Serv-
+       er running on this node.
+
+       <B>File</B> <B>format:</B>
+       File  is  made of an arbitrary number of records. Records are separated
+       by the character '\n' (new-line,  line-feed,  LF,  ASCII  0x0a).  Blank
+       records  as well as comment records (i.e. records starting with the '#'
+       character) are skipped. If a record contains  the  '#'  character,  all
+       charaters  following  the  '#' character (including the '#' itself) are
+       ignored.
+
+       <B>Record</B> <B>format:</B>
+       (permission) file_name
+
+       <B>Record</B> <B>fields</B> <B>description:</B>
+
+       permission:
+              The access permission, which can be "ro"  (read  only)  or  "rw"
+              (read and write).
+
+       file_name:
+              The absolute path of the file, which must not contain blanks.
+
+       <B>Record</B> <B>Examples:</B>
+       (ro) /etc/pcSrv.allow
+       (rw) /etc/ipmiSrv.conf
+       (ro) *
+
+   <B>Access</B> <B>Control</B> <B>File</B>
+       <I>/etc/cmSrv.allow</I>
+
+       <B>Description:</B>
+       The  file <I>/etc/cmSrv.allow</I> must contain the list of the couples of pat-
+       terns <B>user_pattern@hostname_pattern</B> allowed to issue  commands  to  the
+       Configuration Manager Server running on the current node.
+
+       <B>File</B> <B>format:</B>
+       One  couple <B>user_pattern@hostname_pattern</B> per record. Records are sepa-
+       rated using '\n' (new-line, line-feed, LF, ASCII 0x0a).  Blank  records
+       as  well as comment records (i.e. records starting with the '#' charac-
+       ter) are skipped.
+
+       <B>Record</B> <B>format:</B>
+       <B>user_pattern@hostname_pattern</B>.
+       user_pattern and host_pattern are separated by the '@' (at)  character.
+
+       <B>Fields</B> <B>description:</B>
+
+       <B>user_pattern</B>
+              User name wildcard pattern (see <B><A HREF="../../htmlMan/man7/glob.7.html">glob(7)</A></B>).
+
+       <B>host_pattern</B>
+              Host name wildcard pattern (see <B><A HREF="../../htmlMan/man7/glob.7.html">glob(7)</A></B>).
+
+       <B>Record</B> <B>Examples:</B>
+       online@farm0101.mydomain
+       *@farm0101.mydomain
+       online@*
+       *@*
+       online@farm01??.mydomain
+       online@farm01?[0-9].mydomain
+       online@farm01[0-9][0-9].mydomain
+
+
+</PRE>
+<H2>DIM INFORMATION</H2><PRE>
+   <B>DIM</B> <B>Server</B> <B>Name</B>
+       /FMC/<I>HOST</I><B>_</B><I>NAME</I>/config_manager
+              where  <I>HOST</I><B>_</B><I>NAME</I> is the host name of the current PC, as returned
+              by the command "hostname -s", but written in upper case  charac-
+              ters.
+
+   <B>Published</B> <B>DIM</B> <B>Services</B>
+       /FMC/<I>HOSTNAME</I>/config_manager/server_version (string)
+              Publishes  a  NULL-terminated string containing the RCS revision
+              label of the <B>cmSrv.C</B> source code of the current <B>cmSrv</B>  instance,
+              as  returned  by the command "ident /opt/FMC/sbin/cmSrv"; in the
+              present case:
+
+              "cmSrv.C,v 1.32 2012/11/29 15:52:27 galli".
+
+       /FMC/<I>HOSTNAME</I>/config_manager/fmc_version (string)
+              Publishes a NULL-terminated string containing the revision label
+              of  the FMC package which includes the current <B>cmSrv</B> executable,
+              in the present case:
+
+              "3.9.14".
+
+       /FMC/<I>HOSTNAME</I>/config_manager/success (int)
+              Always publishes the integer 1. This dummy services can be  used
+              to  check  whether  the current instance of <B>cmSrv</B> is up and run-
+              ning.
+
+   <B>Published</B> <B>DIM</B> <B>Remote</B> <B>Procedure</B> <B>Calls:</B>
+       /FMC/<I>HOSTNAME</I>/config_manager/set
+              Publishes a RPC to write a file to the local filesystem.
+
+              <B>Input</B> <B>format</B>: <I>"X:3;C"</I>.
+              (uint64_t)(mode_t) mode (Permissions, e.g. 0644 for -rw-r--r--)
+              (uint64_t)(uid_t)  UID (User Identifier of owner)
+              (uint64_t)(gid_t)  GID (Group Identifier of owner)
+              (char*) username+'\f'+hostname+' '+file_path+'\0'+file_con-
+              tent+'\0'
+
+              <B>Output</B> <B>format</B>: <I>"C"</I>.
+              (char*) info/error_message+'\0'
+
+       /FMC/<I>HOSTNAME</I>/config_manager/unset
+              Publishes a RPC to remove a file from the local filesystem.
+
+              <B>Input</B> <B>format</B>: <I>"C"</I>.
+              (char*) username+'\f'+hostname+' '+file_path+'\0'
+
+              <B>Output</B> <B>format</B>: <I>"C"</I>.
+              (char*) info/error_message+'\0'
+
+       /FMC/<I>HOSTNAME</I>/config_manager/get
+              Publishes a RPC to read a file from the local filesystem.
+
+              <B>Input</B> <B>format</B>: <I>"C"</I>.
+              (char*) username+'\f'+hostname+' '+file_path+'\0'
+
+              <B>Output</B> <B>format</B>: <I>"X:5;C"</I>.
+              (uint64_t)(time_t) mtime (time of last modification)
+              (uint64_t)(off_t)  size (total size, in Bytes)
+              (uint64_t)(mode_t) mode (Permissions, e.g. 0755 for -rwxr-xr-x)
+              (uint64_t)(uid_t)  UID (User Identifier of owner)
+              (uint64_t)(gid_t)  GID (Group Identifier of owner)
+              (char*) file_content+'\0'
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information  on how to get the FMC (Farm Monitoring and Control System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development Homepage &lt;https://lhcbweb.bo.infn.it/twiki/bin/
+       view.cgi/LHCbBologna/FmcLinux&gt;.
+
+       CERN ITCOBE: FW Farm Monitor and Control &lt;http://itcobe.web.cern.ch/
+       itcobe/Projects/Framework/Download/Components/SystemOverview/fwFMC/wel-
+       come.html&gt;.
+
+       LHCb Online RPMs &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/
+       index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  cmSrv.C,v 1.32 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO:</H2><PRE>
+       <B><A HREF="../../htmlMan/man1/cmSet.1.html">cmSet(1)</A></B>, <B><A HREF="../../htmlMan/man1/cmUnset.1.html">cmUnset(1)</A></B>, <B><A HREF="../../htmlMan/man1/cmGet.1.html">cmGet(1)</A></B>.
+       <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>.
+       <B><A HREF="../../htmlMan/man7/glob.7.html">glob(7)</A></B>.
+
+FMC-3.9.14                        2012-12-19                          <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

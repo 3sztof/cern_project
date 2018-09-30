@@ -1,0 +1,59 @@
+
+NAME
+       tcpipReset - Reset the counters of the FMC TCP/IP stack Monitor
+                    Servers
+
+SYNOPSIS
+       tcpipReset [-N DIM_DNS_NODE] [-v] [-m NODE_PATTERN...]
+       tcpipReset -h
+
+DESCRIPTION
+       Reset the counters used to evaluate the average and the maximum
+       values of the TCP/IP stack statistics on the Servers running
+       on the farm nodes whose hostname matches the wildcard pattern
+       NODE_PATTERN, specified using the -m command line option.
+       DIM Name Server can be chosen (in decreasing order of priority) by:
+              1. Specifying the -N DIM_DNS_NODE command-line option;
+              2. Specifying the DIM_DNS_NODE environment variable;
+              3. Defining the DIM_DNS_NODE in the file "/etc/sysconfig/dim".
+
+OPTIONS
+       -h     Get basic usage help from the command line.
+       -N DIM_DNS_NODE (string)
+              Use DIM_DNS_NODE as DIM Name Server node.
+       -v     Increase verbosity for debugging.
+       -m NODE_PATTERN (string, repeatable)
+              Reset only the tcpipSrv servers running on the nodes whose
+              hostname matches the wildcard pattern NODE_PATTERN (default:
+              reset the interrupt servers running on all the nodes).
+
+ENVIRONMENT
+       DIM_DNS_NODE (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+       LD_LIBRARY_PATH (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries "libdim"
+              and "libFMCutils".
+
+EXAMPLES
+       Reset the TCP/IP stack Monitor Servers running on all the farm nodes
+              tcpipReset -m "*"
+              tcpipReset
+       Reset only the TCP/IP stack Monitor Servers running on the selected
+       nodes:
+              tcpipReset -m farm0101 -m farm0102
+       Reset only the TCP/IP stack Monitor Servers running on the
+       wildcard-selected nodes:
+              tcpipReset -m "farm01*" -m "farm02*"
+              tcpipReset -m farm01\* -m farm02\*
+              tcpipReset -m "farm010[1357]"
+
+AUTHOR
+       Domenico Galli <domenico.galli@bo.infn.it>
+
+VERSION
+       Source:  tcpipReset.C,v 1.6 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+SEE ALSO
+       tcpipViewer(FMC), tcpipSrv(FMC).
+

@@ -1,0 +1,105 @@
+
+NAME
+       nifSrv - FMC Network Interface Monitor Server
+
+SYNOPSIS
+       nifSrv [-d] [-c DIM_CONF_FILE] [-l LOGGER] [-E ETHTOOL_PATH]
+              [-u REFRESH_TIME_INTERVAL]
+       nifSrv -h
+
+OPTIONS
+       -h     Get basic usage help from the command line.
+       -d     Increase verbosity for debugging.
+       -c DIM_CONF_FILE (string, optional)
+              If DIM_DNS_NODE is not defined in the environment, try to
+              retrieve it from the file DIM_CONF_FILE.
+              Default: DIM_CONF_FILE="/etc/sysconfig/dim"
+       -l LOGGER (integer, optional)
+              Use loggers defined in LOGGER mask to send messages:
+                     0x1 default DIM Message Logger (fifo: /tmp/logSrv.fifo);
+                     0x2 standard error;
+                     0x4 syslog.
+              Default: 0x1.
+       -u REFRESH_TIME_INTERVAL (integer, optional)
+              Set data refresh period to REFRESH_TIME_INTERVAL seconds.
+              (must be in [0,20]s). Default: 20 s.
+       -E ETHTOOL_PATH
+              Use ETHTOOL_PATH as the path to the Ethtool executable.
+              Default: "/usr/sbin/ethtool".
+
+ENVIRONMENT:
+       DIM_DNS_NODE (string, mandatory if not defined in DIM_CONF_FILE)
+              Hostname.domain or IP address of the DIM name server.
+       LD_LIBRARY_PATH (string, mandatory, if not set using ldconfig)
+              Variable in PATH format which must include the path to the
+              libraries "libdim", "libFMCutils" and
+              libFMCsensors.
+       UTGID (string, optional)
+              UTGID of the fsSrv process.
+       ETHTOOL_CMD (string, optional)
+              Path to the Ethtool executable. Default: "/usr/sbin/ethtool".
+              This definition can be overridden by means of the
+              "-E ETHTOOL_PATH" command line option.
+
+PUBLISHED DIM COMMAND:
+       /FMC/<HOSTNAME>/net/ifs/reset
+
+PUBLISHED DIM SERVICES:
+       /FMC/<HOSTNAME>/net/ifs/fmc_version (string)
+              "nifSrv.c,v 2.34 2011/06/13 13:42:15 galli".
+       /FMC/<HOSTNAME>/net/ifs/server_version (string)
+              "getNIFfromProc.c,v 1.28 2011/09/27 11:53:17 galli".
+       /FMC/<HOSTNAME>/net/ifs/sensor_version (string)
+              "getNIFinfoFromEthtool.c,v 1.3 2009/01/29 09:44:45 galli".
+       /FMC/<HOSTNAME>/net/ifs/sensor_version2 (string)
+              "3.9.14".
+       /FMC/<HOSTNAME>/net/ifs/success (int)
+              1 if data are retrieved, 0 otherwise.
+       /FMC/<HOSTNAME>/net/ifs/time_since_reset (string)
+       /FMC/<HOSTNAME>/net/ifs/devices (string[])
+              "net_00" "net_01" "net_02" ...
+       /FMC/<HOSTNAME>/net/ifs/summary/labels (string[8])
+              "rx bit rate" "tx bit rate" "rx total error frac"
+              "tx total error frac" "IF name" "BUS address"
+              "MAC address" "IP address"
+       /FMC/<HOSTNAME>/net/ifs/summary/units (string[8])
+              "b/s" "b/s" "" "" "" "" "" ""
+       /FMC/<HOSTNAME>/net/ifs/summary/<device>/data (float[4],string[4])
+       /FMC/<HOSTNAME>/net/ifs/details/labels (string[27])
+              "rx bit rate" "rx frame rate" "rx multicast rate"
+              "rx compressed rate" "tx bit rate" "tx frame rate"
+              "tx compressed rate" "rx frame size" "rx error frac"
+              "rx dropped frac" "rx fifo error frac"
+              "rx frame error frac" "tx frame size"
+              "tx error frac" "tx dropped frac" "tx fifo error frac"
+              "collision frac" "tx carrier error frac" "IF name"
+              "BUS address" "MAC address" "IP address" "Speed"
+              "Duplex" "Port type" "Auto-negotiation" "Link detected"
+       /FMC/<HOSTNAME>/net/ifs/details/units (string[27])
+              "b/s" "frames/s" "frames/s" "frames/s" "b/s" "frames/s"
+              "frames/s" "B" "" "" "" "" "B" "" "" "" "" "" "" ""
+              "" "" "Mb/s" "" "" "" ""
+       /FMC/<HOSTNAME>/net/ifs/details/<device>/data (float[18],string[9])
+       /FMC/<HOSTNAME>/net/ifs/details/<device>/average_data
+              (float[18],string[9])
+       /FMC/<HOSTNAME>/net/ifs/details/<device>/max_data
+              (float[18],string[9])
+       /FMC/<HOSTNAME>/net/ifs/eth_total/labels (string[4])
+              "rx bit rate" "rx frame rate" "tx bit rate"
+              "tx frame rate"
+       /FMC/<HOSTNAME>/net/ifs/eth_total/units (string[4])
+              "b/s" "frames/s" "b/s" "frames/s"
+       /FMC/<HOSTNAME>/net/ifs/eth_total/data (float[4])
+
+AUTHOR
+       Domenico Galli <domenico.galli@bo.infn.it>
+
+VERSION
+       Source:  nifSrv.c,v 2.34 2011/06/13 13:42:15 galli
+       Source:  getNIFfromProc.c,v 1.28 2011/09/27 11:53:17 galli
+       Source:  getNIFinfoFromEthtool.c,v 1.3 2009/01/29 09:44:45 galli
+       Package: FMC-3.9.14
+
+SEE ALSO
+       ifconfig(8), ethtool(8), /proc/net/dev
+       /usr/share/doc/kernel-doc-2.6.9/Documentation/filesystems/proc.txt

@@ -1,0 +1,180 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/pwStatus.1.html">pwStatus(1)</A></B>                    FMC User Commands                   <B><A HREF="../../htmlMan/man1/pwStatus.1.html">pwStatus(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>pwStatus</B> <B>-</B> Print the Power Status (on/off) of the farm PC(s), got by
+                  means of the FMC Power Manager Server
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>pwStatus</B> [<B>-v</B> | <B>--debug</B>] [<B>-N</B> | <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>]
+                [<B>-m</B> | <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]
+
+       <B>pwStatus</B> { <B>-V</B> | <B>--version</B> } [<B>-v</B> | <B>--debug</B>]
+                [<B>-N</B> | <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>]
+                [<B>-m</B> | <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]
+
+       <B>pwStatus</B> { <B>-h</B> | <B>--help</B> }
+
+
+</PRE>
+<H2>INTRODUCTION</H2><PRE>
+       The FMC Power Manager is a tool which allows, in an OS-independent man-
+       ner, to <B>switch-on</B>, <B>switch-off</B>, and <B>power-cycle</B> the farm nodes,  and  to
+       <B>monitor</B>  their  physical  condition:  <B>power</B> <B>status</B> (on/off), and sensor
+       information retrieved through the I2C bus  (<B>temperatures</B>,  <B>fan</B>  <B>speeds</B>,
+       <B>voltages</B> and <B>currents</B>).
+
+       The  FMC Power Manager can operate on the farm nodes whose motherboards
+       and network interface cards implement the  <B>IPMI</B>  (Intelligent  Platform
+       Management  Interface)  specifications,  version 1.5 or subsequent, and
+       copes with several IPMI limitations.
+
+       The FMC Power Manager Server, <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B> typically runs on a  few  con-
+       trol  PCs  (each  one  watching up to 200-1000 farm nodes) and uses the
+       IPMI protocol to communicate with the BMC  (Baseboard  Management  Con-
+       troller)  of the farm nodes, and the DIM network communication layer to
+       communicate with the Power Manager Clients.
+
+       The Power Manager Clients <B><A HREF="../../htmlMan/man1/pwSwitch.1.html">pwSwitch(1)</A></B>,  <B><A HREF="../../htmlMan/man1/pwStatus.1.html">pwStatus(1)</A></B>  and  <B><A HREF="../../htmlMan/man1/ipmiViewer.1.html">ipmiViewer(1)</A></B>
+       can  contact  one or more Power Manager Servers, running on remote Con-
+       trol PCs, to switch on/off the farm worker nodes  controlled  by  these
+       Control PCs and to retrieve their physical condition.
+
+       The  FMC  Power  Manager  Server <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B> accesses the farm node BMCs
+       both periodically and on user demand: it inquires <B>periodically</B> the farm
+       node  BMCs  to get their power status and sensor information (and keeps
+       the information and its time stamp to be able to answer immediately  to
+       a client request); it sends commands (power on, power off, power cycle,
+       etc.) to the farm node BMCs <B>on</B> <B>user</B> <B>request</B>.
+
+       The Power Manager Server copes with the long IPMI response time by <B>par-</B>
+       <B>allelly</B> <B>accessing</B> <B>each</B> <B>node</B> from a different short-living thread. Every
+       IPMI access request by <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B> starts, by default,  as  many  short-
+       living  threads  as  the number of the controlled nodes and each short-
+       living thread accesses one node only. In case of a huge number of  con-
+       figured  nodes (&gt;~ 500), the number of short-living threads can be lim-
+       ited: in this running condition the IPMI accesses which exceed the max-
+       imum thread number are queued up.
+
+       The Power Manager Server copes also with the IPMI limitation to be able
+       to process only one access at a time, by  <B>arbitrating</B>  among  the  <B>IPMI</B>
+       <B>accesses</B> <B>to</B> <B>the</B> <B>same</B> <B>node</B>. In case of overlapping commands or and peri-
+       odical inquiries, the Power Manager Server <B>enqueues</B> <B>commands</B>, in  order
+       for all the received commands to be executed, one at a time, exactly in
+       the  same  order  they  were  issued,  and  <B>cancel</B>  <B>periodical</B>   <B>sensor</B>
+       <B>inquiries</B>, in order to avoid indefinite thread pile-up for not-respond-
+       ing IPMI interfaces.
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The <B><A HREF="../../htmlMan/man1/pwStatus.1.html">pwStatus(1)</A></B> command prints to the standard output stream the  <B>power</B>
+       <B>status</B>  (<I>on/off</I>)  of the farm nodes, got from the Power Manager Servers
+       registered with the DIM name server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>.
+
+       The DIM Name Server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>, looked up to seek for FMC Power  Man-
+       ager Servers, can be chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file "<B>/etc/sysconfig/dim</B>".
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B> <B>--help</B>
+              Get basic usage help from the command line, then terminate.
+
+       <B>-v</B> <B>--debug</B>
+              Increase verbosity for debugging.
+
+       <B>-N</B> <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-m</B> <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Print only the status of the PCs whose hostname matches at least
+              one of the wildcard patterns <I>NODE</I><B>_</B><I>PATTERN</I>  (<B>default</B>:  print  the
+              status of all the controlled PCs.
+
+       <B>-V</B> <B>--version</B>
+              For  each  selected node print the FMC Power Manager Server ver-
+              sion and the FMC version, than terminate.
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries  "libdim"  and  "libFMCu-
+              tils".
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Print the status of all the controlled PCs:
+
+       <I>bash$</I> <B>pwStatus</B>
+
+       Print the status of the PC farm0101:
+
+       <I>bash$</I> <B>pwStatus</B> <B>-m</B> <B>farm0101</B>
+
+       Use wildcard patterns to select PCs:
+
+       <I>bash$</I> <B>pwStatus</B> <B>-m</B> <B>"farm01*"</B>
+       <I>bash$</I> <B>pwStatus</B> <B>-m</B> <B>"farm01*"</B> <B>-m</B> <B>"farm02*"</B>
+       <I>bash$</I> <B>pwStatus</B> <B>-m</B> <B>"farm010[1357]"</B>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information  on how to get the FMC (Farm Monitoring and Control System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development  Homepage  &lt;https://lhcbweb.bo.infn.it/twiki/bin/
+       view.cgi/LHCbBologna/FmcLinux&gt;.
+
+       CERN  ITCOBE:  FW  Farm Monitor and Control &lt;http://itcobe.web.cern.ch/
+       itcobe/Projects/Framework/Download/Components/SystemOverview/fwFMC/wel-
+       come.html&gt;.
+
+       LHCb Online RPMs &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/
+       index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  pwStatus.C,v 2.10 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO:</H2><PRE>
+       <B><A HREF="../../htmlMan/man1/pwSwitch.1.html">pwSwitch(1)</A></B>, <B><A HREF="../../htmlMan/man1/ipmiViewer.1.html">ipmiViewer(1)</A></B>, <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>.
+       <B><A HREF="../../htmlMan/man1/ipmitool.1.html">ipmitool(1)</A></B>.
+
+FMC-3.9.14                        2012-12-19                       <B><A HREF="../../htmlMan/man1/pwStatus.1.html">pwStatus(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

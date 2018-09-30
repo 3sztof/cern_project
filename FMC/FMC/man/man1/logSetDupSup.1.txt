@@ -1,0 +1,111 @@
+
+NAME
+       logSetDupSup - Set the Duplicate Suppression Settings of a FMC
+                      Message Logger Server
+
+SYNOPSIS
+       logSetDupSup [-v] [-N DIM_DNS_NODE] [-m NODE_PATTERN...]
+                    [-s SERVICE_PATTERN...] [-E] [-L LEV_DIST] [-W WORD_DIST]
+                    [-n COMP_MSGS] [-c SKIP_NUM_COMP] [-C SKIP_CHAR_COMP]
+       logSetDupSup -h
+
+DESCRIPTION
+       Set the Duplicate Suppression Settings of a FMC  Message Logger
+       Message Logger Server.
+       DIM Name Server can be chosen (in decreasing order of priority) by:
+              1. Specifying the -N DIM_DNS_NODE command-line option;
+              2. Specifying the DIM_DNS_NODE environment variable;
+              3. Defining the DIM_DNS_NODE in the file "/etc/sysconfig/dim".
+
+OPTIONS
+       -h     Get basic usage help from the command line.
+       -v     Increase output verbosity.
+       -N DIM_DNS_NODE (string)
+              Use DIM_DNS_NODE as DIM Name Server node.
+       -m NODE_PATTERN (string, repeatable)
+              Set suppression settings to loggers running on nodes whose
+              hostname matches the wildcard pattern NODE_PATTERN
+              (default: all the nodes).
+       -s SERVICE_PATTERN (string, repeatable)
+              Set suppression settings to loggers whose specific name
+              matches the wildcard pattern SERVICE_PATTERN (default: all
+              the logger). The specific name of the logger is the one set
+              using -s option in logSrv command line. The specific name of
+              the default logger is "logger".
+       -E     Suppress repeated messages using exact comparison, i.e.
+              suppress messages which are identical to at least one of the
+              previous COMP_MSGS-1 messages. Default: do not suppress
+              repeated messages. NB: the behaviour with this option is
+              affected by -c, -C and -n options.
+       -L LEV_DIST (integer)
+              Suppress repeated messages using Levenshtein difference, i.e.
+              suppress messages which differ less than or equal to LEV_DIST
+              (inserted, deleted or substituted) characters from at least
+              one of the previous COMP_MSGS-1 messages. Default: do not
+              suppress repeated messages. NB: the behaviour with this
+              option is affected by -c, -C and -n options.
+       -W WORD_DIST (integer)
+              Suppress repeated messages using word difference, i.e.
+              suppress messages which differ less than or equal to
+              WORD_DIST subsituted word, with respect to at least one of
+              the previous COMP_MSGS-1 messages. Default: do not suppress
+              repeated messages. NB: the behaviour with this option is
+              affected by -c, -C and -n options.
+       -n COMP_MSGS (integer)
+              To suppress repeated messages, consider the last COMP_MSGS
+              messages, i.e. compare each message with the previous
+              COMP_MSGS-1 messages. Default: 1 if repeated message
+              suppression is not active, 2 if it is active. NB: affect the
+              behaviour with -E, -L and -W options.
+       -c SKIP_NUM_COMP (integer)
+              In the comparison for the repeated message suppression, skip
+              SKIP_NUM_COMP characters in each string, i.e. start the
+              comparison between a couple of string from the
+              SKIP_NUM_COMP-th character. Affect the behaviour with -E, -L
+              and -W options.
+       -C SKIP_CHAR_COMP (string)
+              In the comparison for the repeated message suppression, skip
+              characters in each string until all the characters listed in
+              the string SKIP_CHAR_COMP are passed. Affect the behaviour
+              with -E, -L and -W options.
+
+ENVIRONMENT:
+       DIM_DNS_NODE (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+       LD_LIBRARY_PATH (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries "libdim.so"
+              and "libFMCutils-2.so".
+
+EXAMPLES
+       Suppress messages which are identical to the previous one:
+              logSetDupSup -E
+       Suppress messages which are identical after the 30-th character
+       to the previous one:
+              logSetDupSup -E -c 30
+       Suppress messages which are identical after the 30-th character
+       to one of the previous 9 messages:
+              logSetDupSup -E -c 30 -n 10
+       Suppress messages which are identical, after the second ":" in
+       the message, to one of the previous 9 messages:
+              logSetDupSup -E -C "::" -n 10
+       Suppress messages which differs, in at most 2 words after the
+       second ":" with respect to one of the previous 9 messages:
+              logSetDupSup -W 2 -C "::" -n 10
+       Suppress messages which differs, in at most 6 character
+       substituted, inserted or deleted after the second ":" with
+       respect to one of the previous 9 messages:
+              logSetDupSup -L 6 -C "::" -n 10
+       Do not suppress repeated messages:
+              logSetDupSup ""
+
+AUTHOR
+       Domenico Galli <domenico.galli@bo.infn.it>
+
+VERSION
+       Source:  logSetDupSup.C,v 1.5 2007/12/13 14:04:04 galli
+       Package: FMC-3.9.2
+
+SEE ALSO
+       logGetDupSup(FMC), logGetFilter(FMC), logGetStored(FMC),
+       logSetFilter(FMC), logSetStored(FMC), logSrv(FMC), logViewer(FMC).
+

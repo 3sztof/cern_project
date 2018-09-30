@@ -1,0 +1,148 @@
+/* ######################################################################### */
+/*
+ * $Log: PcNode.IC,v $
+ * Revision 1.15  2012/12/13 10:58:36  galli
+ * minor changes
+ *
+ * Revision 1.12  2008/09/26 20:05:15  galli
+ * suppressed member variables schRfshReq & runRfshReq
+ * added member variable updateCnt
+ * method addSchPs(): added 2nd argument with default (bool startIt=true)
+ * added method incUpdateCnt()
+ * added method getUpdateCnt()
+ * suppressed methods isSchRfshReq() & isRunRfshReq()
+ *
+ * Revision 1.11  2008/09/24 08:59:34  galli
+ * included <sys/time.h> for gettimeofday(2)
+ *
+ * Revision 1.10  2008/09/23 07:41:10  galli
+ * minor changes
+ *
+ * Revision 1.9  2008/09/22 07:52:49  galli
+ * utils toUpper(), itos(), ltos() and ultosx() moved to class FmcUtils
+ * methods isTmSubscibed() and setTmSubscibed() moved to PcNode.C
+ *
+ * Revision 1.8  2008/09/19 21:15:56  galli
+ * added inline method getTmSrvName()
+ * added prototype for methods: getSchUtgids(), getRunUtgids(),
+ * checkRunning().
+ * changed prototype for method: printRunPss()
+ *
+ * Revision 1.7  2008/09/17 15:32:25  galli
+ * added prototype for methods startPs(utgid) and stopPs()
+ *
+ * Revision 1.6  2008/09/17 13:40:38  galli
+ * gets acl as global
+ * added member variable bool tmSubscribed
+ * added inline methods isTmSubscribed() and setTmSubscribed()
+ * added prototype for method startPs()
+ * constructors moved to PcNode.C
+ * added utilities toUpper(), itos(), ltos() and ultosx()
+ * destructor moved to PcNode.C
+ *
+ * Revision 1.5  2008/09/16 06:45:27  galli
+ * method getSchPss() implemented in PcNode.C makes a list duplicate
+ * to take the process list out of mutex barrier
+ *
+ * Revision 1.4  2008/09/15 07:49:17  galli
+ * added conditional include directives
+ * changed addSchPs() and rmSchPs() prototype
+ *
+ * Revision 1.3  2008/09/12 09:24:20  galli
+ * added getSchPss() inline method
+ *
+ * Revision 1.2  2008/09/10 06:39:44  galli
+ * added constructor PcNode(string name)
+ *
+ * Revision 1.1  2008/09/08 13:58:37  galli
+ * Initial revision
+ */
+/* ######################################################################### */
+#include <string>
+#include <list>
+#include <vector>
+/*---------------------------------------------------------------------------*/
+#include <fnmatch.h>                                            /* fnmatch() */
+#include <errno.h>
+/*---------------------------------------------------------------------------*/
+#include <dic.hxx>                             /* DimClient::sendComamndNB() */
+/*---------------------------------------------------------------------------*/
+#include "fmcMacro.h"                                      /* eExit(), MIN() */
+#include "fmcMacro.H"                                              /* METHOD */
+#include "fmcMsgUtils.h"           /* dfltLoggerOpen(), mPrintf(), rPrintf() */
+#include "fmcVersion.h"                                          /* SVC_HEAD */
+#include "FmcUtils.IC"        /* toUpper(), itos(), utos(), ltos(), ultosx() */
+/*---------------------------------------------------------------------------*/
+#include "PcAcl.IC"
+#include "PcProcess.IC"
+#ifndef _PC_NODE_IC
+#define _PC_NODE_IC 1
+/* ######################################################################### */
+using namespace std;
+/* ######################################################################### */
+class PcNode
+{
+  /* constants */
+  string name;                               /* hostname of the cluster node */
+  string tmSrvName;                              /* task manager server name */
+  string tmLsSvcName;                      /* task manager list service name */
+  string tmStartCmdName;                  /* task manager start command name */
+  string tmStopCmdName;                    /* task manager stop command name */
+  bool tmSubscribed;
+  /* variables */
+  list<PcProcess> schPss;                     /* list of scheduled processes */
+  vector<string> runPss;            /* vector of utgids of running processes */
+  pthread_mutex_t schLk;                                   /* protect schPss */
+  pthread_mutex_t runLk;                                   /* protect runPss */
+  list<PcProcess> schPssCp;         /* copy of schPss (out of mutex barrier) */
+  unsigned long updateCnt;
+  /***************************************************************************/
+  public:
+  /***************************************************************************/
+  /* get methods                                                             */
+  /***************************************************************************/
+  string getName(){return name;}
+  string getTmSrvName(){return tmSrvName;}
+  bool isTmSubscribed();
+  list<PcProcess> &getSchPss();
+  vector<string> getSchUtgids();
+  vector<string> getRunUtgids();
+  unsigned long getUpdateCnt(){return updateCnt;}
+  /***************************************************************************/
+  /* set methods                                                             */
+  /***************************************************************************/
+  void setName(string &name);
+  void setTmSubscribed(bool t);
+  void addSchPs(PcProcess &ps,string &cmd,bool startIt=true);
+  void rmSchPs(string &utgidPttn,unsigned signo,unsigned s9delay,string &cmd);
+  void setRunPss(int runPssSz,char *runPssSeq);
+  void incUpdateCnt(){updateCnt++;}
+  /***************************************************************************/
+  /* start/stop methods                                                      */
+  /***************************************************************************/
+  int startPs(PcProcess &ps);
+  int startPs(string utgid);
+  int stopPs(string utgid,unsigned signo,unsigned s9delay);
+  /***************************************************************************/
+  /* check methods                                                           */
+  /***************************************************************************/
+  void checkRunning();
+  /***************************************************************************/
+  /* print methods */
+  /***************************************************************************/
+  void printSchPss(string head,string separator,string trail);
+  void printRunPss(int sev);
+  /***************************************************************************/
+  /* constructors                                                            */
+  /***************************************************************************/
+  PcNode();
+  PcNode(string name);
+  /***************************************************************************/
+  /* destructor                                                              */
+  /***************************************************************************/
+  virtual ~PcNode();
+  /***************************************************************************/
+};
+/* ######################################################################### */
+#endif                                                        /* _PC_NODE_IC */
+/* ######################################################################### */

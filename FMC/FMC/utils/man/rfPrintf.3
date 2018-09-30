@@ -1,0 +1,416 @@
+.ig
+rfPrintf.3
+
+..
+.
+.\" --------------------------------------------------------------------
+.\" Setup
+.\" --------------------------------------------------------------------
+.
+.mso www.tmac
+.
+.\" set adjust to both
+.ad b
+.
+.\" fonts of fixed length
+.
+.if n \{\
+.  mso tty-char.tmac
+.  ftr CR R
+.  ftr CI I
+.  ftr CB B
+.\}
+.
+.if '\*[.T]'dvi' \
+.  ftr CB CW
+.
+.\" --------------------------------------------------------------------
+." String definitions
+.
+.ds @- "\-\"
+.ds @-- "\-\^\-\"
+.
+.ds Ellipsis .\|.\|.\"
+.
+.
+.\" --------------------------------------------------------------------
+.\" Begin of macro definitions
+.de c
+.\" this is like a comment request when escape mechanism is off
+..
+.eo
+.
+.c --------------------------------------------------------------------
+.de TP+
+.br
+.ns
+.TP \$1
+..
+.c --------------------------------------------------------------------
+.c Like TP, but if specified indent is more than half
+.c the current line-length - indent, use the default indent.
+.de Tp
+.  ie \n[.$]=0:((0\$1)*2u>(\n.lu-\n(.iu)) .TP
+.  el .TP "\$1"
+..
+.c --------------------------------------------------------------------
+.de Text
+.  nop \)\$*
+..
+.c --------------------------------------------------------------------
+.de Synopsis
+.  ds @arg1 \$1\"
+.  nr @old_indent \n[.i]
+.  ad l
+.  in +\w'\f[B]\*[@arg1]\0'u
+.  ti \n[@old_indent]u
+.  B \*[@arg1]\0\c
+.  rr @old_indent
+.  rm @arg1
+..
+.c --------------------------------------------------------------------
+.de EndSynopsis
+.  ad
+.  in
+..
+.c --------------------------------------------------------------------
+.c ShortOpt[]  (name [arg])
+.c
+.c short option in synopsis
+.c
+.de ShortOpt[]
+.  if \n[.$]=0 \
+.    return
+.  ds @opt \$1\"
+.  shift
+.  ie \n[.$]=0 \
+.    Text \f[R][\f[]\f[CB]\*[@-]\*[@opt]\f[]\f[R]]\f[]
+.  el \
+.    Text \f[R][\f[]\f[CB]\*[@-]\*[@opt]\~\f[]\f[I]\/\$*\f[]\f[R]]\f[]
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c LongOpt[]  (name [arg])
+.c
+.c short option in synopsis
+.c
+.de LongOpt[]
+.  if \n[.$]=0 \
+.    return
+.  ds @opt \$1\"
+.  shift
+.  ie \n[.$]=0 \
+.    Text \f[R][\f[]\f[CB]\*[@--]\*[@opt]\f[]\f[R]]\f[]
+.  el \
+.    Text \f[R][\f[]\f[CB]\*[@--]\*[@opt]\~\f[]\f[I]\/\$*\f[]\f[R]]\f[]
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c DoubleOpt[]  (names namel [arg])
+.c
+.c long option in synopsis
+.c
+.de DoubleOpt[]
+.  if \n[.$]=0 \
+.    return
+.  ds @opt \$1\"
+.  shift
+.  ds @optl \$1\"
+.  shift
+.  ie \n[.$]=0 \
+.    Text \f[R][\f[]\f[CB]\*[@-]\*[@opt]\f[R]\~|\~\f[]\*[@--]\*[@optl]\f[]\f[R]]\f[]
+.  el \
+.    Text \f[R][\f[]\f[CB]\*[@-]\*[@opt]\f[R]\~|\~\f[]\*[@--]\*[@optl]\~\f[]\f[I]\/\$*\f[]\f[R]]\f[]
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c Option in synopsis (short option)
+.de SynOpt
+.  if \n[.$]=0 \
+.    return
+.  ds @opt \$1\"
+.  shift
+.  ie \n[.$]=0 \
+.    Text \f[R][\f[]\f[CB]\*[@-]\*[@opt]\f[]\f[R]]\f[]
+.  el \
+.    Text \f[R][\f[]\f[CB]\*[@-]\*[@opt]\~\f[]\f[I]\/\$*\f[]\f[R]]\f[]
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c ShortOpt ([char [punct]])
+.c
+.c `-c' somewhere in the text 
+.c second arg is punctuation
+.c
+.de ShortOpt
+.  ds @opt \$1\"
+.  shift
+.  Text \f[CB]\*[@-]\*[@opt]\f[]\/\$*
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c LongOpt  ([name [punct]])
+.c
+.c `--name' somewhere in the text 
+.c second arg is punctuation
+.c
+.de LongOpt
+.  ds @opt \$1\"
+.  shift
+.  Text \f[CB]\*[@--]\f[]\f[B]\*[@opt]\f[]\/\$*
+.  rm @opt
+..
+.c --------------------------------------------------------------------
+.c OptDef  (shortopt [longopt [argument]])
+.c
+.c option documentation
+.c args : `shortopt', `longopt' can be 
+.c
+.de OptDef
+.  ds @short
+.  ds @long
+.  ds @arg
+.  if \n[.$]>=1 \{\
+.    ds @arg1 "\$1\"
+.    if !'\*[@arg1]'' \
+.      ds @short "\f[CB]\*[@-]\*[@arg1]\f[]\"
+.    if \n[.$]>=2 \{\
+.      if !'\*[@short]'' \
+.        as @short \f[CW]\0\f[]
+.      ds @arg2 "\$2\"
+.      if !'\*[@arg2]'' \
+.        ds @long "\f[CB]\*[@--]\f[]\f[B]\*[@arg2]\f[]\"
+.      if \n[.$]>=3 \{\
+.        if !'\*[@long]'' \
+.          as @long \|\~\|\"
+.        shift 2
+.        ds @arg \f[I]\$*\"
+.      \}
+.    \}
+.  \}
+.  IP "\f[R]\*[@short]\*[@long]\*[@arg]\f[]"
+.  rm @arg
+.  rm @arg1
+.  rm @arg2
+.  rm @short
+.  rm @long
+..
+.c --------------------------------------------------------------------
+.c Continuation of an OptDef header.
+.de OptDef+
+.  br
+.  ns
+.  OptDef \$@
+..
+.c --------------------------------------------------------------------
+.c Environment variable
+.de EnvVar
+.  SM
+.  BR \$1 \$2
+..
+.c --------------------------------------------------------------------
+.c a shell command line
+.de ShellCommand
+.  nr @font \n[.f]
+.  c replace argument separator by unbreakable space
+.  ds @args \$1\""
+.  shift
+.  while (\n[.$]>0) \{\
+.    ds @args \*[@args]\~\$1
+.    shift
+.  \}
+.  br
+.  ad l
+.  nh
+.  Text \f[I]bash$\h'1m'\f[P]\f[B]\*[@args]\f[P]\&\"
+.  ft R
+.  ft P
+.  hy
+.  ad
+.  ft \n[@font]
+.  br
+.  rr @font
+.  rm @args
+..
+.c --------------------------------------------------------------------
+.c `char or string'
+.de Quoted
+.  ft CR
+.  Text \[oq]\$*\[cq]
+.  ft
+..
+.c --------------------------------------------------------------------
+.c End of macro definitions
+.ec
+.
+.TH rfPrintf 3  ___now___ "___fmcVer___" "FMC Library Functions"
+.SH NAME
+.
+.
+.Synopsis rfPrintf\ \-
+Send a formatted message without header to a FMC Message Logger
+.EndSynopsis
+.
+.SH SYNOPSIS
+.nf
+.B #include <stdio.h>
+.B #include <fmcMsgUtils.h>
+.fi
+.sp
+.Synopsis int\ rfPrintf\ (
+\fBint\fP \fIlog_descr\fP, \fBint\fP \fItry_n\fP,
+\fBchar *\fP\fIformat\fP, \fB... ) ;\fP
+.EndSynopsis
+.sp
+.
+.
+.SH INTRODUCTION
+.
+The \fBFMC Message Logger\fP is a tool to \fIcollect\fP, \fImanage\fP (i.e.
+merge, duplicate, filter, suppress duplicates) and \fIdisplay\fP on a central
+console the messages sent by the applications running on the farm nodes. It
+uses \fIDIM\fP to move messages throughout the network and a POSIX.1 \fIFIFO\fP
+(alias \fInamed pipe\fP) on each node as local buffer to collect message sent
+by the application running on the same node.
+.PP
+The FMC Message Logger is a \fIgeneral purpose\fP utility, not tailored on a
+specific application; it can even collect messages sent by the applications to
+their \fIstandard output\fP and \fIerror\fP streams by \fBredirecting the
+streams to the FIFO\fP at the application start-up (the FMC Task Manager
+provides a flag in the \fBtmStart\fP(1) command to activate such a
+redirection).
+.PP
+The \fBFMC Message Logger\fP consists in the server \fBlogSrv\fP(8), which gets
+messages from a local FIFO and publish them using DIM, in the client
+\fBlogViewer\fP(1), which can display the messages got using DIM or forward
+them to another \fBlogSrv\fP(8), and in the clients \fBlogSetProperties\fP(1)
+and \fBlogGetProperties\fP(1) which can change and retrieve the \fBlogSrv\fP(8)
+settings at run-time.
+.PP
+Besides, the \fBFMC Message Logger\fP provides several utilities to help
+sending formatted messages with header to a the FMC Message Logger: the command
+\fBmPrint\fP(1) and the library calls \fBdfltLoggerOpen\fP(3),
+\fBmPrintf\fP(3), \fBrPrintf\fP(3), \fBdfltLoggerClose\fP(3),
+\fBgetDfltFifoFD\fP(3), \fBloggerOpen\fP(3), \fBmfPrintf\fP(3),
+\fBrfPrintf\fP(3) and \fBloggerClose\fP(3)
+.PP
+Look at section \fIWRITING TO THE FMC LOGGER\fP in the \fBlogSrv\fP(8) man page
+for a comprehensive review of the ways of sending messages to the FMC Message
+Logger.
+.
+.
+.SH DESCRIPTION
+.
+The function \fBrfPrintf\fP(3) produce an output message according to a
+\fIformat\fP, which has exactly the same syntax of the format of the
+\fBprintf\fP(3) standard library function.
+.PP
+The message is sent to the FMC Message Logger referenced by the logger
+descriptor \fIlog_descr\fP, returned by the \fBloggerOpen\fP(3) FMC library call.
+.PP
+If the FMC logger is opened with the \fBcongestion-proof\fP policy (by setting
+\fIpolicy\fP = CONG_PROOF in the \fBloggerOpen\fP(3) call) the parameter
+\fItry_n\fP sets the number of write trials to the FMC logger FIFO before
+giving up. A write to the FIFO, in congestion-proof mode, can fail if the FIFO
+is full. If \fItry_n\fP is set greater than one, if the first write attempt
+fails, more attempts are tried at time intervals of 1 ms, 2 ms, 4 ms, 8 ms and
+so on.
+.PP
+To send a message with header, the function \fBmfPrintf\fP(3) can be used
+instead.
+.
+.
+.SH "RETURN VALUE"
+.
+Upon completion, the \fBrfPrintf\fP(3) function returns zero if the message was
+successfully written to the logger and a value greater than zero if the message
+was dropped (e.g. due to a full FIFO).
+.
+.
+.SH "EXAMPLES"
+.
+Print an integer to the FMC Message Logger referenced by the logger descriptor
+ld:
+.PP
+.ad l
+\fBrfPrintf(ld, 5, "%d updates.", i);\fP
+.ad b
+.PP
+Print two strings to the FMC Message Logger referenced by the logger descriptor
+ld:
+.PP
+.ad l
+\fBrfPrintf(ld, 5, "Can't open file: \\"%s\\": %s!", "/home/output.txt",
+strerror(errno));\fP
+.ad b
+.
+.
+. SH USAGE
+.
+#include <stdio.h>
+.br
+#include <fmcMsgUtils.h>
+.br
+int main()
+.br
+{
+.br
+  int ld=-1;
+.br
+  int i;
+.br
+  ld=loggerOpen("/tmp/logGaudi.fifo",CONG_PROOF,L_STD,ERROR);
+.br
+  for(i=0;i<10;i++)
+.br
+  {
+.br
+    rfPrintf(ld,5,"%d updates",i);
+.br
+  }
+.br
+  loggerClose(ld);
+.br
+  return 0;
+.br
+}
+.PP
+This program must be compiled and linked with gcc using the options
+\fB-I/opt/FMC/utils/include -L/opt/FMC/lib -lFMCutils-5 -lm\fP.
+___fmcRef___
+.
+.
+.SH VERSION
+.
+Source:  ___msgUtilsVer___
+.br
+Library: ___fmcUtilsVer___
+.br
+Package: ___fmcVer___
+.
+.
+.SH "SEE ALSO"
+.ad l
+.SS API for writing to an arbitrary FMC Message Logger
+.BR \%loggerOpen (3),
+.BR \%mfPrintf (3),
+.BR \%loggerClose (3).
+.br
+.SS API for writing to the default FMC Message Logger
+.BR \%dfltLoggerOpen (3),
+.BR \%getDfltFifoFD (3),
+.BR \%mPrintf (3),
+.BR \%rPrintf (3),
+.BR \%dfltLoggerClose (3).
+.br
+.SS UI for writing to an arbitrary FMC Message Logger from a shell script
+.BR \%mPrint (1).
+.br
+.SS FMC Message Logger Server and User Commands
+.BR \%logSrv (8),
+.BR \%logViewer (1),
+.BR \%logGetProperties (1),
+.BR \%logSetProperties (1).
+.br
+.SS Standard C stream library (format description)
+.BR \%printf (3).

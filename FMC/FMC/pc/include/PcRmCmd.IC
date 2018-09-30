@@ -1,0 +1,75 @@
+/* ######################################################################### */
+/*
+ * $Log: PcRmCmd.IC,v $
+ * Revision 1.9  2008/10/09 09:36:53  galli
+ * minor changes
+ *
+ * Revision 1.8  2008/09/19 07:27:39  galli
+ * added destructor
+ *
+ * Revision 1.7  2008/09/17 13:52:01  galli
+ * takes cluster, acl, lsSvc, llSvcand lssSvc from globals
+ *
+ * Revision 1.6  2008/09/16 09:42:10  galli
+ * added  member variable PcLssSvc &lssSvc
+ *
+ * Revision 1.5  2008/09/16 06:41:18  galli
+ * added  member variable PcLlSvc &llSvc
+ *
+ * Revision 1.4  2008/09/15 08:04:42  galli
+ * added conditional include directives
+ * added member variable PcLsSvc &lsSvc
+ * changed constructor
+ *
+ * Revision 1.3  2008/09/12 23:18:43  galli
+ * use member initialization list instead of assignments in
+ * the constructor body
+ *
+ * Revision 1.1  2008/09/12 09:26:46  galli
+ * Initial revision
+ */
+/* ######################################################################### */
+#include <string>
+#include <vector>
+#include <list>
+/*---------------------------------------------------------------------------*/
+#include <stdio.h>
+#include <errno.h>
+#include <argz.h>           /* argz_create_sep(), argz_len(), argz_extract() */
+/*---------------------------------------------------------------------------*/
+#include <dis.hxx>
+/*---------------------------------------------------------------------------*/
+#include "fmcMacro.h"
+#include "fmcMacro.H"                                              /* METHOD */
+#include "fmcMsgUtils.h"           /* dfltLoggerOpen(), mPrintf(), rPrintf() */
+/*---------------------------------------------------------------------------*/
+#include "PcProcess.IC"
+#include "PcNode.IC"
+#include "PcCluster.IC"
+#include "PcAcl.IC"
+#include "PcLsSvc.IC"
+#include "PcLlSvc.IC"
+#include "PcLssSvc.IC"
+/*---------------------------------------------------------------------------*/
+#ifndef _PC_RM_CMD_IC
+#define _PC_RM_CMD_IC 1
+/* ######################################################################### */
+using namespace std;
+/* ######################################################################### */
+class PcRmCmd: public DimCommand 
+{
+  /***************************************************************************/
+  void commandHandler();
+  /***************************************************************************/
+  public:
+  /***************************************************************************/
+  /* constructor                                                             */
+  PcRmCmd(const string &cmdName):DimCommand(cmdName.c_str(),"C") {}
+  /***************************************************************************/
+  /* destructor                                                              */
+  virtual ~PcRmCmd() {}
+  /***************************************************************************/
+};
+/* ######################################################################### */
+#endif                                                      /* _PC_RM_CMD_IC */
+/* ######################################################################### */

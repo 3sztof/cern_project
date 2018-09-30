@@ -1,0 +1,81 @@
+/* ######################################################################### */
+/*
+ * $Log: CmAcl.IC,v $
+ * Revision 1.5  2012/11/29 15:52:27  galli
+ * Compatibility with gcc/g++ 4.4.6
+ *
+ * Revision 1.4  2008/10/09 09:33:35  galli
+ * minor changes
+ *
+ * Revision 1.3  2008/10/03 22:02:33  galli
+ * isUserAllowed() returns also user and host
+ *
+ * Revision 1.2  2008/10/03 06:54:58  galli
+ * minor changes
+ *
+ * Revision 1.1  2008/10/02 07:10:42  galli
+ * Initial revision
+ */
+/* ######################################################################### */
+#include <vector>
+#include <string>
+#include <list>
+#include <iostream>
+#include <fstream>
+/*---------------------------------------------------------------------------*/
+#include <string.h>                                           /* strerror(3) */
+#include <stdlib.h>                                               /* exit(3) */
+#include <sys/stat.h>                               /* lstat(2), struct stat */
+#include <pwd.h>                               /* getpwuid(3), struct passwd */
+#include <fnmatch.h>                                           /* fnmatch(3) */
+#include <errno.h>
+#include <unistd.h>                                             /* access(2) */
+/*---------------------------------------------------------------------------*/
+#include "fmcMsgUtils.h"           /* dfltLoggerOpen(), mPrintf(), rPrintf() */
+#include "fmcMacro.H"                                              /* METHOD */
+/*---------------------------------------------------------------------------*/
+#ifndef _CM_ACL_IC
+#define _CM_ACL_IC 1
+/* ######################################################################### */
+using namespace std;
+/* ######################################################################### */
+struct entry
+{
+  string user;
+  string host;
+};
+/* ######################################################################### */
+class CmAcl
+{
+  vector<entry> acl;
+  vector<string> readAllwdFiles;
+  vector<string> writeAllwdFiles;
+  string authString;                                   /* set by constructor */
+  bool authenticated;
+  public:
+  /***************************************************************************/ 
+  /* get methods */
+  string getAuthString(){return authString;}
+  bool isAuthenticated(){return authenticated;}
+  bool isFileReadable(const string &file);
+  bool isFileWritable(const string &file);
+  bool isUserAllowed(const string &rpc, string &rpcArgs, string &authUser,
+                     string &authHost);
+  /* set methods */
+  void on() {authenticated=true;}
+  void off() {authenticated=false;}
+  /* read methods */
+  void readAcl(string &aclFileName);
+  void readConf(string &confFileName);
+  /* print methods */
+  void printAcl(int severity);
+  void printConf(int severity);
+  /***************************************************************************/ 
+  /* constructor */
+  CmAcl();
+  /***************************************************************************/ 
+};
+/* ######################################################################### */
+#endif                                                         /* _CM_ACL_IC */
+/* ######################################################################### */
+

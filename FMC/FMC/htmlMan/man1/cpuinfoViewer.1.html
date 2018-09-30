@@ -1,0 +1,221 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/cpuinfoViewer.1.html">cpuinfoViewer(1)</A></B>               FMC User Commands              <B><A HREF="../../htmlMan/man1/cpuinfoViewer.1.html">cpuinfoViewer(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>cpuinfoViewer</B> <B>-</B> Get the CPU information about the farm PCs from the FMC
+                       CPU Information Servers
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>cpuinfoViewer</B> [<B>-v</B> | <B>--debug</B>] [<B>-N</B> | <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>]
+                     [<B>-m</B> | <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]  [<B>-c</B> | <B>--compact</B>]
+                     [<B>-H</B> | <B>--header</B>]
+
+       <B>cpuinfoViewer</B> { <B>-V</B> | <B>--version</B> } [<B>-v</B> | <B>--debug</B>]
+                     [<B>-N</B> | <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>]
+                     [<B>-m</B> | <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]
+
+       <B>cpuinfoViewer</B> { <B>-h</B> | <B>--help</B> }
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       Get the information about the CPUs  of  the  farm  PCs  whose  hostname
+       matches  the  wildcard  pattern  <I>NODE</I><B>_</B><I>PATTERN</I>,  specified  using the <B>-m</B>
+       <I>NODE</I><B>_</B><I>PATTERN</I> command line option (<B>default</B>:  all  the  nodes  registered
+       with the DIM name server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>). Information includes:
+
+       <B>VENDOR</B> <B>ID</B> (string)
+              The  CPU  brand identifier string. E.g.: GenuineIntel, Authenti-
+              cAMD, CyrixInstead, GenuineTMx86.
+
+       <B>FAMILY</B> (integer)
+              The CPU family identifier. Value 6 stands for Intel Pentium III,
+              AMD  K7,  Cyrix M2, VIA C3; value 15 stands for Intel Pentium IV
+              and AMD K8, etc.
+
+       <B>MODEL</B> (integer)
+              The CPU model identifier. E.g.: value 1 can stand  for  P4  0.18
+              um,  value  2 can stand for P4 0.13 um, value 3 can stand for P4
+              0.09 um, value 5 can stand for AMD K8 Opteron 0.13 um.
+
+       <B>MODEL</B> <B>NAME</B> (string)
+              The CPU model identifier string. E.g.: "Intel(R) Pentium(R)  III
+              CPU  family  1133MHz",  "Intel(R)  Xeon(TM)  CPU  2.40GHz", "AMD
+              Athlon (TM) 64 Processor 3700+".
+
+       <B>STEPPING</B> (integer)
+              The sub-version identifier (a.k.a. revision number)  of  a  CPU.
+              The stepping number increase with manufactory improvement or bug
+              fixes of the same CPU model.
+
+       <B>CLOCK</B> (float)
+              The clock frequency of the CPU, measured in MHz (megahertz).
+
+       <B>CACHE</B> <B>SIZE</B> (integer)
+              The CPU cache size, measured in KiB (kibibytes).
+
+       <B>HYPER-THREAD</B> (boolean)
+              The Hyper-threading capability of the physical CPU package.
+
+       <B>MULTI-CORE</B> (boolean)
+              The Multi-core capability of the physical CPU package.
+
+       <B>PHYSICAL</B> <B>ID</B> (integer)
+              The physical package ID of the logical CPU.
+
+       <B>SIBLINGS</B> (integer)
+              The number of logical processors  (including  <B>both</B>  <B>threads</B>  <B>and</B>
+              <B>cores</B>) in the physical package currently in use by the Operating
+              System.
+
+       <B>CORE</B> <B>ID</B> (integer)
+              The core ID of the logical CPU.
+
+       <B>CPU</B> <B>CORES</B> (integer)
+              The total number of cores in the physical package  currently  in
+              use by the Operating System.
+
+       <B>BOGOMIPS</B> (float)
+              This  number  is  a  very  raw  measure of the CPU computational
+              speed. Etymology has origin by the words bogus (something  which
+              is  a  fake, not genuine) and MIPS. MIPS is an acronym for "Mil-
+              lions of Instruction per Second" and is the number  of  millions
+              of  machine code instruction which a CPU is able to execute in a
+              second. Bogomips are measured at boot time by running a  program
+              loop  which  does  absolutely  nothing  (hence the definition of
+              Bogomips as "the number of million times per second a  processor
+              can  do  absolutely  nothing"). Bogomips ranges from 0.02 (Intel
+              8088 at 4.77 MHz) to 6717.44  (Intel  Pentium  4  at  3.4  GHz).
+              Bogomips/CPU  clock ratio ranges from 0.004 (Intel 8088) to 3.97
+              (Intel Xeon with hyper-threading).
+
+       The DIM Name Server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>, looked up to seek for FMC CPU  Infor-
+       mation Servers, can be chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file "<B>/etc/sysconfig/dim</B>".
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B> <B>--help</B>
+              Get basic usage help from the command line, then terminate.
+
+       <B>-v</B> <B>--debug</B>
+              Increase verbosity for debugging.
+
+       <B>-N</B> <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-m</B> <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Print  only the CPU information of the farm nodes whose hostname
+              matches at least  one  of  the  wildcard  patterns  <I>NODE</I><B>_</B><I>PATTERN</I>
+              (<B>default</B>:  print the CPU information of all the nodes registered
+              with the DIM name server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>).
+
+       <B>-V</B> <B>--version</B>
+              For each selected node print the FMC CPU Information Server ver-
+              sion and the FMC version, than terminate.
+
+       <B>-c</B> <B>--compact</B>
+              Print  the  CPU information in compact format (easier to parse):
+              one core per line, no labels, spaces inside fields  replaced  by
+              underscores.
+
+       <B>-H</B> <B>--header</B>
+              If  the  compact output format has been choosen, print a heading
+              line with the output field labels.
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries  "libdim"  and  "libFMCu-
+              tils".
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Print the CPU information about all the farm nodes:
+
+       <I>bash$</I> <B>cpuinfoViewer</B>
+
+       Print output in compact format with header:
+
+       <I>bash$</I> <B>cpuinfoViewer</B> <B>-c</B> <B>-H</B>
+       <I>bash$</I> <B>cpuinfoViewer</B> <B>-cH</B>
+       <I>bash$</I> <B>cpuinfoViewer</B> <B>--comp</B> <B>--hea</B>
+
+       Print only the CPU information of selected nodes:
+
+       <I>bash$</I> <B>cpuinfoViewer</B> <B>-m</B> <B>farm0101</B> <B>-m</B> <B>farm0102</B>
+       <I>bash$</I> <B>cpuinfoViewer</B> <B>-host</B> <B>farm0101</B> <B>-host</B> <B>farm0102</B>
+
+       Print only the CPU information of wildcard-selected nodes:
+
+       <I>bash$</I> <B>cpuinfoViewer</B> <B>-m</B> <B>"farm01*"</B> <B>-m</B> <B>"farm02*"</B>
+       <I>bash$</I> <B>cpuinfoViewer</B> <B>-m</B> <B>"farm01?[1357]"</B>
+       <I>bash$</I> <B>cpuinfoViewer</B> <B>-m</B> <B>"farm01?[1-5]"</B>
+       <I>bash$</I> <B>cpuinfoViewer</B> <B>--host</B> <B>"farm01[0-5][1-36-9]"</B>
+
+       Print the Server version and the FMC package version of the running FMC
+       CPU Information servers registered with the current DIM name server:
+
+       <I>bash$</I> <B>cpuinfoViewer</B> <B>-V</B>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information on how to get the FMC (Farm Monitoring and Control  System)
+       package and related information is available at the web sites:
+
+       FMC  Linux  Development Homepage &lt;https://lhcbweb.bo.infn.it/twiki/bin/
+       view.cgi/LHCbBologna/FmcLinux&gt;.
+
+       CERN ITCOBE: FW Farm Monitor  and  Control  &lt;http://itcobe.web.cern.ch/
+       itcobe/Projects/Framework/Download/Components/SystemOverview/fwFMC/wel-
+       come.html&gt;.
+
+       LHCb Online RPMs &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/
+       index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  cpuinfoViewer.C,v 1.23 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO:</H2><PRE>
+       <B><A HREF="../../htmlMan/man8/cpuinfoSrv.8.html">cpuinfoSrv(8)</A></B>.
+       <B>/proc/cpuinfo,</B>
+       <B>/usr/share/doc/kernel-doc-2.6.9/Documentation/filesystems/proc.txt.</B>
+
+FMC-3.9.14                        2012-12-19                  <B><A HREF="../../htmlMan/man1/cpuinfoViewer.1.html">cpuinfoViewer(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

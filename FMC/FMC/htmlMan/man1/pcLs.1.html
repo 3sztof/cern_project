@@ -1,0 +1,187 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/pcLs.1.html">pcLs(1)</A></B>                        FMC User Commands                       <B><A HREF="../../htmlMan/man1/pcLs.1.html">pcLs(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>pcLs</B> <B>-</B> Show the processes in the list of the FMC Process Controller
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>pcLs</B> [<B>-v</B>] [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-C</B> <I>CTRL</I><B>_</B><I>PC</I><B>_</B><I>PATTERN...</I>]
+            [<B>-m</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]
+
+       <B>pcLs</B> <B>-V</B> [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-C</B> <I>CTRL</I><B>_</B><I>PC</I><B>_</B><I>PATTERN...</I>]
+
+       <B>pcLs</B> <B>-h</B>
+
+
+</PRE>
+<H2>INTRODUCTION</H2><PRE>
+       The FMC <B>Process</B> <B>Controller</B> is a tool in charge of <I>keeping</I> <I>a</I> <I>dynamically</I>
+       <I>manageable</I> <I>list</I> <I>of</I> <I>applications</I> <I>up</I> <I>and</I> <I>running</I> on the farm nodes.
+
+       The  Process  Controller Server (<B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>) tipically runs on a few con-
+       trol PCs (CTRL_PC), each one watching up to ~200 farm nodes (NODE), and
+       performs its task by maintaining the <I>list</I> <I>of</I> <I>the</I> <I>scheduled</I> <I>applications</I>
+       for each controlled farm node and by interacting with the FMC Task Man-
+       ager  Servers  (<B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>) running on each farm node to start processes,
+       to obtain the notification of the process termination, to re-start  the
+       untimely terminated processes ("respawn"), and to stop processes.
+
+       The  list  of  the  controlled  farm nodes is read by each Process Con-
+       troller Server (<B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>) from the  configuration  file  <I>CONF</I><B>_</B><I>FILE</I>  (by
+       default: "/etc/pcSrv.conf").
+
+       The Process Controller Clients (<B><A HREF="../../htmlMan/man1/pcAdd.1.html">pcAdd(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcRm.1.html">pcRm(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcLs.1.html">pcLs(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcLl.1.html">pcLl(1)</A></B> and
+       <B><A HREF="../../htmlMan/man1/pcLss.1.html">pcLss(1)</A></B>) can contact more than one Process  Controller  Servers  at  a
+       time.  They can use the option <B>-C</B> <I>CTRL</I><B>_</B><I>PC</I><B>_</B><I>PATTERN</I> to choose the Control
+       PC and the option <B>-m</B> <I>NODE</I><B>_</B><I>PATTERN</I> to choose the worker node.
+
+       At runtime, processes can be added to the list for one or more nodes by
+       means of the <B><A HREF="../../htmlMan/man1/pcAdd.1.html">pcAdd(1)</A></B> command and removed from the list for one or more
+       nodes by means of the <B><A HREF="../../htmlMan/man1/pcRm.1.html">pcRm(1)</A></B> command. The  commands  <B><A HREF="../../htmlMan/man1/pcLs.1.html">pcLs(1)</A></B>,  <B><A HREF="../../htmlMan/man1/pcLl.1.html">pcLl(1)</A></B>
+       and  <B><A HREF="../../htmlMan/man1/pcLss.1.html">pcLss(1)</A></B>  provide  several  information  about the controlled pro-
+       cesses.
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The command <B><A HREF="../../htmlMan/man1/pcLs.1.html">pcLs(1)</A></B> lists the processes in the Process Controller  list
+       for  the nodes whose hostname matches at least one of the wildcard pat-
+       terns <I>NODE</I><B>_</B><I>PATTERN</I>,  controlled  by  the  control  PCs  whose  hostname
+       matches at least one of the wildcard patterns <I>CTRL</I><B>_</B><I>PC</I><B>_</B><I>PATTERN</I>.
+
+       The  DIM Name Server, looked up to seek for Process Controller Servers,
+       can be chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file "<B>/etc/sysconfig/dim</B>".
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B>     Get basic usage help from the command line.
+
+       <B>-V</B>     For each selected node print the FMC Process  Controller  Server
+              version and the FMC version, than exit.
+
+       <B>-v</B>     Increase verbosity for debugging.
+
+       <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-C</B> <I>CTRL</I><B>_</B><I>PC</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Contact  the Process Controller Server (<B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>) of the control
+              PCs whose hostname matches the wildcard pattern  <I>CTRL</I><B>_</B><I>PC</I><B>_</B><I>PATTERN</I>
+              (<B>default</B>: contact all the control PCs).
+
+       <B>-m</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              List  the  process(es)  in  the  Process Controller list for the
+              nodes (controlled by the control PCs whose hostname matches  the
+              wildcard  pattern  <I>CTRL</I><B>_</B><I>PC</I><B>_</B><I>PATTERN</I>)  whose  hostname matches the
+              wildcard pattern <I>NODE</I><B>_</B><I>PATTERN</I> (<B>default</B>: list processes from  the
+              Process Controller list for all the nodes controlled by the con-
+              trol  PCs  whose   hostname   matches   the   wildcard   pattern
+              <I>CTRL</I><B>_</B><I>PC</I><B>_</B><I>PATTERN</I>).
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must  include  the  path to the libraries "libdim" and "libFMCu-
+              tils".
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       List the processes scheduled at all the farm nodes, controlled  by  all
+       the  Control  PCs  running a Process Controller servers registered with
+       the current DIM DNS:
+
+       <I>bash$</I> <B>pcLs</B>
+
+       List only the processes scheduled at the farm node "farm0101":
+
+       <I>bash$</I> <B>pcLs</B> <B>-m</B> <B>farm0101</B>
+
+       Use a wildcard pattern to select the farm nodes:
+
+       <I>bash$</I> <B>pcLs</B> <B>-m</B> <B>farm010\*</B>
+       <I>bash$</I> <B>pcLs</B> <B>-m</B> <B>"farm010*"</B>
+       <I>bash$</I> <B>pcLs</B> <B>-m</B> <B>"farm0[2-5]???"</B> <B>-m</B> <B>"far[a-z,A-Z]0101"</B>
+
+       List only the processes scheduled by the Process Controller running  at
+       the Control PC "ctrl01":
+
+       <I>bash$</I> <B>pcLs</B> <B>-C</B> <B>ctrl01</B>
+
+       Use a wildcard pattern to select the control PC:
+
+       <I>bash$</I> <B>pcLs</B> <B>-C</B> <B>ctrl0\*</B>
+       <I>bash$</I> <B>pcLs</B> <B>-C</B> <B>"ctrl0*"</B>
+
+       List  only  the  processes scheduled at the farm node "farm0101" by the
+       Process Controller running at the Control PC "ctrl01":
+
+       <I>bash$</I> <B>pcLs</B> <B>-C</B> <B>ctrl01</B> <B>-m</B> <B>farm0101</B>
+
+       Use a wildcard pattern to select the control PC and the farm node:
+
+       <I>bash$</I> <B>pcLs</B> <B>-C</B> <B>ctrl0\*</B> <B>-m</B> <B>farm010\*</B>
+       <I>bash$</I> <B>pcLs</B> <B>-C</B> <B>"ctrl0*"</B> <B>-m</B> <B>"farm010*"</B>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information on how to get the FMC (Farm Monitoring and Control  System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development Homepage
+       &lt;http://lhcbweb2.bo.infn.it/bin/view/LHCbBologna/FmcLinux&gt;.
+
+       CERN Engineering Department, JCOP, FMC
+       &lt;http://j2eeps.cern.ch/wikis/display/EN/
+       JCOP+Framework+Farm+Monitoring+and+Control+Tool&gt;.
+
+       LHCb Online RPMs
+       &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  pcLs.C,v 1.20 2012/12/17 10:57:23 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO</H2><PRE>
+       <B><A HREF="../../htmlMan/man1/pcAdd.1.html">pcAdd(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcRm.1.html">pcRm(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcLl.1.html">pcLl(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcLss.1.html">pcLss(1)</A></B>, <B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>.
+       <B><A HREF="../../htmlMan/man1/tmStart.1.html">tmStart(1)</A></B>, <B><A HREF="../../htmlMan/man1/tmStop.1.html">tmStop(1)</A></B>, <B><A HREF="../../htmlMan/man1/tmLs.1.html">tmLs(1)</A></B>, <B><A HREF="../../htmlMan/man1/tmLl.1.html">tmLl(1)</A></B>, <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>.
+       <B><A HREF="../../htmlMan/man1/logViewer.1.html">logViewer(1)</A></B>, <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>.
+       <B><A HREF="../../htmlMan/man7/glob.7.html">glob(7)</A></B>.
+
+FMC-3.9.14                        2012-12-19                           <B><A HREF="../../htmlMan/man1/pcLs.1.html">pcLs(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

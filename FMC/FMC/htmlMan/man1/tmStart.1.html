@@ -1,0 +1,354 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/tmStart.1.html">tmStart(1)</A></B>                     FMC User Commands                    <B><A HREF="../../htmlMan/man1/tmStart.1.html">tmStart(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>tmStart</B> <B>-</B> Start a process using the FMC Task Manager
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>tmStart</B> [<B>-v</B> | <B>--debug</B>] [<B>-N</B> | <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>]
+               [<B>-m</B> | <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]  [<B>-X</B> | <B>--no-authentication</B>]
+               [<B>-c</B> | <B>--clr-env</B>] [<B>-D</B> | <B>--set-env</B> <I>NAME=VALUE...</I>]
+               [<B>-s</B> | <B>--scheduler</B> <I>SCHEDULER</I>] [<B>-p</B> | <B>--nice</B> <I>NICE</I><B>_</B><I>LEVEL</I>]
+               [<B>-r</B> | <B>--rtprio</B> <I>RT</I><B>_</B><I>PRIORITY</I>] [<B>-a</B> | <B>--cpu</B> <I>CPU</I><B>_</B><I>NUM...</I>]
+               [<B>-k</B> | <B>--oom-score-adj</B> <I>OOM</I><B>_</B><I>SCORE</I><B>_</B><I>ADJ</I>] [<B>-d</B> | <B>--daemon</B>]
+               [<B>-n</B> | <B>--user</B> <I>USER</I><B>_</B><I>NAME</I>] [<B>-g</B> | <B>--group</B> <I>GROUP</I><B>_</B><I>NAME</I>]
+               [<B>-u</B> | <B>--utgid</B> <I>UTGID</I>] [<B>-w</B> | <B>--wd</B> <I>WD</I>] [<B>-o</B> | <B>--out-to-stdlog</B>]
+               [<B>-e</B> | <B>--err-to-stdlog</B>] [<B>-O</B> | <B>--out-to-log</B> <I>OUT</I><B>_</B><I>FIFO</I>]
+               [<B>-E</B> | <B>--err-to-log</B> <I>ERR</I><B>_</B><I>FIFO</I>] [<B>-A</B> | <B>--no-drop</B>] <I>PATH</I> [<I>ARG</I>...]
+
+       <B>tmStart</B> { <B>-h</B> | <B>--help</B> }
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The command <B>tmStart</B> starts a <B>new</B> <B>process</B> on all the nodes  whose  host-
+       name  matches at least one of the wildcard patterns <I>NODE</I><B>_</B><I>PATTERN</I>, using
+       the executable file located in <I>PATH</I> and the arguments specified in <I>ARG</I>.
+       In  the  environment of the started process the server <B>tmSrv</B> puts a new
+       string variable, called <B>UTGID</B> (User assigned unique Thread Group  Iden-
+       tifier), which is used as a tag by the Task Manager System.
+
+       By  <B>default</B>,  before  starting  the  process,  all file descriptors are
+       closed and standard file descriptors (STDIN_FILENO,  STDOUT_FILENO  and
+       STDERR_FILENO) are re-opened on /dev/null.
+
+       The <B>UTGID</B> can be either defined by the user (using the <B>-u</B> <I>UTGID</I> option)
+       or can be  generated  automatically  (omitting  <B>-u</B>  <I>UTGID</I>  options)  by
+       appending  to  the  command  name (the name of the executable image) an
+       underscore followed by an instance counter.
+
+       The DIM Name Server, looked up to seek for Task Manager Servers, can be
+       chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file "<B>/etc/sysconfig/dim</B>".
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+   <B>General</B> <B>Options</B>
+       <B>-v</B> <B>--debug</B>
+              Increase verbosity for debugging.
+
+       <B>-N</B> <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+   <B>Authentication</B> <B>Options</B>
+       <B>-X</B> <B>--no-authentication</B>
+              Do  not  send authentication string (compatible with <B>tmSrv</B>, ver-
+              sion &lt; 2.0). Works also with <B>tmSrv</B> version &gt;= 2.0  if  <B>tmSrv</B>  is
+              started with the <B>--no-authentication</B> command-line switch.
+
+   <B>Node</B> <B>Selection</B> <B>Options</B>
+       <B>-m</B> <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Start process only at the nodes whose hostname matches the wild-
+              card pattern <I>NODE</I><B>_</B><I>PATTERN</I> (<B>default</B>: Start  process  at  all  the
+              nodes).
+
+   <B>Process</B> <B>Environment</B> <B>Options</B>
+       <B>-c</B> <B>--clr-env</B>
+              Clear  the  <B>environment</B> inherited by the Task Manager.  <B>Default</B>:
+              inherit the Task Manager environment.
+
+       <B>-D</B> <B>--set-env</B> <I>NAME=VALUE</I> <I>(string,</I> <I>repeatable)</I>
+              Set the <B>environment</B> variable <I>NAME</I> to the value <I>VALUE</I>.
+
+   <B>Process</B> <B>Scheduling</B> <B>Options</B>
+       <B>-s</B> <B>--scheduler</B> <I>SCHEDULER</I> <I>(string</I> <I>or</I> <I>integer</I> <I>in</I> <I>the</I> <I>range</I> <I>0..2)</I>
+              Set the process scheduler to <I>SCHEDULER</I>, which can be:
+
+              <B>0</B> | <B>ts</B> | <B>timesharing</B> | <B>SCHED_OTHER</B>
+                     The default Linux <B>time-sharing</B> scheduler, with a  <B>dynamic</B>
+                     <B>priority</B> based on the <I>NICE</I><B>_</B><I>LEVEL</I>.
+
+              <B>1</B> | <B>ff</B> | <B>fifo</B> | <B>SCHED_FIFO</B>
+                     The <B>static-priority</B> Linux <B>real-time</B> <B>fifo</B> scheduler, with-
+                     out time slicing. A <B>SCHED_FIFO</B> process runs until  either
+                     it  is  blocked  by  an I/O request, it is preempted by a
+                     higher priority process, or it calls sched_yield (2).
+
+              <B>2</B> | <B>rr</B> | <B>roundrobin</B> | <B>SCHED_RR</B>
+                     The <B>static-priority</B> Linux  <B>real-time</B>  <B>Round-Robin</B>  sched-
+                     uler.  It differs from <B>SCHED_FIFO</B> because each process is
+                     only allowed to run for a  maximum  time  quantum.  If  a
+                     <B>SCHED_RR</B> process has been running for a time period equal
+                     to or longer than the time quantum, it will be put at the
+                     end of the list for its priority.
+
+              <B>Default</B>: 0 (SCHED_OTHER).
+
+       <B>-p</B> <B>--nice</B> <I>NICE</I><B>_</B><I>LEVEL</I> <I>(integer</I> <I>in</I> <I>the</I> <I>range</I> <I>-20..19)</I>
+              If  <I>SCHEDULER</I>=<B>SCHED_OTHER</B>,  set the <B>nice</B> <B>level</B> of the process to
+              <I>NICE</I><B>_</B><I>LEVEL</I>. The <B>nice</B> <B>level</B> is used by the <B>SCHED_OTHER</B> time-shar-
+              ing  Linux  scheduler  to  compute the <B>dynamic</B> <B>priority</B>. Allowed
+              values for <I>NICE</I><B>_</B><I>LEVEL</I> are in the range -20..19 (-20  corresponds
+              to  the  most  favorable scheduling; 19 corresponds to the least
+              favorable scheduling). The <B>nice</B> <B>level</B> can be lowered by the Task
+              Manager  even  for  processes which run as a user different from
+              root.
+
+       <B>-r</B> <B>--rtprio</B> <I>RT</I><B>_</B><I>PRIORITY</I> <I>(integer</I> <I>in</I> <I>the</I> <I>range</I> <I>0..99)</I>
+              Set the <B>static</B> (real-time) <B>priority</B> of the process to  <I>RT</I><B>_</B><I>PRIOR-</I>
+              <I>ITY</I>.  Only  value 0 (zero) for <I>RT</I><B>_</B><I>PRIORITY</I> is allowed for sched-
+              uler <B>SCHED_OTHER</B>. For <B>SCHED_FIFO</B> and <B>SCHED_RR</B>  real-time  sched-
+              ulers,  allowed  values  are  in the range 1..99 (1 is the least
+              favorable priority, 99 is the most favorable priority).
+
+       <B>-a</B> <B>--cpu</B> <I>CPU</I><B>_</B><I>NUM</I> <I>(integer,</I> <I>repeatable)</I>
+              Add the CPU number <I>CPU</I><B>_</B><I>NUM</I> to the <B>process-to-CPU</B> <B>affinity</B>  <B>mask</B>.
+              More  than  one of these options can be present in the same com-
+              mand to add more than one CPU to the affinity mask. Started pro-
+              cess  is allowed to run only on the CPUs specified in the affin-
+              ity mask. Omitting this option, process is allowed to run on any
+              CPU of the node. Allowed <I>CPU</I><B>_</B><I>NUM</I> depend on the PC architecture
+
+   <B>Process</B> <B>OOM-killer</B> <B>Options</B>
+       <B>-k</B> <B>--oom-score-adj</B> <I>OOM</I><B>_</B><I>SCORE</I><B>_</B><I>ADJ</I> <I>(integer</I> <I>in</I> <I>the</I> <I>range</I> <I>-999..1000)</I>
+              Set  the  <B>Out</B>  <B>Of</B>  <B>Memory</B> <B>Killer</B> <B>Adjust</B> <B>Parameter</B> of the started
+              process (<B>oom_score_adj</B>) to <I>OOM</I><B>_</B><I>SCORE</I><B>_</B><I>ADJ</I>. If the kernel  version
+              is  less  than  2.6.36  then the value is converted in the range
+              -16..15 for the <B>oom_adj</B> parameter.  The process to be killed  in
+              an  out-of-memory  situation  is  selected  based on its badness
+              score. The badness score is reflected in  /proc/&lt;pid&gt;/oom_score.
+              This  value is determined on the basis that the system loses the
+              minimum amount of work done, recovers a large amount of  memory,
+              doesn't  kill  any  innocent  process eating tons of memory, and
+              kills the minimum number of processes (if  possible  limited  to
+              one).  The  badness  score is computed using the original memory
+              size of the process, its CPU time (utime + stime), the run  time
+              (uptime  -  start time) and its oom_adj/oom_score_adj value. The
+              <B>higher</B> the parameter <I>OOM</I><B>_</B><I>SCORE</I><B>_</B><I>ADJ</I>, <B>more</B> <B>likely</B> the  process  is
+              to  be  <B>killed</B>  by  <B>OOM-killer</B>. The value <I>OOM</I><B>_</B><I>SCORE</I><B>_</B><I>ADJ</I>=-1000 is
+              reserved for the Task Manager process and is not allowed for the
+              started processes.
+
+   <B>Process</B> <B>Owner</B> <B>Options</B>
+       <B>-n</B> <B>--user</B> <I>USER</I><B>_</B><I>NAME</I> <I>(string)</I>
+              Set  the  <B>effective</B>  <B>UID</B> (User IDentifier), the <B>real</B> <B>UID</B> and the
+              <B>saved</B> <B>UID</B> of the process to the <B>UID</B> corresponding  to  the  user
+              <I>USER</I><B>_</B><I>NAME</I>.
+
+       <B>-g</B> <B>--group</B> <I>GROUP</I><B>_</B><I>NAME</I> <I>(string)</I>
+              Set  the  <B>effective</B> <B>GID</B> (Group IDentifier), the <B>real</B> <B>GID</B> and the
+              <B>saved</B> <B>GID</B> of the process to the <B>GID</B> corresponding to  the  group
+              <I>GROUP</I><B>_</B><I>NAME</I>.
+
+   <B>Process</B> <B>Output</B> <B>Redirection</B> <B>Options</B>
+       <B>-e</B> <B>--err-to-stdlog</B>
+              Redirect  the  process  <B>stderr</B>  (standard  error  stream) to the
+              default FMC Message Logger. Omitting <B>-e</B> or <B>-E</B> <I>ERR</I><B>_</B><I>FIFO</I>  options,
+              the standard error stream is thrown in /dev/null.
+
+       <B>-o</B> <B>--out-to-stdlog</B>
+              Redirect  the  process  <B>stdout</B>  (standard  output stream) to the
+              default FMC Message Logger. Omitting <B>-o</B> or <B>-O</B> <I>OUT</I><B>_</B><I>FIFO</I>  options,
+              the standard output stream is thrown in /dev/null.
+
+       <B>-E</B> <B>--err-to-log</B> <I>ERR</I><B>_</B><I>FIFO</I> <I>(string)</I>
+              Redirect the process <B>stderr</B> to the FMC Message Logger which uses
+              the FIFO (named pipe)  <I>ERR</I><B>_</B><I>FIFO</I>.  Omitting  <B>-e</B>  or  <B>-E</B>  <I>ERR</I><B>_</B><I>FIFO</I>
+              options, the standard error stream is thrown in /dev/null.
+
+       <B>-O</B> <B>--out-to-log</B> <I>OUT</I><B>_</B><I>FIFO</I> <I>(string)</I>
+              Redirect the process <B>stdout</B> to the FMC Message Logger which uses
+              the FIFO (named pipe)  <I>OUT</I><B>_</B><I>FIFO</I>.  Omitting  <B>-o</B>  or  <B>-O</B>  <I>OUT</I><B>_</B><I>FIFO</I>
+              options, the standard output stream is thrown in /dev/null.
+
+       <B>-A</B> <B>--no-drop</B>
+              In  conjunction  with  <B>-E</B> <I>ERR</I><B>_</B><I>FIFO</I> and <B>-O</B> <I>OUT</I><B>_</B><I>FIFO</I> options, this
+              option forces the <B>no-drop</B> policy for the FIFO. <B>Default</B>: the <B>con-</B>
+              <B>gestion-proof</B> policy is used for the FIFO.
+
+   <B>Other</B> <B>Process</B> <B>Options</B>
+       <B>-d</B> <B>--daemon</B>
+              Start  the  process as <B>daemon</B>: the process <B>umask</B> (user file-cre-
+              ation mask) is changed into 0 (zero) and the program is run in a
+              new <B>session</B> as <B>process</B> <B>group</B> <B>leader</B>.
+
+       <B>-u</B> <B>--utgid</B> <I>UTGID</I> <I>(string)</I>
+              Set the process <B>utgid</B> (User assigned unique Thread Group Identi-
+              fier) to <I>UTGID</I>.
+
+       <B>-w</B> <B>--wd</B> <I>WD</I> <I>(string)</I>
+              Set the process <B>working</B> <B>directory</B> to <I>WD</I>. File open by  the  pro-
+              cess  without  path  specification  are sought by the process in
+              this directory. Process  <B>relative</B>  <B>file</B>  <B>path</B>  start  from  this
+              directory.
+
+   <B>Accessory</B> <B>Options</B>
+       <B>-h</B> <B>--help</B>
+              Get basic usage help from the command line, then terminate.
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must  include  the  path to the libraries "libdim" and "libFMCu-
+              tils".
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Start the process "counter" at all the nodes running the  Task  Manager
+       Server registered with the current DIM DNS:
+
+       <I>bash$</I> <B>tmStart</B> <B>/opt/FMC/tests/counter</B>
+       <I>bash$</I> <B>tmStart</B> <B>-m</B> <B>"*"</B> <B>/opt/FMC/tests/counter</B>
+       <I>bash$</I> <B>tmStart</B> <B>-m</B> <B>\*</B> <B>/opt/FMC/tests/counter</B>
+
+       Redirect stdout and stderr to the default FMC Message Logger:
+
+       <I>bash$</I> <B>tmStart</B> <B>-e</B> <B>-o</B> <B>/opt/FMC/tests/counter</B>
+
+       Set the utgid to "my_counter":
+
+       <I>bash$</I> <B>tmStart</B> <B>-e</B> <B>-o</B> <B>-u</B> <B>my_counter</B> <B>/opt/FMC/tests/counter</B>
+
+       Start the process "counter" only at nodes "farm0101" and "farm0102":
+
+       <I>bash$</I> <B>tmStart</B> <B>-m</B> <B>farm0101</B> <B>-m</B> <B>farm0102</B> <B>/opt/FMC/tests/counter</B>
+
+       Use wildcard patterns to select the nodes:
+
+       <I>bash$</I> <B>tmStart</B> <B>-m</B> <B>"farm0*"</B> <B>-m</B> <B>"farm1*"</B> <B>/opt/FMC/tests/counter</B>
+       <I>bash$</I> <B>tmStart</B> <B>-m</B> <B>farm0\*</B> <B>-m</B> <B>farm1\*</B> <B>/opt/FMC/tests/counter</B>
+       <I>bash$</I> <B>tmStart</B> <B>-m</B> <B>"farm010?"</B> <B>/opt/FMC/tests/counter</B>
+       <I>bash$</I> <B>tmStart</B> <B>-m</B> <B>farm010\?</B> <B>/opt/FMC/tests/counter</B>
+       <I>bash$</I> <B>tmStart</B> <B>-m</B> <B>"farm0[3-7]01"</B> <B>/opt/FMC/tests/counter</B>
+       <I>bash$</I> <B>tmStart</B> <B>-m</B> <B>"farm0[3-7]??"</B> <B>-m</B> <B>"ctrl0[1-4]"</B> <B>/opt/FMC/tests/counter</B>
+
+       Start the process as daemon and set the working directory:
+
+       <I>bash$</I> <B>tmStart</B> <B>-m</B> <B>farm003</B> <B>-d</B> <B>-w</B> <B>/opt/FMC/tests</B> <B>./counter</B>
+
+       Clear the environment, set the utgid and the working directory:
+
+       <I>bash$</I> <B>tmStart</B> <B>-m</B> <B>farm003</B> <B>-c</B> <B>-u</B> <B>my_ps</B> <B>-w</B> <B>/bin</B> <B>ps</B> <B>-e</B> <B>-f</B>
+
+       Start the process as daemon:
+
+       <I>bash$</I> <B>tmStart</B> <B>-d</B> <B>/opt/FMC/tests/counter</B>
+
+       Use the scheduler SCHED_FIFO with static priority set to 1:
+
+       <I>bash$</I> <B>tmStart</B> <B>-d</B> <B>-s</B> <B>1</B> <B>-r</B> <B>1</B> <B>/opt/FMC/tests/counter</B>
+
+       Use the scheduler SCHED_OTHER with nice level set to -10:
+
+       <I>bash$</I> <B>tmStart</B> <B>-d</B> <B>-p</B> <B>-10</B> <B>-n</B> <B>galli</B> <B>/opt/FMC/tests/counter</B>
+
+       Decrease the chance for the process to be killed by the OOM Killer:
+
+       <I>bash$</I> <B>tmStart</B> <B>-k</B> <B>-100</B> <B>-n</B> <B>galli</B> <B>/opt/FMC/tests/counter</B>
+
+       Set the user to "galli" and the group to "users":
+
+       <I>bash$</I> <B>tmStart</B> <B>-d</B> <B>-p</B> <B>-10</B> <B>-n</B> <B>galli</B> <B>-g</B> <B>users</B> <B>/opt/FMC/tests/counter</B>
+
+       Clear the environment and set two new environment variables:
+
+       <I>bash$</I> <B>tmStart</B> <B>-c</B> <B>-d</B> <B>-D</B> <B>LD_LIBRARY_PATH=/opt/dim/linux:/opt/FMC/lib</B>
+       <B>-D</B> <B>DIM_DNS_NODE=ctrl00.daq.lhcb</B> <B>/opt/FMC/tests/counter</B>
+
+       Clear the environment, set two new environment variables, run  as  dae-
+       mon,  with  scheduler  SCHED_FIFO and static priority set to 1, set the
+       user, the utgid and the working directory, redirect stdout and stderr:
+
+       <I>bash$</I> <B>tmStart</B> <B>-m</B> <B>farm0101</B> <B>-c</B> <B>-d</B>
+       <B>-D</B> <B>LD_LIBRARY_PATH=/opt/dim/linux:/opt/FMC/lib</B>
+       <B>-D</B> <B>DIM_DNS_NODE=ctrl00.daq.lhcb</B> <B>-s</B> <B>1</B> <B>-r</B> <B>1</B> <B>-n</B> <B>galli</B> <B>-u</B> <B>my_counter</B>
+       <B>-w</B> <B>/opt/FMC/tests</B> <B>-e</B> <B>-o</B> <B>./counter</B> <B>123</B>
+
+       Set the CPU affinity of the process to CPU 0 and 2:
+
+       <I>bash$</I> <B>tmStart</B> <B>-m</B> <B>farm0141</B> <B>-c</B> <B>-d</B>
+       <B>-D</B> <B>LD_LIBRARY_PATH=/opt/dim/linux:/opt/FMC/lib</B>
+       <B>-D</B> <B>DIM_DNS_NODE=ctrl00.daq.lhcb</B> <B>-s</B> <B>1</B> <B>-r</B> <B>1</B> <B>-a</B> <B>0</B> <B>-a</B> <B>2</B> <B>-n</B> <B>galli</B>
+       <B>-u</B> <B>my_counter</B> <B>-w</B> <B>/opt/FMC/tests</B> <B>-e</B> <B>-o</B> <B>./counter</B> <B>123</B>
+
+       Using a specific logger (non-default) for both stdout and stderr:
+
+       <I>bash$</I> <B>tmStart</B> <B>-m</B> <B>farm0101</B> <B>-u</B> <B>counter_logger</B> <B>/opt/FMC/sbin/logSrv</B>
+       <B>-p</B> <B>/tmp/counter_logger.fifo</B> <B>-s</B> <B>counter_logger</B>
+       <I>bash$</I> <B>logViewer</B> <B>-s</B> <B>counter_logger</B>
+       <I>bash$</I> <B>tmStart</B> <B>-m</B> <B>farm0101</B> <B>-u</B> <B>my_counter</B> <B>-E</B> <B>/tmp/counter_logger.fifo</B>
+       <B>-O</B> <B>/tmp/counter_logger.fifo</B> <B>-A</B> <B>/opt/FMC/tests/counter</B>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information on how to get the FMC (Farm Monitoring and Control  System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development Homepage
+       &lt;http://lhcbweb2.bo.infn.it/bin/view/LHCbBologna/FmcLinux&gt;.
+
+       CERN Engineering Department, JCOP, FMC
+       &lt;http://j2eeps.cern.ch/wikis/display/EN/
+       JCOP+Framework+Farm+Monitoring+and+Control+Tool&gt;.
+
+       LHCb Online RPMs
+       &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  tmStart.C,v 6.5 2012/12/13 15:59:49 galli
+
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO</H2><PRE>
+       <B><A HREF="../../htmlMan/man1/tmLs.1.html">tmLs(1)</A></B>, <B><A HREF="../../htmlMan/man1/tmLl.1.html">tmLl(1)</A></B>, <B><A HREF="../../htmlMan/man1/tmKill.1.html">tmKill(1)</A></B>, <B><A HREF="../../htmlMan/man1/tmStop.1.html">tmStop(1)</A></B>.
+       <B><A HREF="../../htmlMan/man1/pcAdd.1.html">pcAdd(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcRm.1.html">pcRm(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcLs.1.html">pcLs(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcLl.1.html">pcLl(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcLss.1.html">pcLss(1)</A></B>.
+       <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>.
+       <B><A HREF="../../htmlMan/man7/glob.7.html">glob(7)</A></B>.
+
+FMC-3.9.14                        2012-12-19                        <B><A HREF="../../htmlMan/man1/tmStart.1.html">tmStart(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

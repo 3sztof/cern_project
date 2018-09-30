@@ -1,0 +1,196 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/cmGet.1.html">cmGet(1)</A></B>                       FMC User Commands                      <B><A HREF="../../htmlMan/man1/cmGet.1.html">cmGet(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>cmGet</B> <B>-</B> Read a file from one or more farm nodes through the FMC Config-
+               uration Manager
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>cmGet</B> [<B>-v...</B>]  [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-m</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]  [<B>-q</B>]
+             [<B>-o</B> <I>OUT</I><B>_</B><I>DIR</I>] [<B>-t</B> <I>RPC</I><B>_</B><I>TIME</I><B>_</B><I>OUT</I>] <B>-p</B> <I>FILE</I><B>_</B><I>PATH</I>
+
+       <B>cmGet</B> <B>-V</B> [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-m</B> <I>NODE</I><B>_</B><I>PATTERN</I>]
+
+       <B>cmGet</B> <B>-h</B>
+
+
+</PRE>
+<H2>INTRODUCTION</H2><PRE>
+       The  FMC <B>Configuration</B> <B>Manager</B> is a tool to <B>read</B>, <B>write</B> and <B>remove</B> <B>con-</B>
+       <B>figuration</B> <B>files</B> (more generally, ASCII files) to/from the farm  nodes.
+
+       The  Process  Controller  Server, <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B>, typically runs on each farm
+       node and allows to access the files on the node it is running on.
+
+       The Process Controller Clients <B><A HREF="../../htmlMan/man1/cmSet.1.html">cmSet(1)</A></B>, <B><A HREF="../../htmlMan/man1/cmUnset.1.html">cmUnset(1)</A></B>  and  <B><A HREF="../../htmlMan/man1/cmGet.1.html">cmGet(1)</A></B>  can
+       contact  one or more Process Controller Servers running on remote nodes
+       to write files, remove files and read files respectively.
+
+       File access can be <B>restricted</B> in 2 different ways  simultaneously:  (a)
+       by  means  of  a username/hostname access control and (b) by means of a
+       filename access control. See <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B> for more information.
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The command <B><A HREF="../../htmlMan/man1/cmGet.1.html">cmGet(1)</A></B> <B>read</B> the files at the absolute path <I>FILE</I><B>_</B><I>PATH</I> from
+       all  the farm nodes whose hostname matches at least one of the wildcard
+       patterns <I>NODE</I><B>_</B><I>PATTERN</I> and print their content either  to  the  standard
+       output  stream (terminal), if the option <B>-o</B> <I>OUT</I><B>_</B><I>DIR</I> is omitted, or to a
+       file in the directory <I>OUT</I><B>_</B><I>DIR</I>, if the option <B>-o</B> <I>OUT</I><B>_</B><I>DIR</I> is specified.
+
+       Together with the file content, the command <B><A HREF="../../htmlMan/man1/cmGet.1.html">cmGet(1)</A></B>  always  print  to
+       the standard output stream also: (a) the date and time of the last mod-
+       ification of the file; (b) the size of the file  (in  Bytes);  (c)  the
+       file  permission  (in  octal notation); (d) the UID (User Identifier of
+       the file owner); (e) the GID (Group Identifier of the file owner).
+
+       The DIM Name Server, looked  up  to  seek  for  Configuration  Managers
+       Servers, can be chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file "<B>/etc/sysconfig/dim</B>".
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B>     Get basic usage help from the command line, then terminate.
+
+       <B>-v</B>     Increase verbosity for debugging.
+
+       <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-m</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Operate  only with the nodes whose hostname matches at least one
+              of the wildcard patterns <I>NODE</I><B>_</B><I>PATTERN</I> (<B>default</B>: operate with all
+              the nodes).
+
+       <B>-V</B>     For  each  selected  node  print  the  FMC Configuration Manager
+              Server version and the FMC version, than terminate.
+
+       <B>-p</B> <I>FILE</I><B>_</B><I>PATH</I> <I>(string,</I> <I>mandatory)</I>
+              Read the files at path <I>FILE</I><B>_</B><I>PATH</I> from the selected nodes.
+
+       <B>-o</B> <I>OUT</I><B>_</B><I>DIR</I> <I>(string)</I>
+              Write the content of the remote files  to  local  files  in  the
+              directory <I>OUT</I><B>_</B><I>DIR</I>. Local file are named <I>NODE.FILE</I><B>_</B><I>PATH</I> where the
+              slash characters in  <I>FILE</I><B>_</B><I>PATH</I>  are  substituted  by  underscore
+              characters.
+
+       <B>-q</B>     Quiet  mode.  Do not print the file content. Print only the date
+              and time of the last modification of the file, the size  of  the
+              file  (in  Bytes),  the file permission (in octal notation), the
+              UID (User Identifier of the file  owner),  and  the  GID  (Group
+              Identifier of the file owner) and possible error messages.
+
+       <B>-t</B> <I>RPC</I><B>_</B><I>TIME</I><B>_</B><I>OUT</I> <I>(integer)</I>
+              Set  the timeout for the Remote Procedure Call to <I>RPC</I><B>_</B><I>TIME</I><B>_</B><I>OUT</I> .
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries  "libdim"  and  "libFMCu-
+              tils".
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Read the remote files "/tmp/test.conf" at all the farm nodes registered
+       with the current DIM name server and print their contents to  the  cur-
+       rent  terminal  (together  with the date and time of the last modifica-
+       tion, the size, the permission (in octal notation) and the UID and  the
+       GID of the owner):
+
+       <I>bash$</I> <B>cmGet</B> <B>-p</B> <B>/tmp/test.conf</B>
+
+       Read the remote files "/tmp/test.conf" at all the farm nodes registered
+       with the current DIM name server and print to the current terminal only
+       the  date  and  time of the last modification, the size, the permission
+       (in octal notation) and the UID and the GID of the owner:
+
+       <I>bash$</I> <B>cmGet</B> <B>-q</B> <B>-p</B> <B>/tmp/test.conf</B>
+
+       Read the remote files "/tmp/test.conf" at all the farm nodes registered
+       with  the current DIM name server and print their contents to the local
+       files <I>hostname</I>.tmp_test.conf in the current  directory;  the  date  and
+       time of the last modification, the size, the permission (in octal nota-
+       tion) and the UID and the GID of the owner are  still  printed  to  the
+       current terminal:
+
+       <I>bash$</I> <B>cmGet</B> <B>-p</B> <B>/tmp/test.conf</B> <B>-o</B> <B>.</B>
+
+       Read  the  remote  file "/tmp/test.conf" only at the farm node farm0101
+       and print its content to the  current  terminal  (together  with  date,
+       time, size, etc.):
+
+       <I>bash$</I> <B>cmGet</B> <B>-m</B> <B>farm0101</B> <B>-p</B> <B>/tmp/test.conf</B>
+
+       Use a wildcard pattern to select the nodes:
+
+       <I>bash$</I> <B>cmGet</B> <B>-m</B> <B>"farm0[0-5]*"</B> <B>-m</B> <B>"farm07[135][0-5]"</B> <B>-p</B> <B>/tmp/test.conf</B>
+       <I>bash$</I> <B>cmGet</B> <B>-m</B> <B>"farm07[135][0-5]"</B> <B>-o</B> <B>.</B> <B>-p</B> <B>/tmp/test.conf</B>
+       <I>bash$</I> <B>cmGet</B> <B>-m</B> <B>"farm07[135][0-5]"</B> <B>-o</B> <B>/tmp</B> <B>-p</B> <B>/tmp/test.conf</B>
+
+       Check the version of the Configuration Manager Servers installed on the
+       farm nodes:
+
+       <I>bash$</I> <B>cmGet</B> <B>-V</B>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information on how to get the FMC (Farm Monitoring and Control  System)
+       package and related information is available at the web sites:
+
+       FMC  Linux  Development Homepage &lt;https://lhcbweb.bo.infn.it/twiki/bin/
+       view.cgi/LHCbBologna/FmcLinux&gt;.
+
+       CERN ITCOBE: FW Farm Monitor  and  Control  &lt;http://itcobe.web.cern.ch/
+       itcobe/Projects/Framework/Download/Components/SystemOverview/fwFMC/wel-
+       come.html&gt;.
+
+       LHCb Online RPMs &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/
+       index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  cmGet.C,v 1.12 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO:</H2><PRE>
+       <B><A HREF="../../htmlMan/man1/cmSet.1.html">cmSet(1)</A></B>, <B><A HREF="../../htmlMan/man1/cmUnset.1.html">cmUnset(1)</A></B>, <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B>,
+       <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>.
+       <B><A HREF="../../htmlMan/man7/glob.7.html">glob(7)</A></B>.
+
+FMC-3.9.14                        2012-12-19                          <B><A HREF="../../htmlMan/man1/cmGet.1.html">cmGet(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

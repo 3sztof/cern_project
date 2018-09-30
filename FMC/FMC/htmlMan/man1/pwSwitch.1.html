@@ -1,0 +1,257 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/pwSwitch.1.html">pwSwitch(1)</A></B>                    FMC User Commands                   <B><A HREF="../../htmlMan/man1/pwSwitch.1.html">pwSwitch(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>pwSwitch</B> <B>-</B> Issue an IPMI Power Command (power on, power off, power
+                  cycle, etc.) to the farm PC(s) through the FMC Power Manager
+                  Server
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>pwSwitch</B> [<B>-v</B>] [<B>-f</B>] [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-m</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]
+                [<B>-d</B> <I>DELAY</I><B>_</B><I>TIME</I>] <I>CMD</I>
+
+       <B>pwSwitch</B> <B>-V</B> [<B>-v</B>] [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-m</B> <I>CTRL</I><B>_</B><I>PC</I><B>_</B><I>PATTERN...</I>]
+
+       <B>pwSwitch</B> { <B>-h</B> | <B>--help</B> }
+
+       <I>CMD</I> = on | off | cycle | soft_off | hard_reset | pulse_diag
+
+
+</PRE>
+<H2>INTRODUCTION</H2><PRE>
+       The FMC Power Manager is a tool which allows, in an OS-independent man-
+       ner,  to  <B>switch-on</B>, <B>switch-off</B>, and <B>power-cycle</B> the farm nodes, and to
+       <B>monitor</B> their physical condition: <B>power</B>  <B>status</B>  (on/off),  and  sensor
+       information  retrieved  through  the I2C bus (<B>temperatures</B>, <B>fan</B> <B>speeds</B>,
+       <B>voltages</B> and <B>currents</B>).
+
+       The FMC Power Manager can operate on the farm nodes whose  motherboards
+       and  network  interface  cards implement the <B>IPMI</B> (Intelligent Platform
+       Management Interface) specifications, version 1.5  or  subsequent,  and
+       copes with several IPMI limitations.
+
+       The  FMC  Power Manager Server, <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B> typically runs on a few con-
+       trol PCs (each one watching up to 200-1000 farm  nodes)  and  uses  the
+       IPMI  protocol  to  communicate with the BMC (Baseboard Management Con-
+       troller) of the farm nodes, and the DIM network communication layer  to
+       communicate with the Power Manager Clients.
+
+       The  Power  Manager  Clients <B><A HREF="../../htmlMan/man1/pwSwitch.1.html">pwSwitch(1)</A></B>, <B><A HREF="../../htmlMan/man1/pwStatus.1.html">pwStatus(1)</A></B> and <B><A HREF="../../htmlMan/man1/ipmiViewer.1.html">ipmiViewer(1)</A></B>
+       can contact one or more Power Manager Servers, running on  remote  Con-
+       trol  PCs,  to  switch on/off the farm worker nodes controlled by these
+       Control PCs and to retrieve their physical condition.
+
+       The FMC Power Manager Server <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B> accesses  the  farm  node  BMCs
+       both periodically and on user demand: it inquires <B>periodically</B> the farm
+       node BMCs to get their power status and sensor information  (and  keeps
+       the  information and its time stamp to be able to answer immediately to
+       a client request); it sends commands (power on, power off, power cycle,
+       etc.) to the farm node BMCs <B>on</B> <B>user</B> <B>request</B>.
+
+       The Power Manager Server copes with the long IPMI response time by <B>par-</B>
+       <B>allelly</B> <B>accessing</B> <B>each</B> <B>node</B> from a different short-living thread. Every
+       IPMI  access  request  by <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B> starts, by default, as many short-
+       living threads as the number of the controlled nodes  and  each  short-
+       living  thread accesses one node only. In case of a huge number of con-
+       figured nodes (&gt;~ 500), the number of short-living threads can be  lim-
+       ited: in this running condition the IPMI accesses which exceed the max-
+       imum thread number are queued up.
+
+       The Power Manager Server copes also with the IPMI limitation to be able
+       to  process  only  one  access at a time, by <B>arbitrating</B> among the <B>IPMI</B>
+       <B>accesses</B> <B>to</B> <B>the</B> <B>same</B> <B>node</B>. In case of overlapping commands or and peri-
+       odical  inquiries, the Power Manager Server <B>enqueues</B> <B>commands</B>, in order
+       for all the received commands to be executed, one at a time, exactly in
+       the   same  order  they  were  issued,  and  <B>cancel</B>  <B>periodical</B>  <B>sensor</B>
+       <B>inquiries</B>, in  order  to  avoid  indefinite  thread  pile-up  for  not-
+       responding IPMI interfaces.
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The  <B><A HREF="../../htmlMan/man1/pwSwitch.1.html">pwSwitch(1)</A></B>  command  issues the <B>IPMI</B> <B>chassis</B> <B>power</B> <B>command</B> <I>CMD</I> to
+       all the farm  nodes  (controlled  by  a  Power  Manager  Server)  whose
+       hostname  matches  at least one of the wildcard patter <I>NODE</I><B>_</B><I>PATTERN</I> (by
+       <B>default</B>: "*").
+
+       The IPMI chassis  power  commands  which  can  be  issued  through  the
+       <B><A HREF="../../htmlMan/man1/pwSwitch.1.html">pwSwitch(1)</A></B> command (non-option argument <I>CMD</I>) are:
+
+       <B>on</B>:    Power-up the node
+
+       <B>off</B>:   Power  down  the  node into soft off (S4/S5 state). This command
+              does not initiate a clean shutdown of the operating system prior
+              to powering down the system.
+
+       <B>cycle</B>: Provides  a power off interval of at least 1 s. No action should
+              occur if the node power is in S4/S5 state.
+
+       <B>soft_off</B>:
+              Initiate a soft-shutdown of the OS via ACPI. This can be done in
+              a number of ways, commonly by simulating an overtemperture or by
+              simulating a power button press. It is necessary to have OS sup-
+              port  for  ACPI  and some sort of daemon watching for soft power
+              events.
+
+       <B>hard_reset</B>:
+              Pulse the system reset signal.
+
+       <B>pulse_diag</B>:
+              Pulse a diagnostic interrupt (NMI) directly to the processor(s).
+              This  is  typically  used  to cause the operating system to do a
+              diagnostic dump (OS dependent).
+
+       Unless the option <B>-f</B> (force) is specified, before  proceeding  issueing
+       the  command,  the  list  of  the  nodes matching the wildcard patterns
+       <I>NODE</I><B>_</B><I>PATTERN</I> is shown and a <B>confirmation</B> is asked.
+
+       By means of the option <B>-d</B> <I>DELAY</I><B>_</B><I>TIME</I>, commands issued to different farm
+       nodes  can  be  spaced out by the time interval <I>DELAY</I><B>_</B><I>TIME</I>, in order to
+       limit the <B>inrush</B> <B>current</B>).
+
+       The DIM Name Server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>, looked up to seek for FMC Power  Man-
+       ager Servers, can be chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file "<B>/etc/sysconfig/dim</B>".
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B> <B>--help</B>
+              Get basic usage help from the command line, then terminate.
+
+       <B>-v</B>     Increase verbosity for debugging.
+
+       <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-m</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Send  the command only to the controlled farm PCs whose hostname
+              matches at least  one  of  the  wildcard  patterns  <I>NODE</I><B>_</B><I>PATTERN</I>
+              (<B>default</B>: send the command to all the controlled farm PCs).
+
+       <B>-V</B>     For  each  selected node print the FMC Power Manager Server ver-
+              sion and the FMC version, than terminate.
+
+       <B>-f</B>     Do not prompt for confirmation before sending  a  command  to  a
+              group  of nodes defined by means of a wildcard pattern (<B>default</B>:
+              always ask confirmation before sending a command to a  group  of
+              nodes defined by means of a wildcard pattern).
+
+       <B>-d</B> <I>DELAY</I><B>_</B><I>TIME</I> <I>(float)</I>
+              Space  out  the commands dispatched to different farm PCs by the
+              delay <I>DELAY</I><B>_</B><I>TIME</I>, in order to limit the <B>inrush</B> <B>current</B> (<B>default</B>:
+              no delay).
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must  include  the  path to the libraries "libdim" and "libFMCu-
+              tils".
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Switch on all the controlled PCs:
+
+       <I>bash$</I> <B>pwSwitch</B> <B>on</B>
+       <I>bash$</I> <B>pwSwitch</B> <B>-m</B> <B>\*</B> <B>on</B>
+       <I>bash$</I> <B>pwSwitch</B> <B>-m</B> <B>"*"</B> <B>on</B>
+
+       Switch off all the controlled PCs:
+
+       <I>bash$</I> <B>pwSwitch</B> <B>off</B>
+       <I>bash$</I> <B>pwSwitch</B> <B>-m</B> <B>\*</B> <B>off</B>
+       <I>bash$</I> <B>pwSwitch</B> <B>-m</B> <B>"*"</B> <B>off</B>
+
+       Power cycle all the controlled PCs:
+
+       <I>bash$</I> <B>pwSwitch</B> <B>cycle</B>
+       <I>bash$</I> <B>pwSwitch</B> <B>-m</B> <B>\*</B> <B>cycle</B>
+       <I>bash$</I> <B>pwSwitch</B> <B>-m</B> <B>"*"</B> <B>cycle</B>
+
+       Switch on, switch off and power cycle only the farm node farm0107:
+
+       <I>bash$</I> <B>pwSwitch</B> <B>-m</B> <B>farm0107</B> <B>on</B>
+       <I>bash$</I> <B>pwSwitch</B> <B>-m</B> <B>farm0107</B> <B>off</B>
+       <I>bash$</I> <B>pwSwitch</B> <B>-m</B> <B>farm0107</B> <B>cycle</B>
+
+       Power cycle the three farm nodes farm0107, farm0314 and farm0705:
+
+       <I>bash$</I> <B>pwSwitch</B> <B>-m</B> <B>farm0107</B> <B>-m</B> <B>farm0314</B> <B>-m</B> <B>farm0705</B> <B>cycle</B>
+
+       Use a wildcard pattern to select the farm nodes:
+
+       <I>bash$</I> <B>pwSwitch</B> <B>-m</B> <B>"farm*"</B> <B>off</B>
+       <I>bash$</I> <B>pwSwitch</B> <B>-m</B> <B>farm\*</B> <B>cycle</B>
+       <I>bash$</I> <B>pwSwitch</B> <B>-m</B> <B>"farm01[3-7]?"</B> <B>on</B>
+       <I>bash$</I> <B>pwSwitch</B> <B>-m</B> <B>"farm01[1357]1"</B> <B>off</B>
+       <I>bash$</I> <B>pwSwitch</B> <B>-m</B> <B>farm010\?</B> <B>-m</B> <B>farm011\?</B> <B>on</B>
+       <I>bash$</I> <B>pwSwitch</B> <B>-m</B> <B>"farm01??"</B> <B>-m</B> <B>"farm02??"</B> <B>-m</B> <B>"farm03??"</B> <B>on</B>
+
+       Space out the dispatch of the power-on command to different nodes by  a
+       delay of 0.5 seconds:
+
+       <I>bash$</I> <B>pwSwitch</B> <B>-d</B> <B>0.5</B> <B>-m</B> <B>"farm01*"</B> <B>-m</B> <B>"ctrl01*"</B> <B>on</B>
+
+       Do not ask confirmation for a wildcard command:
+
+       <I>bash$</I> <B>pwSwitch</B> <B>-f</B> <B>-m</B> <B>"farm01*"</B> <B>-m</B> <B>"ctrl01*"</B> <B>off</B>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information  on how to get the FMC (Farm Monitoring and Control System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development  Homepage  &lt;https://lhcbweb.bo.infn.it/twiki/bin/
+       view.cgi/LHCbBologna/FmcLinux&gt;.
+
+       CERN  ITCOBE:  FW  Farm Monitor and Control &lt;http://itcobe.web.cern.ch/
+       itcobe/Projects/Framework/Download/Components/SystemOverview/fwFMC/wel-
+       come.html&gt;.
+
+       LHCb Online RPMs &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/
+       index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  pwSwitch.C,v 1.8 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO:</H2><PRE>
+       <B><A HREF="../../htmlMan/man1/pwStatus.1.html">pwStatus(1)</A></B>, <B><A HREF="../../htmlMan/man1/ipmiViewer.1.html">ipmiViewer(1)</A></B>, <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>.
+       <B><A HREF="../../htmlMan/man1/ipmitool.1.html">ipmitool(1)</A></B>.
+
+FMC-3.9.14                        2012-12-19                       <B><A HREF="../../htmlMan/man1/pwSwitch.1.html">pwSwitch(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

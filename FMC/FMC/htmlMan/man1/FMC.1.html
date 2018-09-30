@@ -1,0 +1,436 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/FMC.1.html">FMC(1)</A></B>                         FMC User Commands                        <B><A HREF="../../htmlMan/man1/FMC.1.html">FMC(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>FMC</B> <B>-</B> Farm Monitoring and Control System
+
+
+</PRE>
+<H2>INTRODUCTION</H2><PRE>
+       The FMC (<B>Farm</B> <B>Monitoring</B> <B>and</B> <B>Control</B>) System has been designed to moni-
+       tor and control each PC of the online Event Filter  Farm  of  the  LHCb
+       Experiment  at CERN, composed of ~2000 PCs and to supervise the overall
+       status of the farm.
+
+       The FMC is based on DIM (Distributed Information Management System)  as
+       network  communication  layer.  It is accessible both through a command
+       line  interface  and  through  the  PVSS  (Prozessvisualisierungs   und
+       Steuerungssystem,  a commercial SCADA system adopted by CERN) graphical
+       interface, and it is interfaced to the <B>Finite</B> <B>State</B>  <B>Machine</B>  (FSM)  of
+       the  <B>Experiment</B>  <B>Control</B> <B>System</B> (ECS) in order to manage anomalous farm
+       conditions.
+
+       The FMC is an integral part of the ECS, which is in charge of  monitor-
+       ing  and  controlling  all  on-line  components; it uses the same tools
+       (DIM, PVSS, FSM, etc.) to guarantee  its  complete  integration  and  a
+       coherent look and feel throughout the whole control system.
+
+
+</PRE>
+<H2>OVERVIEW</H2><PRE>
+       The FMC System is composed of the following tools:
+
+       The <B>Message</B> <B>Logger</B>
+              collects  messages  sent by the applications running on the farm
+              nodes.
+
+       The <B>Power</B> <B>Manager</B>
+              can switch off and on the farm nodes; moreover it  monitors  the
+              physical  parameters  (temperatures,  fan  speeds,  power supply
+              voltages, etc.).
+
+       The <B>Task</B> <B>Manager</B>
+              can start and stop processes on the farm nodes  from  a  central
+              console; moreover it provides a real-time notification upon pro-
+              cess terminations.
+
+       The <B>Process</B> <B>Controller</B>
+              is in charge of keeping a list of applications up and running on
+              the  farm  nodes,  by interacting with the Task Managers and re-
+              spawning the terminated processes if requested.
+
+       The <B>Configuration</B> <B>Manager</B>
+              is a tool to read, write and remove  configuration  files  (more
+              generally, ASCII files) to/from the farm nodes.
+
+       The <B>Monitor</B> <B>System</B>
+              supervises the farm node operation.
+
+       Excepting  the  Process  Controller, which depends on the Task Manager,
+       all the other tools listed above are <B>independent</B> each-other and can  be
+       used <B>stand-alone</B>.  All the FMC tools can send their diagnostic messages
+       to the Message Logger (but can also send them  to  the  standard  error
+       stream  or  to  the system log service) and the Task Manager is able to
+       redirect to the Message Logger the standard output and error streams of
+       the started processes.
+
+       Since  <B>fault-tolerance</B>  is  an important requirement of the system, the
+       software was designed in order to be kept as  simple  as  possible,  to
+       exploit  as  far  as  possible the existing OS kernel services -- since
+       they are certainly reliable and optimized --, to handle and  log  every
+       occurrence of envisaged exception and to be able to <B>survive</B> <B>the</B> <B>restart</B>
+       <B>of</B> <B>each</B> <B>component</B>.  In the event of a Task Manager restart, a mechanism
+       exploiting  the  process table of the Linux kernel, allows the new Task
+       Manager instance to take control on every running  process  started  by
+       the  previous  instance.  Finally, the system servers are automatically
+       restarted, either by the Linux <I>init</I> process or by the FMC Process  Con-
+       troller, in case of unexpected termination.
+
+       The  FMC  consists  in  <B>light-weight</B> servers running on the farm nodes,
+       which communicate, by means of the <I>DIM</I> network layer, with an arbitrary
+       number  of  clients running on different PCs, which can be command line
+       clients or graphical PVSS clients.  In  particular,  the  PVSS  clients
+       interface the FMC with the experiment FSM to induce the transition of a
+       state machine to an alarm state when the monitored parameters  indicate
+       abnormal  farm  conditions,  and  to execute actions (system reboot and
+       power on/off, process start/stop) triggered by a state machine  transi-
+       tion.
+
+       To guarantee a <B>coherent</B> <B>look</B> <B>and</B> <B>feel</B> throughout the whole control sys-
+       tem, the FMC PVSS clients are fully integrated into the  LHCb  ECS,  in
+       charge  of  monitoring  and controlling all the on-line components: the
+       data  acquisition  and  the  trigger  (timing,  front-end  electronics,
+       Level-0  trigger electronics, readout network, EFF, etc.), the detector
+       operations (gases, high voltages, low  voltages,  temperatures,  etc.),
+       the  experimental  infrastructure  (magnet, cooling, ventilation, power
+       distribution, detector safety, etc.) and  the  interaction  with  other
+       outside  control  systems  (LHC  accelerator,  CERN safety system, CERN
+       technical services, etc.).
+
+       In a typical installation the <I>Message</I> <I>Logger</I>, <I>Task</I> <I>Manager</I> and  <I>Monitor</I>
+       <I>System</I>  servers  run  on  <B>each</B> <B>farm</B> <B>node</B>, the <I>Power</I> <I>Manager</I> and <I>Process</I>
+       <I>Controller</I> servers run on a few <B>control</B> <B>PCs</B>,  each  one  watching  ~200
+       farm nodes, and all the <I>clients</I> can run on one or more <B>monitor</B> <B>PCs</B>.
+
+
+</PRE>
+<H2>FMC USER COMMANDS AND LIBRARY CALLS</H2><PRE>
+       This  section summarises the <B>command-line</B> version of the FMC <B>front-end</B>.
+       It is made of <B>DIM</B> <B>clients</B> which are commands that can be issued by  the
+       users.
+
+   <B>Installation</B> <B>Check</B>
+       <B><A HREF="../../htmlMan/man1/fmcSrvViewer.1.html">fmcSrvViewer(1)</A></B>
+              Print the execution status (on/off) of the FMC Servers.
+
+       <B><A HREF="../../htmlMan/man1/fmcVersionViewer.1.html">fmcVersionViewer(1)</A></B>
+              Print  the  revision tag of the main source file and the version
+              tag of the FMC package of the FMC Servers currently running.
+
+   <B>Message</B> <B>Logger</B>
+       <B><A HREF="../../htmlMan/man1/logViewer.1.html">logViewer(1)</A></B>
+              FMC Message Logger displayer, saver and forwarder.
+
+       <B><A HREF="../../htmlMan/man1/logGetProperties.1.html">logGetProperties(1)</A></B>
+              Get the Properties of one or more FMC Message Logger  Server(s).
+
+       <B><A HREF="../../htmlMan/man1/logSetProperties.1.html">logSetProperties(1)</A></B>
+              Set  the Properties of one or more FMC Message Logger Server(s).
+
+       <B><A HREF="../../htmlMan/man1/mPrint.1.html">mPrint(1)</A></B>
+              Send a message to the FMC Message Logger Server.
+
+       <B><A HREF="../../htmlMan/man3/dfltLoggerOpen.3.html">dfltLoggerOpen(3)</A></B>
+              Open the access for writing to the default FMC Message Logger.
+
+       <B><A HREF="../../htmlMan/man3/getDfltFifoFD.3.html">getDfltFifoFD(3)</A></B>
+              Get the file descriptor of the default FMC Message Logger  FIFO.
+
+       <B><A HREF="../../htmlMan/man3/mPrintf.3.html">mPrintf(3)</A></B>
+              Send  a formatted message with header to the default FMC Message
+              Logger and/or to the standard error stream and/or to the OS sys-
+              log facility.
+
+       <B><A HREF="../../htmlMan/man3/rPrintf.3.html">rPrintf(3)</A></B>
+              Send  a formatted message without header to the default FMC Mes-
+              sage Logger and/or to the standard error stream and/or to the OS
+              syslog facility.
+
+       <B><A HREF="../../htmlMan/man3/dfltLoggerClose.3.html">dfltLoggerClose(3)</A></B>
+              Close  the access for writing to the default FMC Message Logger.
+
+       <B><A HREF="../../htmlMan/man3/loggerOpen.3.html">loggerOpen(3)</A></B>
+              Open the access for writing to a FMC Message Logger.
+
+       <B><A HREF="../../htmlMan/man3/mfPrintf.3.html">mfPrintf(3)</A></B>
+              Send a formatted message with header to a FMC Message Logger.
+
+       <B><A HREF="../../htmlMan/man3/rfPrintf.3.html">rfPrintf(3)</A></B>
+              Send a formatted message without header to a FMC Message Logger.
+
+       <B><A HREF="../../htmlMan/man3/loggerClose.3.html">loggerClose(3)</A></B>
+              Close the access for writing to a FMC Message Logger.
+
+   <B>Task</B> <B>Manager</B>
+       <B><A HREF="../../htmlMan/man1/tmStart.1.html">tmStart(1)</A></B>
+              Start  a  process on one or more farm node(s) using the FMC Task
+              Manager.
+
+       <B><A HREF="../../htmlMan/man1/tmKill.1.html">tmKill(1)</A></B>
+              Send a signal to one or more process(es) running on one or  more
+              node(s) using the FMC Task Manager.
+
+       <B><A HREF="../../htmlMan/man1/tmStop.1.html">tmStop(1)</A></B>
+              Terminate one or more process(es) running on one or more node(s)
+              using the FMC Task Manager.
+
+       <B><A HREF="../../htmlMan/man1/tmLs.1.html">tmLs(1)</A></B>
+              List the process(es) started by FMC Task Manager (short list).
+
+       <B><A HREF="../../htmlMan/man1/tmLl.1.html">tmLl(1)</A></B>
+              List the process(es) started by FMC  Task  Manager  (long  list,
+              including: TGID, CMD, UTGID and STATUS).
+
+   <B>Process</B> <B>Controller</B>
+       <B><A HREF="../../htmlMan/man1/pcAdd.1.html">pcAdd(1)</A></B>
+              Add  a new process to the FMC Process Controller and start it on
+              the farm nodes.
+
+       <B><A HREF="../../htmlMan/man1/pcRm.1.html">pcRm(1)</A></B>
+              Remove one or more process(es) from the FMC  Process  Controller
+              and stop them on the farm nodes.
+
+       <B><A HREF="../../htmlMan/man1/pcLs.1.html">pcLs(1)</A></B>
+              Show the processes in the list of the FMC Process Controller.
+
+       <B><A HREF="../../htmlMan/man1/pcLl.1.html">pcLl(1)</A></B>
+              Show  the  processes  in  the list of the FMC Process Controller
+              with their start parameters.
+
+       <B><A HREF="../../htmlMan/man1/pcLss.1.html">pcLss(1)</A></B>
+              Show the processes in the list of  the  FMC  Process  Controller
+              with the number of their (re)starts and the date and the time of
+              each (re)start.
+
+   <B>Power</B> <B>Manager</B>
+       <B><A HREF="../../htmlMan/man1/pwStatus.1.html">pwStatus(1)</A></B>
+              Print the Power Status (on/off) of the farm PC(s), got by  means
+              of the FMC Power Manager Server.
+
+       <B><A HREF="../../htmlMan/man1/ipmiViewer.1.html">ipmiViewer(1)</A></B>
+              Print  the Power Status (on/off) and the Sensor Status (tempera-
+              tures, fan speeds, etc.) of the farm PC(s), got by means of  the
+              FMC Power Manager Server.
+
+       <B><A HREF="../../htmlMan/man1/pwSwitch.1.html">pwSwitch(1)</A></B>
+              Issue  an  IPMI Power Command (power on, power off, power cycle,
+              etc.) to the farm PC(s) through the FMC Power Manager Server.
+
+   <B>Configuration</B> <B>Manager</B>
+       <B><A HREF="../../htmlMan/man1/cmSet.1.html">cmSet(1)</A></B>
+              Write a file to one or more farm nodes through the FMC  Configu-
+              ration Manager.
+
+       <B><A HREF="../../htmlMan/man1/cmUnset.1.html">cmUnset(1)</A></B>
+              Remove  a  file from one or more farm nodes through the FMC Con-
+              figuration Manager.
+
+       <B><A HREF="../../htmlMan/man1/cmGet.1.html">cmGet(1)</A></B>
+              Read a file from one or more farm nodes through the FMC Configu-
+              ration Manager.
+
+   <B>Monitor</B>
+       <B><A HREF="../../htmlMan/man1/osViewer.1.html">osViewer(1)</A></B>
+              Get Operating System information from the FMC OS Servers.
+
+       <B><A HREF="../../htmlMan/man1/couinfoViewer.1.html">couinfoViewer(1)</A></B>
+              Get  CPU  static  information  from  the  FMC  CPU  Info Monitor
+              Servers.
+
+       <B><A HREF="../../htmlMan/man1/cpustatViewer.1.html">cpustatViewer(1)</A></B>
+              Get CPU  state  information  from  the  FMC  CPU  state  Monitor
+              Servers.
+
+       <B><A HREF="../../htmlMan/man1/memViewer.1.html">memViewer(1)</A></B>
+              Get memory usage statistic information from the FMC Memory Moni-
+              tor Servers.
+
+       <B><A HREF="../../htmlMan/man1/irqViewer.1.html">irqViewer(1)</A></B>
+              Get  interrupt  rates  information  from  the  FMC  IRQ  Monitor
+              Servers.
+
+       <B><A HREF="../../htmlMan/man1/irqReset.1.html">irqReset(1)</A></B>
+              Reset  the  interrupt  counters  of  the  FMC  Interrupt Monitor
+              Servers.
+
+       <B><A HREF="../../htmlMan/man1/psViewer.1.html">psViewer(1)</A></B>
+              Get processes information from the FMC Process Monitor  Servers.
+
+       <B><A HREF="../../htmlMan/man1/nifViewer.1.html">nifViewer(1)</A></B>
+              Get  network interface statistics from the FMC Network Interface
+              Monitor Servers.
+
+       <B><A HREF="../../htmlMan/man1/nifReset.1.html">nifReset(1)</A></B>
+              Reset the counters of the FMC Network Interface Monitor Servers.
+
+       <B><A HREF="../../htmlMan/man1/coalViewer.1.html">coalViewer(1)</A></B>
+              Get  network interrupt coalescence information from the FMC Coa-
+              lescence Monitor Servers.
+
+       <B><A HREF="../../htmlMan/man1/coalReset.1.html">coalReset(1)</A></B>
+              Reset the network interrupt coalescence counters of the FMC Coa-
+              lescence Monitor Servers.
+
+       <B><A HREF="../../htmlMan/man1/tcpipViewer.1.html">tcpipViewer(1)</A></B>
+              Get  the TCP/IP stack statistics from the FMC TCP/IP Stack Moni-
+              tor Servers.
+
+       <B><A HREF="../../htmlMan/man1/tcpipReset.1.html">tcpipReset(1)</A></B>
+              Reset the counters of the FMC TCP/IP stack Monitor Servers.
+
+       <B><A HREF="../../htmlMan/man1/fsViewer.1.html">fsViewer(1)</A></B>
+              Get filesystem space usage from  the  DIM  File  System  Monitor
+              Servers.
+
+       <B><A HREF="../../htmlMan/man1/smartViewer.1.html">smartViewer(1)</A></B>
+               Get the SMART (Self-Monitoring, Analysis and Reporting Technol-
+              ogy) statistics from the FMC SMART Monitor Servers.
+
+
+</PRE>
+<H2>FMC SERVERS</H2><PRE>
+   <B>Control</B> <B>Servers</B>
+       This section summarises the FMC <B>back-end</B>, made of  a  few  <B>DIM</B>  <B>servers</B>
+       which typically are started at computer start-up by the sysv-compatible
+       init process.
+
+       <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>
+              FMC Message Logger Server.
+
+       <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>
+              FMC Task Manager Server.
+
+       <B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>
+              FMC Process Controller Server.
+
+       <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>
+              FMC Power Manager Server.
+
+       <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B>
+              FMC Configuration Manager Server.
+
+   <B>Monitor</B> <B>Servers</B>
+       <B><A HREF="../../htmlMan/man8/osSrv.8.html">osSrv(8)</A></B>
+              FMC Operating System Information Server.
+
+       <B><A HREF="../../htmlMan/man8/cpuinfoSrv.8.html">cpuinfoSrv(8)</A></B>
+              FMC CPU Information Server.
+
+       <B><A HREF="../../htmlMan/man8/cpustatSrv.8.html">cpustatSrv(8)</A></B>
+              FMC CPU Statistics Monitor Server.
+
+       <B><A HREF="../../htmlMan/man8/memSrv.8.html">memSrv(8)</A></B>
+               FMC Memory Monitor Server.
+
+       <B><A HREF="../../htmlMan/man8/irqSrv.8.html">irqSrv(8)</A></B>
+              FMC Interrupt Monitor Server.
+
+       <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>
+              FMC Process Monitor Server.
+
+       <B><A HREF="../../htmlMan/man8/nifSrv.8.html">nifSrv(8)</A></B>
+              FMC Network Interface Monitor Server.
+
+       <B><A HREF="../../htmlMan/man8/coalSrv.8.html">coalSrv(8)</A></B>
+              FMC Network Interrupt Coalescence Monitor Server.
+
+       <B><A HREF="../../htmlMan/man8/tcpipSrv.8.html">tcpipSrv(8)</A></B>
+              FMC TCP/IP Stack Monitor Server.
+
+       <B><A HREF="../../htmlMan/man8/fsSrv.8.html">fsSrv(8)</A></B>
+              FMC Filesystem Monitor Server.
+
+       <B><A HREF="../../htmlMan/man8/smartSrv.8.html">smartSrv(8)</A></B>
+              FMC SMART (Self-Monitoring, Analysis and  Reporting  Technology)
+              Monitor Server.
+
+
+</PRE>
+<H2>FILES</H2><PRE>
+   <B>FMC</B> <B>Configuration</B> <B>Manager</B> <B>Server</B>
+       <I>/etc/cmSrv.conf</I>
+       <I>/etc/cmSrv.allow</I>
+
+   <B>FMC</B> <B>Task</B> <B>Manager</B> <B>Server</B>
+       <I>/etc/tmSrv.allow</I>
+
+   <B>FMC</B> <B>Process</B> <B>Controller</B> <B>Server</B>
+       <I>/etc/pcSrv.conf</I>
+       <I>/etc/pcSrv.init</I>
+       <I>/etc/pcSrv.allow</I>
+
+   <B>FMC</B> <B>Power</B> <B>Manager</B> <B>Server</B>
+       <I>/etc/ipmiSrv.conf</I>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information  on how to get the FMC (Farm Monitoring and Control System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development Homepage
+       &lt;http://lhcbweb2.bo.infn.it/bin/view/LHCbBologna/FmcLinux&gt;.
+
+       CERN Engineering Department, JCOP, FMC
+       &lt;http://j2eeps.cern.ch/wikis/display/EN/
+       JCOP+Framework+Farm+Monitoring+and+Control+Tool&gt;.
+
+       LHCb Online RPMs
+       &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO:</H2><PRE>
+   <B>Installation</B> <B>check</B>
+       <B><A HREF="../../htmlMan/man1/fmcSrvViewer.1.html">fmcSrvViewer(1)</A></B>, <B><A HREF="../../htmlMan/man1/fmcVersionViewer.1.html">fmcVersionViewer(1)</A></B>.
+
+   <B>Message</B> <B>Logger</B>
+       <B><A HREF="../../htmlMan/man8/logSrv.8.html">logSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/logViewer.1.html">logViewer(1)</A></B>, <B><A HREF="../../htmlMan/man1/logGetProperties.1.html">logGetProperties(1)</A></B>, <B><A HREF="../../htmlMan/man1/logSetProperties.1.html">logSetProperties(1)</A></B>,
+       <B><A HREF="../../htmlMan/man1/mPrint.1.html">mPrint(1)</A></B>.  <B><A HREF="../../htmlMan/man3/dfltLoggerOpen.3.html">dfltLoggerOpen(3)</A></B>.  <B><A HREF="../../htmlMan/man3/getDfltFifoFD.3.html">getDfltFifoFD(3)</A></B>.  <B><A HREF="../../htmlMan/man3/mPrintf.3.html">mPrintf(3)</A></B>.
+       <B><A HREF="../../htmlMan/man3/rPrintf.3.html">rPrintf(3)</A></B>.  <B><A HREF="../../htmlMan/man3/dfltLoggerClose.3.html">dfltLoggerClose(3)</A></B>.  <B><A HREF="../../htmlMan/man3/loggerOpen.3.html">loggerOpen(3)</A></B>.  <B><A HREF="../../htmlMan/man3/mfPrintf.3.html">mfPrintf(3)</A></B>.
+       <B><A HREF="../../htmlMan/man3/rfPrintf.3.html">rfPrintf(3)</A></B>.  <B><A HREF="../../htmlMan/man3/loggerClose.3.html">loggerClose(3)</A></B>.
+
+   <B>Task</B> <B>Manager</B>
+       <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/tmStart.1.html">tmStart(1)</A></B>, <B><A HREF="../../htmlMan/man1/tmKill.1.html">tmKill(1)</A></B>, <B><A HREF="../../htmlMan/man1/tmStop.1.html">tmStop(1)</A></B>, <B><A HREF="../../htmlMan/man1/tmLs.1.html">tmLs(1)</A></B>, <B><A HREF="../../htmlMan/man1/tmLl.1.html">tmLl(1)</A></B>.
+
+   <B>Process</B> <B>Controller</B>
+       <B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/pcAdd.1.html">pcAdd(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcRm.1.html">pcRm(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcLs.1.html">pcLs(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcLl.1.html">pcLl(1)</A></B>, <B><A HREF="../../htmlMan/man1/pcLss.1.html">pcLss(1)</A></B>.
+
+   <B>Power</B> <B>Manager</B>
+       <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/pwSwitch.1.html">pwSwitch(1)</A></B>, <B><A HREF="../../htmlMan/man1/pwStatus.1.html">pwStatus(1)</A></B>, <B><A HREF="../../htmlMan/man1/ipmiViewer.1.html">ipmiViewer(1)</A></B>.
+
+   <B>Configuration</B> <B>Manager</B>
+       <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/cmSet.1.html">cmSet(1)</A></B>, <B><A HREF="../../htmlMan/man1/cmUnset.1.html">cmUnset(1)</A></B>, <B><A HREF="../../htmlMan/man1/cmGet.1.html">cmGet(1)</A></B>.
+
+   <B>Monitor</B>
+       <B><A HREF="../../htmlMan/man8/osSrv.8.html">osSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/osViewer.1.html">osViewer(1)</A></B>, <B><A HREF="../../htmlMan/man8/cpuinfoSrv.8.html">cpuinfoSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/couinfoViewer.1.html">couinfoViewer(1)</A></B>, <B><A HREF="../../htmlMan/man8/cpustatSrv.8.html">cpustatSrv(8)</A></B>,
+       <B><A HREF="../../htmlMan/man1/cpustatViewer.1.html">cpustatViewer(1)</A></B>, <B><A HREF="../../htmlMan/man8/memSrv.8.html">memSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/memViewer.1.html">memViewer(1)</A></B>, <B><A HREF="../../htmlMan/man8/irqSrv.8.html">irqSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/irqViewer.1.html">irqViewer(1)</A></B>,
+       <B><A HREF="../../htmlMan/man1/irqReset.1.html">irqReset(1)</A></B>, <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/psViewer.1.html">psViewer(1)</A></B>, <B><A HREF="../../htmlMan/man8/nifSrv.8.html">nifSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/nifViewer.1.html">nifViewer(1)</A></B>,
+       <B><A HREF="../../htmlMan/man1/nifReset.1.html">nifReset(1)</A></B>, <B><A HREF="../../htmlMan/man8/coalSrv.8.html">coalSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/coalViewer.1.html">coalViewer(1)</A></B>, <B><A HREF="../../htmlMan/man1/coalReset.1.html">coalReset(1)</A></B>, <B><A HREF="../../htmlMan/man8/tcpipSrv.8.html">tcpipSrv(8)</A></B>,
+       <B><A HREF="../../htmlMan/man1/tcpipViewer.1.html">tcpipViewer(1)</A></B>, <B><A HREF="../../htmlMan/man1/tcpipReset.1.html">tcpipReset(1)</A></B>, <B><A HREF="../../htmlMan/man8/fsSrv.8.html">fsSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/fsViewer.1.html">fsViewer(1)</A></B>, <B><A HREF="../../htmlMan/man8/smartSrv.8.html">smartSrv(8)</A></B>,
+       <B><A HREF="../../htmlMan/man1/smartViewer.1.html">smartViewer(1)</A></B>,
+
+FMC-3.9.14                        2012-12-20                            <B><A HREF="../../htmlMan/man1/FMC.1.html">FMC(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

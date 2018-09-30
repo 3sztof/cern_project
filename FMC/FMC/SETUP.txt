@@ -1,0 +1,335 @@
+
+
+
+ FFMMCC LLiinnuuxx SSeettuupp
+===============================================================================
+_F_M_C_ _L_i_n_u_x_ _H_o_m_e_ _P_a_g_e
+    * _W_o_r_k_e_r_ _N_o_d_e_s_ _a_n_d_ _C_o_n_t_r_o_l_ _N_o_d_e_s
+    * _W_o_r_k_e_r_ _N_o_d_e_ _S_e_t_u_p
+          o _U_n_a_u_t_h_e_n_t_i_c_a_t_e_d_ _W_o_r_k_e_r_ _N_o_d_e_ _S_e_t_u_p
+          o _A_u_t_h_e_n_t_i_c_a_t_e_d_ _W_o_r_k_e_r_ _N_o_d_e_ _S_e_t_u_p
+    * _C_o_n_t_r_o_l_ _N_o_d_e_ _S_e_t_u_p
+          o _U_n_a_u_t_h_e_n_t_i_c_a_t_e_d_ _C_o_n_t_r_o_l_ _N_o_d_e_ _S_e_t_u_p
+          o _A_u_t_h_e_n_t_i_c_a_t_e_d_ _C_o_n_t_r_o_l_ _N_o_d_e_ _S_e_t_u_p
+ WWoorrkkeerr NNooddeess aanndd CCoonnttrrooll NNooddeess
+FMC consists, at present, of 16 server processes. In a typical farm setup,
+among these processes:
+    * The 11 Monitor Servers (ccooaallSSrrvv((88)), _cc_pp_uu_ii_nn_ff_oo_SS_rr_vv_((_88_)), ccppuussttaattSSrrvv((88)), ffssSSrrvv
+      ((88)), iirrqqSSrrvv((88)), mmeemmSSrrvv((88)), _oo_ss_SS_rr_vv_((_88_)), nniiffSSrrvv((88)), ppssSSrrvv((88)), ssmmaarrttSSrrvv((88)) and
+      ttccppiippSSrrvv((88))) have to run on eeaacchh farm node;
+    * The Message Logger Server (_ll_oo_gg_SS_rr_vv_((_88_))) and the Task Manager Server (_tt_mm_SS_rr_vv
+      _((_88_))) and the Configuration Manager Server (_cc_mm_SS_rr_vv_((_88_))) also have to run on
+      eeaacchh farm node;
+    * The Power Manager Server (_ii_pp_mm_ii_SS_rr_vv_((_88_))) and the Process Controller Server
+      (_pp_cc_SS_rr_vv_((_88_))) need not to run on each farm node: they can run instead on a
+      rreedduucceedd number of nodes (CCoonnttrrooll NNooddeess) which control the other nodes
+      (WWoorrkkeerr NNooddeess).
+In order for this 16 servers to work an additional server process is needed -
+- the DDIIMM NNaammee SSeerrvveerr -- which must be in execution on a node hereinafter
+referred as DDIIMM__DDNNSS__NNOODDEE. Concerning the configuration of the DIM network
+communication layer, refer to the documents in _h_t_t_p_:_/_/_d_i_m_._w_e_b_._c_e_r_n_._c_h_/_d_i_m_/.
+Furthermore, in the FMC setup choice, consider that the PPoowweerr MMaannaaggeerr (_ii_pp_mm_ii_SS_rr_vv
+_((_88_))) is able to switch on and off the other nodes, but it is not able to switch
+on and off the node on which it is running.
+                               [FMC deployment]
+_t_o_ _t_o_p
+ WWoorrkkeerr NNooddee SSeettuupp
+In this setup only the MMeessssaaggee LLooggggeerr SSeerrvveerr, the TTaasskk MMaannaaggeerr SSeerrvveerr and the
+CCoonnffiigguurraattiioonn MMaannaaggeerr SSeerrvveerr are started on the current node (by the System V
+start-up scripts //eettcc//rrcc..dd//iinniitt..dd//ffmmcc). The 11 MMoonniittoorr SSeerrvveerrss are then started
+on the current node by the PPrroocceessss CCoonnttrroolllleerr SSeerrvveerr running on the CCoonnttrrooll
+NNooddee which controls the current node.
+_t_o_ _t_o_p
+ UUnnaauutthheennttiiccaatteedd WWoorrkkeerr NNooddee SSeettuupp
+    * Install the RPM:
+      iippmmiittooooll--11..88..99--11..ssllcc44.
+    * Download:
+      ddiimm--vv1177rr77--11..RRHHEELL44..ii338866..rrppmm (32 bit)
+      or
+      ddiimm--vv1177rr77--11..RRHHEELL44..xx8866__6644..rrppmm (64 bit)
+      from _h_t_t_p_:_/_/_l_h_c_b_-_d_a_q_._w_e_b_._c_e_r_n_._c_h_/_l_h_c_b_-_d_a_q_/_o_n_l_i_n_e_-_r_p_m_-_r_e_p_o_/_i_n_d_e_x_._h_t_m_l and
+      install it.
+    * Download:
+      FFMMCC--XX..XX..XX--XX..RRHHEELL44..ii338866..rrppmm (32 bit)
+      or
+      FFMMCC--XX..XX..XX--XX..RRHHEELL44..xx8866__6644..rrppmm (64 bit)
+      from _h_t_t_p_:_/_/_l_h_c_b_-_d_a_q_._w_e_b_._c_e_r_n_._c_h_/_l_h_c_b_-_d_a_q_/_o_n_l_i_n_e_-_r_p_m_-_r_e_p_o_/_i_n_d_e_x_._h_t_m_l or //
+      aaffss//cceerrnn..cchh//llhhccbb//pprroojjeecctt//wweebb//oonnlliinnee//oonnlliinnee--rrppmm--rreeppoo//ssllcc44XX//.
+    * Type:
+      rrppmm --iivvhh FFMMCC--XX..XX..XX--XX..RRHHEELL44..ii338866..rrppmm (32 bit)
+      or
+      rrppmm --iivvhh FFMMCC--XX..XX..XX--XX..RRHHEELL44..xx8866__6644..rrppmm (64 bit).
+    * Create the user:
+      oonnlliinnee.
+    * Edit the text file
+      _//_ee_tt_cc_//_ss_yy_ss_cc_oo_nn_ff_ii_gg_//_dd_ii_mm
+      as described in _t_h_i_s_ _l_i_n_k to define the DIM Name Server node.
+    * Edit the text file
+      _//_ee_tt_cc_//_ss_yy_ss_cc_oo_nn_ff_ii_gg_//_ff_mm_cc
+      as described in _t_h_i_s_ _l_i_n_k to choose the FMC Servers to be started by the
+      System V start-up scripts as follows:
+     # ------------------------------------------------------------------------
+-----
+     LOG_SRV=yes                                    # Message Logger Server
+     TM_SRV=yes                                     # Task Manager Server
+     CM_SRV=yes                                     # Configuration Manager
+Server
+     PC_SRV=no                                      # Process Controller Server
+     IPMI_SRV=no                                    # Power Manager Server
+     # ------------------------------------------------------------------------
+-----
+     LOG_ARGS="-S 200"
+     TM_ARGS="-p 2 -u online -U root --no-auth"
+     CM_ARGS=""
+     PC_ARGS="-u online -g online --no-auth"
+     IPMI_ARGS="-t 0"
+     # ------------------------------------------------------------------------
+-----
+    * Edit the text file:
+      _//_ee_tt_cc_//_cc_mm_SS_rr_vv_.._cc_oo_nn_ff
+      as described in _t_h_i_s_ _l_i_n_k to set-up the Configuration Manager file access
+      configuration.
+    * Edit the text file
+      _//_ee_tt_cc_//_cc_mm_SS_rr_vv_.._aa_ll_ll_oo_ww
+      as described in _t_h_i_s_ _l_i_n_k to set-up the Configuration Manager user@host
+      access configuration.
+    * To start FMC tools immediately, type:
+      sseerrvviiccee ffmmcc ssttaarrtt
+    * To start automatically the FMC tools at each bootstrap, type:
+      cchhkkccoonnffiigg ----lleevveellss 334455 ffmmcc oonn
+      cchhkkccoonnffiigg ----lleevveellss 00112266 ffmmcc ooffff
+_t_o_ _t_o_p
+ AAuutthheennttiiccaatteedd WWoorrkkeerr NNooddee SSeettuupp
+    * Install the RPM:
+      iippmmiittooooll--11..88..99--11..ssllcc44.
+    * Download:
+      ddiimm--vv1177rr77--11..RRHHEELL44..ii338866..rrppmm (32 bit)
+      or
+      ddiimm--vv1177rr77--11..RRHHEELL44..xx8866__6644..rrppmm (64 bit)
+      from _h_t_t_p_:_/_/_l_h_c_b_-_d_a_q_._w_e_b_._c_e_r_n_._c_h_/_l_h_c_b_-_d_a_q_/_o_n_l_i_n_e_-_r_p_m_-_r_e_p_o_/_i_n_d_e_x_._h_t_m_l and
+      install it.
+    * Download:
+      FFMMCC--XX..XX..XX--XX..RRHHEELL44..ii338866..rrppmm (32 bit)
+      or
+      FFMMCC--XX..XX..XX--XX..RRHHEELL44..xx8866__6644..rrppmm (64 bit)
+      from _h_t_t_p_:_/_/_l_h_c_b_-_d_a_q_._w_e_b_._c_e_r_n_._c_h_/_l_h_c_b_-_d_a_q_/_o_n_l_i_n_e_-_r_p_m_-_r_e_p_o_/_i_n_d_e_x_._h_t_m_l or //
+      aaffss//cceerrnn..cchh//llhhccbb//pprroojjeecctt//wweebb//oonnlliinnee//oonnlliinnee--rrppmm--rreeppoo//ssllcc44XX//.
+    * Type:
+      rrppmm --iivvhh FFMMCC--XX..XX..XX--XX..RRHHEELL44..ii338866..rrppmm (32 bit)
+      or
+      rrppmm --iivvhh FFMMCC--XX..XX..XX--XX..RRHHEELL44..xx8866__6644..rrppmm (64 bit).
+    * Create the user:
+      oonnlliinnee.
+    * Edit the text file
+      _//_ee_tt_cc_//_ss_yy_ss_cc_oo_nn_ff_ii_gg_//_dd_ii_mm
+      as described in _t_h_i_s_ _l_i_n_k to define the DIM Name Server node.
+    * Edit the text file
+      _//_ee_tt_cc_//_ss_yy_ss_cc_oo_nn_ff_ii_gg_//_ff_mm_cc
+      as described in _t_h_i_s_ _l_i_n_k to choose the FMC Servers to be started by the
+      System V start-up scripts as follows:
+     # ------------------------------------------------------------------------
+-----
+     LOG_SRV=yes                                    # Message Logger Server
+     TM_SRV=yes                                     # Task Manager Server
+     CM_SRV=yes                                     # Configuration Manager
+Server
+     PC_SRV=no                                      # Process Controller Server
+     IPMI_SRV=no                                    # Power Manager Server
+     # ------------------------------------------------------------------------
+-----
+     LOG_ARGS="-S 200"
+     TM_ARGS="-p 2 -u online -U root"
+     CM_ARGS=""
+     PC_ARGS="-u online -g online"
+     IPMI_ARGS="-t 0"
+     # ------------------------------------------------------------------------
+-----
+    * Edit the text file:
+      _//_ee_tt_cc_//_cc_mm_SS_rr_vv_.._cc_oo_nn_ff
+      as described in _t_h_i_s_ _l_i_n_k to set-up the Configuration Manager file access
+      configuration.
+    * Edit the text file
+      _//_ee_tt_cc_//_cc_mm_SS_rr_vv_.._aa_ll_ll_oo_ww
+      as described in _t_h_i_s_ _l_i_n_k to set-up the Configuration Manager user@host
+      access configuration.
+    * Edit the text file
+      _//_ee_tt_cc_//_tt_mm_SS_rr_vv_.._aa_ll_ll_oo_ww
+      as described in _t_h_i_s_ _l_i_n_k to set-up the Task Manager user@host access
+      configuration.
+    * To start FMC tools immediately, type:
+      sseerrvviiccee ffmmcc ssttaarrtt
+    * To start automatically the FMC tools at each bootstrap, type:
+      cchhkkccoonnffiigg ----lleevveellss 334455 ffmmcc oonn
+      cchhkkccoonnffiigg ----lleevveellss 00112266 ffmmcc ooffff
+_t_o_ _t_o_p
+ CCoonnttrrooll NNooddee SSeettuupp
+In this setup aallll the FMC servers are started on the current node. The MMeessssaaggee
+LLooggggeerr SSeerrvveerr, the TTaasskk MMaannaaggeerr SSeerrvveerr, the CCoonnffiigguurraattiioonn MMaannaaggeerr SSeerrvveerr, the
+PPoowweerr MMaannaaggeerr SSeerrvveerr and the PPrroocceessss CCoonnttrroolllleerr SSeerrvveerr are started by the
+System file start-up script (//eettcc//rrcc..dd//iinniitt..dd//ffmmcc). The 11 MMoonniittoorr SSeerrvveerrss are
+then started by the Process Controller Server running on the current node.
+_t_o_ _t_o_p
+ UUnnaauutthheennttiiccaatteedd CCoonnttrrooll NNooddee SSeettuupp
+    * Install the RPM:
+      iippmmiittooooll--11..88..99--11..ssllcc44.
+    * Download:
+      ddiimm--vv1177rr77--11..RRHHEELL44..ii338866..rrppmm (32 bit)
+      or
+      ddiimm--vv1177rr77--11..RRHHEELL44..xx8866__6644..rrppmm (64 bit)
+      from _h_t_t_p_:_/_/_l_h_c_b_-_d_a_q_._w_e_b_._c_e_r_n_._c_h_/_l_h_c_b_-_d_a_q_/_o_n_l_i_n_e_-_r_p_m_-_r_e_p_o_/_i_n_d_e_x_._h_t_m_l and
+      install it.
+    * Download:
+      FFMMCC--XX..XX..XX--XX..RRHHEELL44..ii338866..rrppmm (32 bit)
+      or
+      FFMMCC--XX..XX..XX--XX..RRHHEELL44..xx8866__6644..rrppmm (64 bit)
+      from _h_t_t_p_:_/_/_l_h_c_b_-_d_a_q_._w_e_b_._c_e_r_n_._c_h_/_l_h_c_b_-_d_a_q_/_o_n_l_i_n_e_-_r_p_m_-_r_e_p_o_/_i_n_d_e_x_._h_t_m_l or //
+      aaffss//cceerrnn..cchh//llhhccbb//pprroojjeecctt//wweebb//oonnlliinnee//oonnlliinnee--rrppmm--rreeppoo//ssllcc44XX//.
+    * Type:
+      rrppmm --iivvhh FFMMCC--XX..XX..XX--XX..RRHHEELL44..ii338866..rrppmm (32 bit)
+      or
+      rrppmm --iivvhh FFMMCC--XX..XX..XX--XX..RRHHEELL44..xx8866__6644..rrppmm (64 bit).
+    * Create the user:
+      oonnlliinnee.
+    * Edit the text file
+      _//_ee_tt_cc_//_ss_yy_ss_cc_oo_nn_ff_ii_gg_//_dd_ii_mm
+      as described in _t_h_i_s_ _l_i_n_k to define the DIM Name Server node.
+    * Edit the text file
+      _//_ee_tt_cc_//_ss_yy_ss_cc_oo_nn_ff_ii_gg_//_ff_mm_cc
+      as described in _t_h_i_s_ _l_i_n_k to choose the FMC Servers to be started by the
+      System V start-up scripts as follows:
+     # ------------------------------------------------------------------------
+-----
+     LOG_SRV=yes                                    # Message Logger Server
+     TM_SRV=yes                                     # Task Manager Server
+     CM_SRV=yes                                     # Configuration Manager
+Server
+     PC_SRV=yes                                     # Process Controller Server
+     IPMI_SRV=yes                                   # Power Manager Server
+     # ------------------------------------------------------------------------
+-----
+     LOG_ARGS="-S 200"
+     TM_ARGS="-p 2 -u online -U root --no-auth"
+     CM_ARGS=""
+     PC_ARGS="-u online -g online --no-auth"
+     IPMI_ARGS="-t 0"
+     # ------------------------------------------------------------------------
+-----
+    * Edit the text file:
+      _//_ee_tt_cc_//_cc_mm_SS_rr_vv_.._cc_oo_nn_ff
+      as described in _t_h_i_s_ _l_i_n_k to set-up the Configuration Manager file access
+      configuration.
+    * Edit the text file
+      _//_ee_tt_cc_//_cc_mm_SS_rr_vv_.._aa_ll_ll_oo_ww
+      as described in _t_h_i_s_ _l_i_n_k to set-up the Configuration Manager user@host
+      access configuration.
+    * Edit the text file
+      _//_ee_tt_cc_//_ii_pp_mm_ii_SS_rr_vv_.._cc_oo_nn_ff
+      as described in _t_h_i_s_ _l_i_n_k to define the default IPMI username and
+      password and the per-node IPMI configuration.
+    * Edit the text file
+      _//_ee_tt_cc_//_pp_cc_SS_rr_vv_.._cc_oo_nn_ff
+      as described in _t_h_i_s_ _l_i_n_k to define the list of the worker nodes which
+      have to be controlled by the Process Controller Server running on the
+      current node. The list must include also the current node.
+    * Edit the text file
+      _//_ee_tt_cc_//_pp_cc_SS_rr_vv_.._ii_nn_ii_tt
+      as described in _t_h_i_s_ _l_i_n_k to check the Monitor Servers to be started on
+      the controlled worker nodes by the Process Controller Server running on
+      the current nodes.
+    * To start FMC tools immediately, type:
+      sseerrvviiccee ffmmcc ssttaarrtt
+    * To start automatically the FMC tools at each bootstrap, type:
+      cchhkkccoonnffiigg ----lleevveellss 334455 ffmmcc oonn
+      cchhkkccoonnffiigg ----lleevveellss 00112266 ffmmcc ooffff
+_t_o_ _t_o_p
+ AAuutthheennttiiccaatteedd CCoonnttrrooll NNooddee SSeettuupp
+    * Install the RPM:
+      iippmmiittooooll--11..88..99--11..ssllcc44.
+    * Download:
+      ddiimm--vv1177rr77--11..RRHHEELL44..ii338866..rrppmm (32 bit)
+      or
+      ddiimm--vv1177rr77--11..RRHHEELL44..xx8866__6644..rrppmm (64 bit)
+      from _h_t_t_p_:_/_/_l_h_c_b_-_d_a_q_._w_e_b_._c_e_r_n_._c_h_/_l_h_c_b_-_d_a_q_/_o_n_l_i_n_e_-_r_p_m_-_r_e_p_o_/_i_n_d_e_x_._h_t_m_l and
+      install it.
+    * Download:
+      FFMMCC--XX..XX..XX--XX..RRHHEELL44..ii338866..rrppmm (32 bit)
+      or
+      FFMMCC--XX..XX..XX--XX..RRHHEELL44..xx8866__6644..rrppmm (64 bit)
+      from _h_t_t_p_:_/_/_l_h_c_b_-_d_a_q_._w_e_b_._c_e_r_n_._c_h_/_l_h_c_b_-_d_a_q_/_o_n_l_i_n_e_-_r_p_m_-_r_e_p_o_/_i_n_d_e_x_._h_t_m_l or //
+      aaffss//cceerrnn..cchh//llhhccbb//pprroojjeecctt//wweebb//oonnlliinnee//oonnlliinnee--rrppmm--rreeppoo//ssllcc44XX//.
+    * Type:
+      rrppmm --iivvhh FFMMCC--XX..XX..XX--XX..RRHHEELL44..ii338866..rrppmm (32 bit)
+      or
+      rrppmm --iivvhh FFMMCC--XX..XX..XX--XX..RRHHEELL44..xx8866__6644..rrppmm (64 bit).
+    * Create the user:
+      oonnlliinnee.
+    * Edit the text file
+      _//_ee_tt_cc_//_ss_yy_ss_cc_oo_nn_ff_ii_gg_//_dd_ii_mm
+      as described in _t_h_i_s_ _l_i_n_k to define the DIM Name Server node.
+    * Edit the text file
+      _//_ee_tt_cc_//_ss_yy_ss_cc_oo_nn_ff_ii_gg_//_ff_mm_cc
+      as described in _t_h_i_s_ _l_i_n_k to choose the FMC Servers to be started by the
+      System V start-up scripts as follows:
+     # ------------------------------------------------------------------------
+-----
+     LOG_SRV=yes                                    # Message Logger Server
+     TM_SRV=yes                                     # Task Manager Server
+     CM_SRV=yes                                     # Configuration Manager
+Server
+     PC_SRV=yes                                     # Process Controller Server
+     IPMI_SRV=yes                                   # Power Manager Server
+     # ------------------------------------------------------------------------
+-----
+     LOG_ARGS="-S 200"
+     TM_ARGS="-p 2 -u online -U root"
+     CM_ARGS=""
+     PC_ARGS="-u online -g online"
+     IPMI_ARGS="-t 0"
+     # ------------------------------------------------------------------------
+-----
+    * Edit the text file:
+      _//_ee_tt_cc_//_cc_mm_SS_rr_vv_.._cc_oo_nn_ff
+      as described in _t_h_i_s_ _l_i_n_k to set-up the Configuration Manager file access
+      configuration.
+    * Edit the text file
+      _//_ee_tt_cc_//_cc_mm_SS_rr_vv_.._aa_ll_ll_oo_ww
+      as described in _t_h_i_s_ _l_i_n_k to set-up the Configuration Manager user@host
+      access configuration.
+    * Edit the text file
+      _//_ee_tt_cc_//_tt_mm_SS_rr_vv_.._aa_ll_ll_oo_ww
+      as described in _t_h_i_s_ _l_i_n_k to set-up the Task Manager user@host access
+      configuration.
+    * Edit the text file
+      _//_ee_tt_cc_//_ii_pp_mm_ii_SS_rr_vv_.._cc_oo_nn_ff
+      as described in _t_h_i_s_ _l_i_n_k to define the default IPMI username and
+      password and the per-node IPMI configuration.
+    * Edit the text file
+      _//_ee_tt_cc_//_pp_cc_SS_rr_vv_.._cc_oo_nn_ff
+      as described in _t_h_i_s_ _l_i_n_k to define the list of the worker nodes which
+      have to be controlled by the Process Controller Server running on the
+      current node. The list must include also the current node.
+    * Edit the text file
+      _//_ee_tt_cc_//_pp_cc_SS_rr_vv_.._ii_nn_ii_tt
+      as described in _t_h_i_s_ _l_i_n_k to check the Monitor Servers to be started on
+      the controlled worker nodes by the Process Controller Server running on
+      the current nodes.
+    * Edit the text file
+      _//_ee_tt_cc_//_pp_cc_SS_rr_vv_.._aa_ll_ll_oo_ww
+      as described in _t_h_i_s_ _l_i_n_k to set-up the Pocess Controller user@host
+      access configuration.
+    * To start FMC tools immediately, type:
+      sseerrvviiccee ffmmcc ssttaarrtt
+    * To start automatically the FMC tools at each bootstrap, type:
+      cchhkkccoonnffiigg ----lleevveellss 334455 ffmmcc oonn
+      cchhkkccoonnffiigg ----lleevveellss 00112266 ffmmcc ooffff
+_t_o_ _t_o_p
+===============================================================================
+_F_M_C_ _L_i_n_u_x_ _H_o_m_e_ _P_a_g_e
+===============================================================================
+-- _D_o_m_e_n_i_c_o_G_a_l_l_i, 18 Nov 2008 - 09:38
+
+Revision: r1.9 - 18 Nov 2008 - 09:38 - _D_o_m_e_n_i_c_o_G_a_l_l_i
+_L_H_C_b_B_o_l_o_g_n_a > FmcSetup
+Copyright © 1999-2009 by the contributing authors. All material on this
+collaboration platform is the property of the contributing authors.
+Ideas, requests, problems regarding TWiki? _S_e_n_d_ _f_e_e_d_b_a_c_k

@@ -1,0 +1,998 @@
+#!/bin/bash
+# *****************************************************************************
+# chkconfig: 345 96 04
+# description: FMC (Farm Monitoring and Control System)
+# *****************************************************************************
+# /etc/rc.d/init.d/fmc
+# Init file for basic FMC daemons
+# *****************************************************************************
+# $Id: etc_rc.d_init.d_fmc,v 1.34 2011/11/08 13:02:31 galli Exp $
+# *****************************************************************************
+# pull in standard functions
+. /etc/init.d/functions
+# pull in FMC settings
+[ -f /etc/sysconfig/fmc ] && . /etc/sysconfig/fmc
+# *****************************************************************************
+# file names
+#set -x
+LOG_DFLT_FIFO=/tmp/logSrv.fifo
+LOG_PATH=/opt/FMC/sbin/logSrv
+TM_PATH=/opt/FMC/sbin/tmSrv
+CM_PATH=/opt/FMC/sbin/cmSrv
+PC_PATH=/opt/FMC/sbin/pcSrv
+IPMI_PATH=/opt/FMC/sbin/ipmiSrv
+TEST_KRN_PATCH=/opt/FMC/sbin/test_trunc_proc_PID_environ.sh
+
+contains_element () {
+  local e
+  for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
+  return 1
+}
+# =============================================================================
+# force dependency requirement
+check_config()
+{
+  if [[ $PC_SRV = yes ]] ; then
+    TM_SRV=yes
+  fi
+}
+# -----------------------------------------------------------------------------
+# get the DIM DNS node from /etc/sysconfig/dim
+get_dim_dns_node()
+{
+  [ -r /etc/sysconfig/dim ] && . /etc/sysconfig/dim
+  if [ -z $DIM_DNS_NODE ]; then
+    err="DIM_DNS_NODE undefined and /etc/sysconfig/dim not readable!"
+    logger -t fmc -p local7.info "$err"
+    local DNS_RV=1
+  else
+    logger -t fmc -p local7.info "Got DIM_DNS_NODE = $DIM_DNS_NODE."
+    export DIM_DNS_NODE
+    local DNS_RV=0
+  fi
+  return $DNS_RV
+}
+# =============================================================================
+# Get the pids of the FMC main processes running
+# -----------------------------------------------------------------------------
+get_log_pid()
+{
+  LOG_PID="`ps aux | egrep -i "[ ]$LOG_PATH" | egrep -v "\-s|\-p"| awk '{print $2}'`"
+}
+# -----------------------------------------------------------------------------
+get_tm_pid()
+{
+  TM_PID="`ps aux | egrep -i "[ ]$TM_PATH" | awk '{print $2}'`"
+}
+# -----------------------------------------------------------------------------
+get_pc_pid()
+{
+  PC_PID="`ps aux | egrep -i "[ ]$PC_PATH" | awk '{print $2}'`"
+}
+# -----------------------------------------------------------------------------
+get_ipmi_pid()
+{
+  IPMI_PID="`ps aux | egrep -i "[ ]$IPMI_PATH" | awk '{print $2}'`"
+}
+# -----------------------------------------------------------------------------
+get_cm_pid()
+{
+  CM_PID="`ps aux | egrep -i "[ ]$CM_PATH" | awk '{print $2}'`"
+}
+# =============================================================================
+# Get the status of the FMC main processes running
+# RETURN VALUE: 0: running; 1: stopped.
+# -----------------------------------------------------------------------------
+status_log_srv()
+{
+  get_log_pid
+  if [[ -z ${LOG_PID:-} ]] ; then                         # process not running
+    echo $"logSrv is stopped"
+    local LOG_STAT=1
+  else                                                        # process running
+    echo $"logSrv (pid "${LOG_PID}") running..."
+    local LOG_STAT=0
+  fi
+  return $LOG_STAT
+}
+# -----------------------------------------------------------------------------
+status_tm_srv()
+{
+  get_tm_pid
+  if [[ -z ${TM_PID:-} ]] ; then                          # process not running
+    echo $"tmSrv is stopped"
+    local TM_STAT=1
+  else                                                        # process running
+    echo $"tmSrv (pid "${TM_PID}") running..."
+    local TM_STAT=0
+  fi
+  return $TM_STAT
+}
+# -----------------------------------------------------------------------------
+status_pc_srv()
+{
+  get_pc_pid
+  if [[ -z ${PC_PID:-} ]] ; then                          # process not running
+    echo $"pcSrv is stopped"
+    local PC_STAT=1
+  else                                                        # process running
+    echo $"pcSrv (pid "${PC_PID}") running..."
+    local PC_STAT=0
+  fi
+  return $PC_STAT
+}
+# -----------------------------------------------------------------------------
+status_ipmi_srv()
+{
+  get_ipmi_pid
+  if [[ -z ${IPMI_PID:-} ]] ; then                        # process not running
+    echo $"ipmiSrv is stopped"
+    local IPMI_STAT=1
+  else                                                        # process running
+    echo $"ipmiSrv (pid "${IPMI_PID}") running..."
+    local IPMI_STAT=0
+  fi
+  return $IPMI_STAT
+}
+# -----------------------------------------------------------------------------
+status_cm_srv()
+{
+  get_cm_pid
+  if [[ -z ${CM_PID:-} ]] ; then                          # process not running
+    echo $"cmSrv is stopped"
+    local CM_STAT=1
+  else                                                        # process running
+    echo $"cmSrv (pid "${CM_PID}") running..."
+    local CM_STAT=0
+  fi
+  return $CM_STAT
+}
+# =============================================================================
+# Start the FMC main processes
+# RETURN VALUE: 0: succeeded; 1: failed.
+# -----------------------------------------------------------------------------
+start_log_srv()
+{
+  echo -n $"Starting FMC logSrv "
+  get_log_pid
+  if [[ -n ${LOG_PID:-} ]] ; then                     # process already running
+    logger -t fmc -p local7.info "logSrv already running."
+    local LOG_RV=0
+  else                                                    # process not running
+    if [[ -z ${DIM_DNS_NODE} ]] ; then                    # DIM DNS not defined
+      local LOG_RV=1
+    else                                                      # DIM DNS defined
+      # start process
+      export UTGID="fmcLog"
+      $LOG_PATH $LOG_ARGS>/dev/null 2>&1 &
+      # wait for process to be running
+      for i in 0 1 2 3 4 ; do
+        sleep 1
+        get_log_pid
+        [[ -p ${LOG_DFLT_FIFO} && -n ${LOG_PID:-} ]] && break
+      done
+      [[ -n ${LOG_PID:-} ]] && local LOG_RV=0 || local LOG_RV=1
+    fi
+    [ $LOG_RV -eq 0 ] && logger -t fmc -p local7.info "logSrv started."
+  fi
+  [ $LOG_RV -eq 0 ] && success "===== logSrv start-up" || \
+                       failure "===== logSrv start-up"
+  echo
+  return $LOG_RV
+}
+# -----------------------------------------------------------------------------
+start_tm_srv()
+{
+  local patchName="\"Don-t-truncate-proc-PID-environ-at-4096-characters.patch\""
+  local krnRel=$(uname -r)
+  local msgWarOn="The Linux Kernel \"${krnRel}\" running on the current node "\
+"apparently truncates the file \"/proc/<pid>/environ\" at 4096 Bytes and "\
+"therefore the FMC Task Manager needs to use the \"ptrace workaround\" to "\
+"retrieve the UTGID of processes having an environment larger than 4096 B. "\
+"This make the system LESS EFFICIENT and INCOMPATIBLE with the use of gdb, "\
+"ltrace and strace! To fix the problem, install a Linux SLC Kernel >= "\
+"2.6.9-78.0.1 or apply the the patch \"${patchName}\"!"
+  local msgWarOff="The Linux Kernel ${krnRel} running on the current node "\
+"does not cut the file \"/proc/<pid>/environ\" at 4096 Bytes and therefore "\
+"the FMC Task Manager does not need to use the \"ptrace workaround\". This "\
+"improves system performances."
+  echo -n $"Starting FMC tmSrv "
+  get_tm_pid
+  if [[ -n ${TM_PID:-} ]] ; then                      # process already running
+    logger -t fmc -p local7.info "tmSrv already running."
+    local TM_RV=0
+  else                                                    # process not running
+    if [[ -z ${DIM_DNS_NODE} ]] ; then                    # DIM DNS not defined
+      local TM_RV=1
+    else                                                      # DIM DNS defined
+      get_log_pid
+      export UTGID="tmSrv_u"
+      ($TEST_KRN_PATCH)
+      if [ $? -eq 1 ] ; then # proc_pid_environ patch installed in runn. krnl
+        logger -t fmc -p local7.info "${msgWarOff}"
+        /opt/FMC/bin/mPrint -s WARN -f start_tm_srv -n 10 "${msgWarOff}"
+        TM_ARGS="${TM_ARGS} --no-ptrace-workaround"
+      else             # proc_pid_environ patch NOT installed in running kernel
+        logger -t fmc -p local7.info "${msgWarOn}"
+        /opt/FMC/bin/mPrint -s WARN -f start_tm_srv -n 10 "${msgWarOn}"
+      fi
+      if [[ -n ${LOG_PID:-} ]] ; then                          # logger running
+        # start process, output to default FMC logger
+        ($TM_PATH -l 1 $TM_ARGS>${LOG_DFLT_FIFO} 2>&1 &) 
+        logger -t fmc -p local7.info "tmSrv messages sent to FMC Logger."
+      else                                                 # logger not running
+        # start process, output to syslog
+        ($TM_PATH -l 4 $TM_ARGS>/dev/null 2>&1 &)
+        logger -t fmc -p local7.info "tmSrv messages sent to syslog."
+      fi
+      # wait for process to be running
+      for i in 0 1 2 3 4 ; do
+        sleep 1
+        get_tm_pid
+        [[ -n ${TM_PID:-} ]] && break
+      done
+      [[ -n ${TM_PID:-} ]] && local TM_RV=0 || local TM_RV=1
+    fi
+    [ $TM_RV -eq 0 ] && logger -t fmc -p local7.info "tmSrv started."
+  fi
+  [ $TM_RV -eq 0 ] && success "===== tmSrv start-up" || \
+                      failure "===== tmSrv start-up"
+  echo
+  return $TM_RV
+}
+# -----------------------------------------------------------------------------
+start_pc_srv()
+{
+  echo -n $"Starting FMC pcSrv "
+  get_pc_pid
+  if [[ -n ${PC_PID:-} ]] ; then                      # process already running
+    logger -t fmc -p local7.info "pcSrv already running."
+    local PC_RV=0
+  else                                                    # process not running
+    if [[ -z ${DIM_DNS_NODE} ]] ; then                    # DIM DNS not defined
+      local PC_RV=1
+    else                                                      # DIM DNS defined
+      get_log_pid
+      export UTGID="pcSrv_u"
+      if [[ -n ${LOG_PID:-} ]] ; then                          # logger running
+        # start process, output to default FMC logger
+        ($PC_PATH -l 1 $PC_ARGS>${LOG_DFLT_FIFO} 2>&1 &) 
+        logger -t fmc -p local7.info "pcSrv messages sent to FMC Logger."
+      else                                                 # logger not running
+        # start process, output to syslog
+        ($PC_PATH -l 4 $PC_ARGS>/dev/null 2>&1 &)
+        logger -t fmc -p local7.info "pcSrv messages sent to syslog."
+      fi
+      # wait for process to be running
+      for i in 0 1 2 3 4 ; do
+        sleep 1
+        get_pc_pid
+        [[ -n ${PC_PID:-} ]] && break
+      done
+      [[ -n ${PC_PID:-} ]] && local PC_RV=0 || local PC_RV=1
+    fi
+    [ $PC_RV -eq 0 ] && logger -t fmc -p local7.info "pcSrv started."
+  fi
+  [ $PC_RV -eq 0 ] && success "===== pcSrv start-up" || \
+                      failure "===== pcSrv start-up"
+  echo
+  return $PC_RV
+}
+# -----------------------------------------------------------------------------
+start_ipmi_srv()
+{
+  echo -n $"Starting FMC ipmiSrv "
+  get_ipmi_pid
+  if [[ -n ${IPMI_PID:-} ]] ; then                    # process already running
+    logger -t fmc -p local7.info "ipmiSrv already running."
+    local IPMI_RV=0
+  else                                                    # process not running
+    if [[ -z ${DIM_DNS_NODE} ]] ; then                    # DIM DNS not defined
+      local IPMI_RV=1
+    else                                                      # DIM DNS defined
+      get_log_pid
+      export UTGID="ipmiSrv_u"
+      if [[ -n ${LOG_PID:-} ]] ; then                          # logger running
+        # start process, output to default FMC logger
+        ($IPMI_PATH -l 1 $IPMI_ARGS>${LOG_DFLT_FIFO} 2>&1 &) 
+        logger -t fmc -p local7.info "ipmiSrv messages sent to FMC Logger."
+      else                                                 # logger not running
+        # start process, output to syslog
+        ($IPMI_PATH -l 4 $IPMI_ARGS>/dev/null 2>&1 &)
+        logger -t fmc -p local7.info "ipmiSrv messages sent to syslog."
+      fi
+      # wait for process to be running
+      for i in 0 1 2 3 4 ; do
+        sleep 1
+        get_ipmi_pid
+        [[ -n ${IPMI_PID:-} ]] && break
+      done
+      [[ -n ${IPMI_PID:-} ]] && local IPMI_RV=0 || local IPMI_RV=1
+    fi
+    [ $IPMI_RV -eq 0 ] && logger -t fmc -p local7.info "ipmiSrv started."
+  fi
+  [ $IPMI_RV -eq 0 ] && success "===== ipmiSrv start-up" || \
+                        failure "===== ipmiSrv start-up"
+  echo
+  return $IPMI_RV
+}
+# -----------------------------------------------------------------------------
+start_cm_srv()
+{
+  echo -n $"Starting FMC cmSrv "
+  get_cm_pid
+  if [[ -n ${CM_PID:-} ]] ; then                      # process already running
+    logger -t fmc -p local7.info "cmSrv already running."
+    local CM_RV=0
+  else                                                    # process not running
+    if [[ -z ${DIM_DNS_NODE} ]] ; then                    # DIM DNS not defined
+      local CM_RV=1
+    else                                                      # DIM DNS defined
+      get_log_pid
+      export UTGID="cmSrv_u"
+      if [[ -n ${LOG_PID:-} ]] ; then                          # logger running
+        # start process, output to default FMC logger
+        ($CM_PATH -l 1 $CM_ARGS>${LOG_DFLT_FIFO} 2>&1 &) 
+        logger -t fmc -p local7.info "cmSrv messages sent to FMC Logger."
+      else                                                 # logger not running
+        # start process, output to syslog
+        ($CM_PATH -l 4 $CM_ARGS>/dev/null 2>&1 &)
+        logger -t fmc -p local7.info "cmSrv messages sent to syslog."
+      fi
+      # wait for process to be running
+      for i in 0 1 2 3 4 ; do
+        sleep 1
+        get_cm_pid
+        [[ -n ${CM_PID:-} ]] && break
+      done
+      [[ -n ${CM_PID:-} ]] && local CM_RV=0 || local CM_RV=1
+    fi
+    [ $CM_RV -eq 0 ] && logger -t fmc -p local7.info "cmSrv started."
+  fi
+  [ $CM_RV -eq 0 ] && success "===== cmSrv start-up" || \
+                      failure "===== cmSrv start-up"
+  echo
+  return $CM_RV
+}
+# =============================================================================
+# Stop the FMC main processes
+# RETURN VALUE: 0: succeeded; 1: failed.
+# -----------------------------------------------------------------------------
+stop_log_srv()
+{
+  echo -n $"Killing FMC logSrv "
+  get_log_pid
+  if [[ -z ${LOG_PID:-} ]] ; then                         # process not running
+    logger -t fmc -p local7.info "logSrv already stopped."
+    local LOG_RV=0
+  else                                                        # process running
+    # kill -TERM process
+    kill -TERM $LOG_PID > /dev/null 2>&1
+    if [ $? -ne 0 ] ; then                                # kill command failed
+      logger -t fmc -p local7.info "Failed killing logSrv!"
+      local LOG_RV=1
+    else                                               # kill command succeeded
+      # wait for process to be stopped
+      for i in 0 1 2 3 4 ; do
+        sleep 1
+        get_log_pid
+        [[ -z ${LOG_PID:-} ]] && break
+      done
+      get_log_pid
+      if [[ -z ${LOG_PID:-} ]] ; then     # process terminated after kill -TERM
+        local LOG_RV=0
+      else                               # process still alive after kill -TERM
+        logger -t fmc -p local7.info "logSrv still alive after kill -TERM!"
+        # kill -KILL process
+        kill -KILL $LOG_PID > /dev/null 2>&1
+        if [ $? -ne 0 ] ; then                            # kill command failed
+          logger -t fmc -p local7.info "Failed killing logSrv!"
+          local LOG_RV=1
+        else                                           # kill command succeeded
+          # wait for process to be stopped
+          for i in 0 1 2 3 4 ; do
+            sleep 1
+            get_log_pid
+            [[ -z ${LOG_PID:-} ]] && break
+          done
+          get_log_pid
+          if [[ -z ${LOG_PID:-} ]] ; then # process terminated after kill -KILL
+            local LOG_RV=0
+          else                           # process still alive after kill -KILL
+            logger -t fmc -p local7.info "logSrv still alive after kill -KILL!"
+            local LOG_RV=1
+          fi
+        fi
+      fi
+    fi
+    [ $LOG_RV -eq 0 ] && logger -t fmc -p local7.info "logSrv killed."
+  fi
+  [ $LOG_RV -eq 0 ] && success "===== logSrv shutdown" || \
+                       failure "===== logSrv shutdown"
+  echo
+  return $LOG_RV
+}
+# -----------------------------------------------------------------------------
+stop_tm_srv()
+{
+  echo -n $"Killing FMC tmSrv "
+  get_tm_pid
+  if [[ -z ${TM_PID:-} ]] ; then                          # process not running
+    logger -t fmc -p local7.info "tmSrv already stopped."
+    local TM_RV=0
+  else                                                        # process running
+    # kill -TERM process
+    kill -TERM $TM_PID > /dev/null 2>&1
+    if [ $? -ne 0 ] ; then                                # kill command failed
+      logger -t fmc -p local7.info "Failed killing tmSrv!"
+      local TM_RV=1
+    else                                               # kill command succeeded
+      # wait for process to be stopped
+      for i in 0 1 2 3 4 ; do
+        sleep 1
+        get_tm_pid
+        [[ -z ${TM_PID:-} ]] && break
+      done
+      get_tm_pid
+      if [[ -z ${TM_PID:-} ]] ; then      # process terminated after kill -TERM
+        local TM_RV=0
+      else                               # process still alive after kill -TERM
+        logger -t fmc -p local7.info "tmSrv still alive after kill -TERM!"
+        # kill -KILL process
+        kill -KILL $TM_PID > /dev/null 2>&1
+        if [ $? -ne 0 ] ; then                            # kill command failed
+          logger -t fmc -p local7.info "Failed killing tmSrv!"
+          local TM_RV=1
+        else                                           # kill command succeeded
+          # wait for process to be stopped
+          for i in 0 1 2 3 4 ; do
+            sleep 1
+            get_tm_pid
+            [[ -z ${TM_PID:-} ]] && break
+          done
+          get_tm_pid
+          if [[ -z ${TM_PID:-} ]] ; then  # process terminated after kill -KILL
+            local TM_RV=0
+          else                           # process still alive after kill -KILL
+            logger -t fmc -p local7.info "tmSrv still alive after kill -KILL!"
+            local TM_RV=1
+          fi
+        fi
+      fi
+    fi
+    [ $TM_RV -eq 0 ] && logger -t fmc -p local7.info "tmSrv killed."
+  fi
+  [ $TM_RV -eq 0 ] && success "===== tmSrv shutdown" || \
+                      failure "===== tmSrv shutdown"
+  echo
+  return $TM_RV
+}
+# -----------------------------------------------------------------------------
+stop_pc_srv()
+{
+  echo -n $"Killing FMC pcSrv "
+  # stop all the processes started by pcSrv
+  /opt/FMC/bin/pcRm "*" >/dev/null 2>&1
+  sleep 1
+  get_pc_pid
+  if [[ -z ${PC_PID:-} ]] ; then                          # process not running
+    logger -t fmc -p local7.info "pcSrv already stopped."
+    local PC_RV=0
+  else                                                        # process running
+    # kill -TERM process
+    kill -TERM $PC_PID > /dev/null 2>&1
+    if [ $? -ne 0 ] ; then                                # kill command failed
+      logger -t fmc -p local7.info "Failed killing pcSrv!"
+      local PC_RV=1
+    else                                               # kill command succeeded
+      # wait for process to be stopped
+      for i in 0 1 2 3 4 ; do
+        sleep 1
+        get_pc_pid
+        [[ -z ${PC_PID:-} ]] && break
+      done
+      get_pc_pid
+      if [[ -z ${PC_PID:-} ]] ; then      # process terminated after kill -TERM
+        local PC_RV=0
+      else                               # process still alive after kill -TERM
+        logger -t fmc -p local7.info "pcSrv still alive after kill -TERM!"
+        # kill -KILL process
+        kill -KILL $PC_PID > /dev/null 2>&1
+        if [ $? -ne 0 ] ; then                            # kill command failed
+          logger -t fmc -p local7.info "Failed killing pcSrv!"
+          local PC_RV=1
+        else                                           # kill command succeeded
+          # wait for process to be stopped
+          for i in 0 1 2 3 4 ; do
+            sleep 1
+            get_pc_pid
+            [[ -z ${PC_PID:-} ]] && break
+          done
+          get_pc_pid
+          if [[ -z ${PC_PID:-} ]] ; then  # process terminated after kill -KILL
+            local PC_RV=0
+          else                           # process still alive after kill -KILL
+            logger -t fmc -p local7.info "pcSrv still alive after kill -KILL!"
+            local PC_RV=1
+          fi
+        fi
+      fi
+    fi
+    [ $PC_RV -eq 0 ] && logger -t fmc -p local7.info "pcSrv killed."
+  fi
+  [ $PC_RV -eq 0 ] && success "===== pcSrv shutdown" || \
+                      failure "===== pcSrv shutdown"
+  echo
+  return $PC_RV
+}
+# -----------------------------------------------------------------------------
+stop_ipmi_srv()
+{
+  echo -n $"Killing FMC ipmiSrv "
+  get_ipmi_pid
+  if [[ -z ${IPMI_PID:-} ]] ; then                        # process not running
+    logger -t fmc -p local7.info "ipmiSrv already stopped."
+    local IPMI_RV=0
+  else                                                        # process running
+    # kill -TERM process
+    kill -TERM $IPMI_PID > /dev/null 2>&1
+    if [ $? -ne 0 ] ; then                                # kill command failed
+      logger -t fmc -p local7.info "Failed killing ipmiSrv!"
+      local IPMI_RV=1
+    else                                               # kill command succeeded
+      # wait for process to be stopped
+      for i in 0 1 2 3 4 ; do
+        sleep 1
+        get_ipmi_pid
+        [[ -z ${IPMI_PID:-} ]] && break
+      done
+      get_ipmi_pid
+      if [[ -z ${IPMI_PID:-} ]] ; then    # process terminated after kill -TERM
+        local IPMI_RV=0
+      else                               # process still alive after kill -TERM
+        logger -t fmc -p local7.info "ipmiSrv still alive after kill -TERM!"
+        # kill -KILL process
+        kill -KILL $IPMI_PID > /dev/null 2>&1
+        if [ $? -ne 0 ] ; then                            # kill command failed
+          logger -t fmc -p local7.info "Failed killing ipmiSrv!"
+          local IPMI_RV=1
+        else                                           # kill command succeeded
+          # wait for process to be stopped
+          for i in 0 1 2 3 4 ; do
+            sleep 1
+            get_ipmi_pid
+            [[ -z ${IPMI_PID:-} ]] && break
+          done
+          get_ipmi_pid
+          if [[ -z ${IPMI_PID:-} ]] ; then # process terminat. after kill -KILL
+            local IPMI_RV=0
+          else                           # process still alive after kill -KILL
+            logger -t fmc -p local7.info "ipmiSrv still alive after kill -KILL!"
+            local IPMI_RV=1
+          fi
+        fi
+      fi
+    fi
+    [ $IPMI_RV -eq 0 ] && logger -t fmc -p local7.info "ipmiSrv killed."
+  fi
+  [ $IPMI_RV -eq 0 ] && success "===== ipmiSrv shutdown" || \
+                        failure "===== ipmiSrv shutdown"
+  echo
+  return $IPMI_RV
+}
+# -----------------------------------------------------------------------------
+stop_cm_srv()
+{
+  echo -n $"Killing FMC cmSrv "
+  get_cm_pid
+  if [[ -z ${CM_PID:-} ]] ; then                          # process not running
+    logger -t fmc -p local7.info "cmSrv already stopped."
+    local CM_RV=0
+  else                                                        # process running
+    # kill -TERM process
+    kill -TERM $CM_PID > /dev/null 2>&1
+    if [ $? -ne 0 ] ; then                                # kill command failed
+      logger -t fmc -p local7.info "Failed killing cmSrv!"
+      local CM_RV=1
+    else                                               # kill command succeeded
+      # wait for process to be stopped
+      for i in 0 1 2 3 4 ; do
+        sleep 1
+        get_cm_pid
+        [[ -z ${CM_PID:-} ]] && break
+      done
+      get_cm_pid
+      if [[ -z ${CM_PID:-} ]] ; then      # process terminated after kill -TERM
+        local CM_RV=0
+      else                               # process still alive after kill -TERM
+        logger -t fmc -p local7.info "cmSrv still alive after kill -TERM!"
+        # kill -KILL process
+        kill -KILL $CM_PID > /dev/null 2>&1
+        if [ $? -ne 0 ] ; then                            # kill command failed
+          logger -t fmc -p local7.info "Failed killing cmSrv!"
+          local CM_RV=1
+        else                                           # kill command succeeded
+          # wait for process to be stopped
+          for i in 0 1 2 3 4 ; do
+            sleep 1
+            get_cm_pid
+            [[ -z ${CM_PID:-} ]] && break
+          done
+          get_cm_pid
+          if [[ -z ${CM_PID:-} ]] ; then  # process terminated after kill -KILL
+            local CM_RV=0
+          else                           # process still alive after kill -KILL
+            logger -t fmc -p local7.info "cmSrv still alive after kill -KILL!"
+            local CM_RV=1
+          fi
+        fi
+      fi
+    fi
+    [ $CM_RV -eq 0 ] && logger -t fmc -p local7.info "cmSrv killed."
+  fi
+  [ $CM_RV -eq 0 ] && success "===== cmSrv shutdown" || \
+                      failure "===== cmSrv shutdown"
+  echo
+  return $CM_RV
+}
+# =============================================================================
+# Start FMC enabled processes
+# RETURN VALUE: 0: succeeded; 1: failed.
+# -----------------------------------------------------------------------------
+start_fmc()
+{
+  to_start=()
+  to_start+=($@)
+  echo ${to_start[@]}
+  to_start=($(echo ${to_start[@]} | sed -e 's/srv/Srv/g'))
+  if [[ ${#to_start[@]} -eq 1 ]]; then
+        to_start+=("logSrv")
+        to_start+=("tmSrv")
+        to_start+=("cmSrv")
+        to_start+=("pcSrv")
+        to_start+=("ipmiSrv")
+  fi
+  local RETVAL=0
+  logger -t fmc -p local7.info "=============== FMC start-up ongoing..."
+  get_dim_dns_node
+  if [[ $LOG_SRV = yes ]] ; then
+    contains_element "logSrv" "${to_start[@]}"
+    if [[ $? -eq 0 ]]; then
+      start_log_srv
+      RETVAL=$[$RETVAL || $?]
+    fi
+  fi
+  if [[ $TM_SRV = yes ]] ; then
+    contains_element "tmSrv" "${to_start[@]}"
+    if [[ $? -eq 0 ]]; then
+      start_tm_srv
+      RETVAL=$[$RETVAL || $?]
+    fi
+  fi
+  if [[ $CM_SRV = yes ]] ; then
+    contains_element "cmSrv" "${to_start[@]}"
+    if [[ $? -eq 0 ]]; then
+      start_cm_srv
+      RETVAL=$[$RETVAL || $?]
+    fi
+  fi
+  if [[ $PC_SRV = yes ]] ; then
+    contains_element "pcSrv" "${to_start[@]}"
+    if [[ $? -eq 0 ]]; then
+    start_pc_srv
+    RETVAL=$[$RETVAL || $?]
+    fi
+  fi
+  if [[ $IPMI_SRV = yes ]] ; then
+    contains_element "ipmiSrv" "${to_start[@]}"
+    if [[ $? -eq 0 ]]; then
+      start_ipmi_srv
+      RETVAL=$[$RETVAL || $?]
+    fi
+  fi
+  if [ $RETVAL -eq 0 ] ; then
+    logger -t fmc -p local7.info "=============== FMC start-up succeeded"
+  else
+    logger -t fmc -p local7.info "=============== FMC start-up failed"
+  fi
+  return $RETVAL
+}
+# -----------------------------------------------------------------------------
+# Start only Control Tools (Power Manager and Process Controller)
+# To be used after a configuration change made by cmSrv
+# RETURN VALUE: 0: succeeded; 1: failed.
+# -----------------------------------------------------------------------------
+start_ctrl_fmc()
+{
+  to_start=()
+  to_start+=($@)
+  to_start=($(echo ${to_start[@]} | sed -e 's/srv/Srv/g'))
+  if [[ ${#to_start[@]} -eq 1 ]]; then
+        to_start+=("pcSrv")
+        to_start+=("ipmiSrv")
+  fi
+  local RETVAL=0
+  logger -t fmc -p local7.info "=============== FMC Ctrl start-up ongoing..."
+  get_dim_dns_node
+  if [[ $PC_SRV = yes ]] ; then
+    contains_element "pcSrv" "${to_start[@]}"
+    if [[ $? -eq 0 ]]; then
+    start_pc_srv
+    RETVAL=$[$RETVAL || $?]
+    fi
+  fi
+  if [[ $IPMI_SRV = yes ]] ; then
+    contains_element "ipmiSrv" "${to_start[@]}"
+    if [[ $? -eq 0 ]]; then
+      start_ipmi_srv
+      RETVAL=$[$RETVAL || $?]
+    fi
+  fi
+  if [ $RETVAL -eq 0 ] ; then
+    logger -t fmc -p local7.info "=============== FMC Ctrl start-up succeeded"
+  else
+    logger -t fmc -p local7.info "=============== FMC Ctrl start-up failed"
+  fi
+  return $RETVAL
+}
+# -----------------------------------------------------------------------------
+# Restart only FMC processes enabled and running
+# RETURN VALUE: 0: succeeded; 1: failed.
+# -----------------------------------------------------------------------------
+condrestart_fmc()
+{
+  to_cond=()
+  to_cond+=($@)
+  to_cond=($(echo ${to_cond[@]} | sed -e 's/srv/Srv/g'))
+  if [[ ${#to_cond[@]} -eq 1 ]]; then
+        to_cond+=("logSrv")
+        to_cond+=("tmSrv")
+        to_cond+=("cmSrv")
+        to_cond+=("pcSrv")
+        to_cond+=("ipmiSrv")
+  fi
+  local RETVAL=0
+  local msg="=============== FMC conditionnal restart ongoing..."
+  logger -t fmc -p local7.info "$msg"
+  get_dim_dns_node
+  if [[ $LOG_SRV = yes ]] ; then
+    contains_element "logSrv" "${to_cond[@]}"
+    if [[ $? -eq 0 ]]; then
+      get_log_pid
+      if [[ -n ${LOG_PID:-} ]] ; then                           # process running
+        stop_log_srv
+        start_log_srv
+        RETVAL=$[$RETVAL || $?]
+      fi
+    fi
+  fi
+  if [[ $TM_SRV = yes ]] ; then
+    contains_element "tmSrv" "${to_cond[@]}"
+    if [[ $? -eq 0 ]]; then
+    get_tm_pid
+    if [[ -n ${TM_PID:-} ]] ; then                            # process running
+      stop_tm_srv
+      start_tm_srv
+      RETVAL=$[$RETVAL || $?]
+    fi
+    fi
+  fi
+  if [[ $CM_SRV = yes ]] ; then
+    contains_element "cmSrv" "${to_cond[@]}"
+    if [[ $? -eq 0 ]]; then
+    get_cm_pid
+    if [[ -n ${CM_PID:-} ]] ; then                            # process running
+      stop_cm_srv
+      start_cm_srv
+      RETVAL=$[$RETVAL || $?]
+    fi
+    fi
+  fi
+  if [[ $PC_SRV = yes ]] ; then
+    contains_element "pcSrv" "${to_cond[@]}"
+    if [[ $? -eq 0 ]]; then
+    get_pc_pid
+    if [[ -n ${PC_PID:-} ]] ; then                            # process running
+      stop_pc_srv
+      start_pc_srv
+      RETVAL=$[$RETVAL || $?]
+    fi
+    fi
+  fi
+  if [[ $IPMI_SRV = yes ]] ; then
+    contains_element "ipmiSrv" "${to_cond[@]}"
+    if [[ $? -eq 0 ]]; then
+    get_ipmi_pid
+    if [[ -n ${IPMI_PID:-} ]] ; then                          # process running
+      stop_ipmi_srv
+      start_ipmi_srv
+      RETVAL=$[$RETVAL || $?]
+    fi
+    fi
+  fi
+  if [ $RETVAL -eq 0 ] ; then
+    logger -t fmc -p local7.info "=============== FMC conditionnal restart succeeded"
+  else
+    logger -t fmc -p local7.info "=============== FMC conditionnal restart failed"
+  fi
+  return $RETVAL
+}
+# -----------------------------------------------------------------------------
+# Stop FMC enabled processes
+# RETURN VALUE: 0: succeeded; 1: failed.
+# -----------------------------------------------------------------------------
+stop_fmc()
+{
+  to_stop=()
+  to_stop+=($@)
+  to_stop=($(echo ${to_stop[@]} | sed -e 's/srv/Srv/g'))
+  if [[ ${#to_stop[@]} -lt 2 ]]; then
+        to_stop+=("logSrv")
+        to_stop+=("tmSrv")
+        to_stop+=("cmSrv")
+        to_stop+=("pcSrv")
+        to_stop+=("ipmiSrv")
+  fi
+  local RETVAL=0
+  logger -t fmc -p local7.info "=============== FMC shutdown ongoing..."
+  if [[ $IPMI_SRV = yes ]] ; then
+    contains_element "ipmiSrv" "${to_stop[@]}"
+    if [[ $? -eq 0 ]]; then
+    stop_ipmi_srv
+    RETVAL=$[$RETVAL || $?]
+    fi
+  fi
+  if [[ $PC_SRV = yes ]] ; then
+    contains_element "pcSrv" "${to_stop[@]}"
+    if [[ $? -eq 0 ]]; then
+    stop_pc_srv
+    RETVAL=$[$RETVAL || $?]
+    fi
+  fi
+  if [[ $CM_SRV = yes ]] ; then
+    contains_element "cmSrv" "${to_stop[@]}"
+    if [[ $? -eq 0 ]]; then
+    stop_cm_srv
+    RETVAL=$[$RETVAL || $?]
+    fi
+  fi
+  if [[ $TM_SRV = yes ]] ; then
+    contains_element "tmSrv" "${to_stop[@]}"
+    if [[ $? -eq 0 ]]; then
+    stop_tm_srv
+    RETVAL=$[$RETVAL || $?]
+    fi
+  fi
+  sleep 1
+  if [[ $LOG_SRV = yes ]] ; then
+    contains_element "logSrv" "${to_stop[@]}"
+    if [[ $? -eq 0 ]]; then
+    stop_log_srv
+    RETVAL=$[$RETVAL || $?]
+    fi
+  fi
+  if [ $RETVAL -eq 0 ] ; then
+    logger -t fmc -p local7.info "=============== FMC shutdown succeeded"
+  else
+    logger -t fmc -p local7.info "=============== FMC shutdown failed"
+  fi
+  return $RETVAL
+}
+# -----------------------------------------------------------------------------
+# stop only Control Tools (Power Manager and Process Controller)
+# To be used after a configuration change made by cmSrv
+# RETURN VALUE: 0: succeeded; 1: failed.
+# -----------------------------------------------------------------------------
+stop_ctrl_fmc()
+{
+  to_stop=()
+  to_stop+=($@)
+  to_stop=($(echo ${to_stop[@]} | sed -e 's/srv/Srv/g'))
+  if [[ ${#to_stop[@]} -eq 1 ]]; then
+        to_stop+=("pcSrv")
+        to_stop+=("ipmiSrv")
+  fi
+  local RETVAL=0
+  logger -t fmc -p local7.info "=============== FMC Ctrl shutdown ongoing..."
+  if [[ $IPMI_SRV = yes ]] ; then
+    contains_element "ipmiSrv" "${to_stop[@]}"
+    if [[ $? -eq 0 ]]; then
+      stop_ipmi_srv
+      RETVAL=$[$RETVAL || $?]
+    fi
+  fi
+  if [[ $PC_SRV = yes ]] ; then
+    contains_element "pcSrv" "${to_stop[@]}"
+    if [[ $? -eq 0 ]]; then
+      stop_pc_srv
+      RETVAL=$[$RETVAL || $?]
+    fi
+  fi
+  if [ $RETVAL -eq 0 ] ; then
+    logger -t fmc -p local7.info "=============== FMC Ctrl shutdown succeeded"
+  else
+    logger -t fmc -p local7.info "=============== FMC Ctrl shutdown failed"
+  fi
+  return $RETVAL
+}
+# -----------------------------------------------------------------------------
+status_fmc()
+{
+  to_status=()
+  to_status+=($@)
+  to_status=($(echo ${to_status[@]} | sed -e 's/srv/Srv/g'))
+  if [[ ${#to_status[@]} -eq 1 ]]; then
+        to_status+=("logSrv")
+        to_status+=("tmSrv")
+        to_status+=("cmSrv")
+        to_status+=("pcSrv")
+        to_status+=("ipmiSrv")
+  fi
+  contains_element "logSrv" "${to_status[@]}"
+  if [[ $? -eq 0 ]]; then
+  status_log_srv
+  fi
+  contains_element "tmSrv" "${to_status[@]}"
+  if [[ $? -eq 0 ]]; then
+  status_tm_srv
+  fi
+  contains_element "cmSrv" "${to_status[@]}"
+  if [[ $? -eq 0 ]]; then
+  status_cm_srv
+  fi
+  contains_element "pcSrv" "${to_status[@]}"
+  if [[ $? -eq 0 ]]; then
+  status_pc_srv
+  fi
+  contains_element "ipmiSrv" "${to_status[@]}"
+  if [[ $? -eq 0 ]]; then
+  status_ipmi_srv
+  fi
+}
+# =============================================================================
+# condrestart: restart only running servers
+# ctrlrestart: restart only pcSrv and ipmiSrv (Control Tools, running only on
+#              ctrl-PCs). To be used after a configuration change made by cmSrv
+# =============================================================================
+RETVAL=0
+case "$1" in
+  start)
+    check_config
+    start_fmc $*
+    RETVAL=$?
+    ;;
+  stop)
+    check_config
+    stop_fmc $*
+    RETVAL=$?
+    ;;
+  status)
+    status_fmc $*
+    ;;
+  restart)
+    check_config
+    stop_fmc $*
+    RETVAL=$?
+    sleep 2
+    start_fmc $*
+    RETVAL=$[$RETVAL || $?]
+    ;;
+  ctrlrestart)
+    check_config
+    stop_ctrl_fmc $*
+    RETVAL=$?
+    sleep 2
+    start_ctrl_fmc $*
+    RETVAL=$[$RETVAL || $?]
+    ;;
+  condrestart)
+    condrestart_fmc $*
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop|restart|condrestart|ctrlrestart|status}"
+    RETVAL=1
+    exit 1
+    ;;
+esac
+exit $RETVAL
+# =============================================================================

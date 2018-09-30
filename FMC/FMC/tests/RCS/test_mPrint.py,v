@@ -1,0 +1,31 @@
+head	1.1;
+access;
+symbols;
+locks
+	galli:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2008.08.16.06.30.37;	author galli;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@#!/usr/bin/env python
+import time
+import os
+os.putenv("UTGID","test_py")
+os.system("/opt/FMC/bin/mPrint \"bla bla bla\"")                # default: VERB
+os.system("/opt/FMC/bin/mPrint -s WARN -p /tmp/logSrv.fifo \"bla bla bla\"")
+os.system("/opt/FMC/bin/mPrint -s ERROR -f main \"bla bla bla\"")
+@

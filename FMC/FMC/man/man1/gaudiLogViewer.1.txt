@@ -1,0 +1,483 @@
+logViewer(1)                   FMC User Commands                  logViewer(1)
+
+
+
+NNAAMMEE
+       llooggVViieewweerr -- FMC Message Logger displayer, archiver and forwarder
+
+SSYYNNOOPPSSIISS
+       llooggVViieewweerr [--NN | ----ddiimm--ddnnss _D_I_M___D_N_S___N_O_D_E]
+                 [--mm | ----hhoossttnnaammee _N_O_D_E___P_A_T_T_E_R_N_._._.]
+                 [--ss | ----llooggggeerr--nnaammee _L_O_G___P_A_T_T_E_R_N_._._.]  [--bb | ----nnoo--ccoolloorr]
+                 [--SS | ----nnoo--oolldd--mmeessssaaggeess]
+                 [--ll | ----sseevveerriittyy--tthhrreesshhoolldd _S_E_V_E_R_I_T_Y___T_H_R_E_S_H_O_L_D]
+                 [--oo | ----oouutt--ffiiffoo _F_I_F_O___N_A_M_E] [--OO | ----oouutt--ffiillee _F_I_L_E___N_A_M_E]
+                 [--AA | ----nnoo--ddrroopp] [--FF | ----ffiilltteerr--rreeggeexx _R_E_G_U_L_A_R___E_X_P_R_E_S_S_I_O_N]
+                 [--ff | ----ffiilltteerr--wwiillddccaarrdd _W_I_L_D_C_A_R_D___P_A_T_T_E_R_N]
+                 [--XX | ----ffiilltteerr--oouutt--rreeggeexx _R_E_G_U_L_A_R___E_X_P_R_E_S_S_I_O_N]
+                 [--xx | ----ffiilltteerr--oouutt--wwiillddccaarrdd _W_I_L_D_C_A_R_D___P_A_T_T_E_R_N]
+                 [--EE | ----ssuupppprreessss--iiddeenntt _0_|_1]
+                 [--LL | ----ssuupppprreessss--lleevveennsshhtteeiinn--tthhrreesshhoolldd _L_E_V___D_I_S_T]
+                 [--WW | ----ssuupppprreessss--wwoorrdd--tthhrreesshhoolldd _W_O_R_D___D_I_S_T]
+                 [--nn | ----ccoommppaarreedd--mmeessssaaggee--nnuumm _C_O_M_P___M_S_G_S]
+                 [--cc | ----sskkiipp--cchhaarr--nnuumm _S_K_I_P___N_U_M___C_O_M_P]
+                 [--CC | ----sskkiipp--cchhaarr--lliisstt _S_K_I_P___C_H_A_R___C_O_M_P]
+
+       llooggVViieewweerr { --VV | ----vveerrssiioonn } [--NN | ----ddiimm--ddnnss _D_I_M___D_N_S___N_O_D_E]
+                 [--mm | ----hhoossttnnaammee _N_O_D_E___P_A_T_T_E_R_N_._._.]
+                 [--ss | ----llooggggeerr--nnaammee _L_O_G___P_A_T_T_E_R_N_._._.]
+
+       llooggVViieewweerr { --hh | ----hheellpp }
+
+IINNTTRROODDUUCCTTIIOONN
+       The FFMMCC MMeessssaaggee LLooggggeerr is a tool to _c_o_l_l_e_c_t, _m_a_n_a_g_e (i.e. merge, dupli-
+       cate, filter, suppress duplicates) and _d_i_s_p_l_a_y on a central console the
+       messages sent by the applications running on the farm  nodes.  It  uses
+       _D_I_M  to  move messages throughout the network and a POSIX.1 _F_I_F_O (alias
+       _n_a_m_e_d _p_i_p_e) on each node as local buffer to collect message sent by the
+       application running on the same node.
+
+       The  FMC Message Logger is a _g_e_n_e_r_a_l _p_u_r_p_o_s_e utility, not tailored on a
+       specific application; it can even collect messages sent by the applica-
+       tions  to  their  _s_t_a_n_d_a_r_d  _o_u_t_p_u_t and _e_r_r_o_r streams by rreeddiirreeccttiinngg tthhee
+       ssttrreeaammss ttoo tthhee FFIIFFOO at the application start-up (the FMC  Task  Manager
+       provides  a  flag in the ttmmSSttaarrtt(1) command to activate such a redirec-
+       tion).
+
+       The FFMMCC MMeessssaaggee LLooggggeerr consists in the  server  llooggSSrrvv(8),  which  gets
+       messages  from  a  local FIFO and publish them using DIM, in the client
+       llooggVViieewweerr(1), which can display the messages got using DIM  or  forward
+       them  to  another llooggSSrrvv(8), and in the clients llooggSSeettPPrrooppeerrttiieess(1) and
+       llooggGGeettPPrrooppeerrttiieess(1) which can change and retrieve  the  llooggSSrrvv(8)  set-
+       tings at run-time.
+
+       Besides,  the  FFMMCC  MMeessssaaggee  LLooggggeerr  provides several utilities to help
+       sending formatted messages with header to a the FMC Message Logger: the
+       command  mmPPrriinntt(1) and the library calls ddffllttLLooggggeerrOOppeenn(3), mmPPrriinnttff(3),
+       rrPPrriinnttff(3),   ddffllttLLooggggeerrCClloossee(3),   ggeettDDffllttFFiiffooFFDD(3),    llooggggeerrOOppeenn(3),
+       mmffPPrriinnttff(3), rrffPPrriinnttff(3) and llooggggeerrCClloossee(3).
+
+       Look at section _W_R_I_T_I_N_G _T_O _T_H_E _F_M_C _L_O_G_G_E_R in the llooggSSrrvv(8) man page for
+       a comprehensive review of the ways  of  sending  messages  to  the  FMC
+       Message Logger.
+
+   NNoo--DDrroopp aanndd CCoonnggeessttiioonn--PPrrooooff BBeehhaavviioorr
+       The  FMC  Message  Logger  can work either in nnoo--ddrroopp or in ccoonnggeessttiioonn--
+       pprrooooff mode.
+
+       If the FIFO is completely filled (this could be due to a  network  con-
+       gestion  which  prevents  the  FIFO drain), any attempt to write to the
+       FIFO in nnoo--ddrroopp mode bblloocckkss the writer application until a  message  is
+       pulled  out of the FIFO, while any attempt to write to the FIFO in ccoonn--
+       ggeessttiioonn--pprrooooff mode returns immediately the _E_A_G_A_I_N eerrrroorr, without block-
+       ing,  without  writing  (dropping  therefore  the  message) and without
+       injecting additional traffic into the network.
+
+   TThhee MMeessssaaggee FFiilltteerr
+       Since very often an excess of messages hides the messages of  interest,
+       it  is  often  desirable  to  filter  the message flow. The FMC Message
+       Logger allows to filter the  message  flow  both  on  the  _s_e_r_v_e_r  _s_i_d_e
+       (llooggSSrrvv(8)) and on the _c_l_i_e_n_t _s_i_d_e (llooggVViieewweerr(1)). The filtering can be
+       based, on both sides, on:
+
+       * the _s_e_v_e_r_i_t_y of the message, classified in six classes, (VERB, DEBUG,
+         INFO,  WARN, ERROR and FATAL) and recognized either by a conventional
+         message header or by means of a heuristic  method  based  on  regular
+         expressions, which can be changed at the server start-up;
+
+       * an arbitrary _w_i_l_d_c_a_r_d _p_a_t_t_e_r_n;
+
+       * an arbitrary _e_x_t_e_n_d_e_d _r_e_g_u_l_a_r _e_x_p_r_e_s_s_i_o_n.
+
+   TThhee SSuupppprreessssiioonn ooff DDuupplliiccaatteess
+       While  running  processes  on  a large farm, an anomalous condition can
+       trigger the same error message (or the same set of few error  messages)
+       on  all  the  nodes of the farm. If the same messages is sent more than
+       once by each node, the result is a mmeessssaaggee ssttoorrmm of thousands  of  mes-
+       sages  which  differ  at  most  for a few details (e.g. the name of the
+       sender, a serial number, etc.).
+
+       To avoid such a condition, the FMC  Message  Logger  can  suppress  the
+       duplicated  messages both on the _s_e_r_v_e_r _s_i_d_e and on the _c_l_i_e_n_t _s_i_d_e. To
+       recognize duplicates, it can compare the last _n received messages (i.e.
+       can  suppress  repeated  messages  which are iinntteerrlleeaavveedd by zero to _n_-_1
+       different messages) where the parameter _n can be set  and  modified  at
+       run-time.
+
+       Three  different  comparison criteria can be used to distinguish dupli-
+       cates from different messages:
+
+       * _e_x_a_c_t _c_o_m_p_a_r_i_s_o_n: two messages are considered different if  an  exact
+         string comparison between the two messages fails;
+
+       * _n_u_m_b_e_r  _o_f _d_i_f_f_e_r_e_n_t _t_o_k_e_n_s: two messages are considered different if
+         the number of tokens which are different in the two messages  exceeds
+         a given threshold;
+
+       * _L_e_v_e_n_s_h_t_e_i_n  _d_i_s_t_a_n_c_e:  two  message  are considered different if the
+         Levenshtein  distance  between  the  two  messages  exceeds  a  given
+         threshold.  The Levenshtein distance (also known as _e_d_i_t _d_i_s_t_a_n_c_e) is
+         a measurement of the similarity of the two strings,  defined  as  the
+         number  of  single  character edit operations (deletion, insertion or
+         substitution) required to transform one string into the other.
+
+       Moreover, the hheeaaddeerr of the message -- which contains the time and  the
+       node name, which are very often different -- can be sskkiippppeedd in the com-
+       parison to distinguish duplicates from different messages. Indeed,  the
+       FMC  Message  Logger allows to start the comparison either after a set-
+       tled number of characters from the beginning of the messages  or  after
+       the  occurrence  of  a  given  sequence of (not necessarily contiguous)
+       characters of the message.
+
+   TThhee LLaasstt MMeessssaaggee BBuuffffeerr
+       When the message filter is tight, only the  severe  messages  are  dis-
+       played  on  the console, while all the other messages are discarded. If
+       something severe does happen, sometimes is desirable to  rreettrriieevvee  aallssoo
+       tthhee lleessss sseevveerree mmeessssaaggeess aallrreeaaddyy ddiissccaarrddeedd.
+
+       To  this  aim the FMC Message Logger Server implements a buffer, on the
+       _s_e_r_v_e_r _s_i_d_e, containing the  llaasstt  _m  mmeessssaaggeess  (before  filtering  and
+       duplicate  suppression),  where the parameter _m can be set and modified
+       at rruunn--ttiimmee.  The whole buffer can be retrieved -- filtered and reduced
+       with  the  current settings -- through the DIM service _l_a_s_t___l_o_g.  While
+       in normal operation the FMC Message Logger Client subscribes  only,  in
+       MONITORED mode, the DIM service _l_o_g containing the last single message,
+       however, every time it detects a change in the filter or message reduc-
+       tion  settings  it accesses also the _l_a_s_t___l_o_g DIM service, in ONCE_ONLY
+       mode, to download the last message buffer.
+
+       If something severe happens, the user can make the filter and reduction
+       cuts  looser  and the client, detecting a change in the settings, auto-
+       matically downloads the Last Message Buffer. This way, even less severe
+       messages  among  the  last _m ones can be displayed to better understand
+       the fault.
+
+DDEESSCCRRIIPPTTIIOONN
+       The llooggVViieewweerr is an application of the  _F_M_C  _M_e_s_s_a_g_e  _L_o_g_g_e_r  which  is
+       able:
+
+              1.  to  ddiissppllaayy  on  the ccuurrrreenntt tteerrmmiinnaall the messages retrieved
+              from  one  or  more  selected   FMC   Message   Logger   Servers
+              (llooggSSrrvv(8));
+
+              2.  to  ssaavvee  in a ffiillee the messages retrieved  from one or more
+              selected FMC Message Logger Servers (llooggSSrrvv(8));
+
+              3.  to  ffoorrwwaarrdd the messages retrieved from one or more selected
+              FMC Message Logger Servers (llooggSSrrvv(8)), through a  FFIIFFOO  (a.k.a.
+              named  pipe), to another FMC Message Logger Servers (llooggSSrrvv(8)),
+              which act as "collector".
+
+       The llooggVViieewweerr application terminates on _C_t_r_l_-_C.
+
+       The  DIM Name Server, looked up to seek for Message Logger Servers, can
+       be chosen (in decreasing order of priority) by:
+
+              1. Specifying the --NN _D_I_M___D_N_S___N_O_D_E command-line option;
+
+              2. Specifying the _D_I_M___D_N_S___N_O_D_E eennvviirroonnmmeenntt vvaarriiaabbllee;
+
+              3. Defining the _D_I_M___D_N_S___N_O_D_E in the file "//eettcc//ssyyssccoonnffiigg//ddiimm".
+
+OOPPTTIIOONNSS
+   GGeenneerraall OOppttiioonnss
+       --hh ----hheellpp
+              Get basic usage help from the command line.
+
+       --NN ----ddiimm--ddnnss _D_I_M___D_N_S___N_O_D_E _(_s_t_r_i_n_g_)
+              Use _D_I_M___D_N_S___N_O_D_E as DIM Name Server node.
+
+       --VV ----vveerrssiioonn
+              For each selected node  print  the  FMC  Message  Logger  Server
+              version and the FMC version, than exit.
+
+       --mm ----hhoossttnnaammee _N_O_D_E___P_A_T_T_E_R_N _(_s_t_r_i_n_g_, _r_e_p_e_a_t_a_b_l_e_)
+              Contact  FMC  Message  Logger  Servers  only  at the nodes whose
+              hostname matches the  wildcard  pattern  _N_O_D_E___P_A_T_T_E_R_N  (ddeeffaauulltt:
+              contact the FMC Logger Servers at all the nodes).
+
+       --ss ----llooggggeerr--nnaammee _L_O_G___P_A_T_T_E_R_N _(_s_t_r_i_n_g_, _r_e_p_e_a_t_a_b_l_e_)
+              Contact  only  FMC  Message  Logger  Servers  whose  logger name
+              matches the wildcard pattern _L_O_G___P_A_T_T_E_R_N. DDeeffaauulltt:  contact  the
+              FMC Logger Servers with whatever logger name).
+
+       --bb ----nnoo--ccoolloorr
+              Print  output in _b_l_a_c_k _& _w_h_i_t_e (do not include ANSI color escape
+              sequences). DDeeffaauulltt: include ANSI color escape sequences. Option
+              --bb is implicitely activated setting options --oo or --OO.
+
+       --SS ----nnoo--oolldd--mmeessssaaggeess
+              Do not print the old messages stored on servers and published in
+              the DIM service _l_a_s_t___l_o_g.
+
+   OOuuttppuutt OOppttiioonnss
+       --OO ----oouutt--ffiillee _F_I_L_E___N_A_M_E _(_s_t_r_i_n_g_)
+              Send output to ffiillee _F_I_L_E___N_A_M_E. DDeeffaauulltt: send output to stdout.
+
+       --oo ----oouutt--ffiiffoo _F_I_F_O___N_A_M_E _(_s_t_r_i_n_g_)
+              Send output to FFIIFFOO (named pipe) _F_I_F_O___N_A_M_E.  DDeeffaauulltt: send  out-
+              put to stdout.
+
+       --AA ----nnoo--ddrroopp
+              Use  the  nnoo--ddrroopp ppoolliiccyy in writing to a FFIIFFOO.  DDeeffaauulltt: use the
+              ccoonnggeessttiioonn--pprrooooff policy.
+
+   FFiilltteerr OOppttiioonnss
+       --ll ----sseevveerriittyy--tthhrreesshhoolldd _S_E_V_E_R_I_T_Y___T_H_R_E_S_H_O_L_D _(_i_n_t_e_g_e_r _o_r _s_t_r_i_n_g_)
+              Send to output only messages of sseevveerriittyy >=  _S_E_V_E_R_I_T_Y___T_H_R_E_S_H_O_L_D.
+              As  string,  AALLLL  =  0, VVEERRBB = 1, DDEEBBUUGG = 2, IINNFFOO = 3, WWAARRNN = 4,
+              EERRRROORR = 5, FFAATTAALL =6 .  DDeeffaauulltt: _S_E_V_E_R_I_T_Y___T_H_R_E_S_H_O_L_D = 1 = VVEERRBB.
+
+       --FF ----ffiilltteerr--rreeggeexx _R_E_G_U_L_A_R___E_X_P_R_E_S_S_I_O_N _(_s_t_r_i_n_g_)
+              Filter tthhrroouugghh messages by using the extended regular expression
+              _R_E_G_U_L_A_R___E_X_P_R_E_S_I_O_N. DDeeffaauulltt: do not filter.
+
+       --ff ----ffiilltteerr--wwiillddccaarrdd _W_I_L_D_C_A_R_D___P_A_T_T_E_R_N _(_s_t_r_i_n_g_)
+              Filter   tthhrroouugghh   messages   by   using  the  wildcard  pattern
+              _W_I_L_D_C_A_R_D___P_A_T_T_E_R_N. DDeeffaauulltt: do not filter.
+
+       --XX ----ffiilltteerr--oouutt--rreeggeexx _R_E_G_U_L_A_R___E_X_P_R_E_S_S_I_O_N _(_s_t_r_i_n_g_)
+              Filter oouutt messages by using  the  extended  regular  expression
+              _R_E_G_U_L_A_R___E_X_P_R_E_S_I_O_N. DDeeffaauulltt: do not filter.
+
+       --xx ----ffiilltteerr--oouutt--wwiillddccaarrdd _W_I_L_D_C_A_R_D___P_A_T_T_E_R_N _(_s_t_r_i_n_g_)
+              Filter    oouutt   messages   by   using   the   wildcard   pattern
+              _W_I_L_D_C_A_R_D___P_A_T_T_E_R_N. DDeeffaauulltt: do not filter.
+
+   DDuupplliiccaattee SSuupppprreessssiioonn OOppttiioonnss
+       --EE ----ssuupppprreessss--iiddeenntt _0_|_1
+              Suppress  repeated  messages  using   exact   comparison,   i.e.
+              suppress  messages  which  are  identical to at least one of the
+              previous _C_O_M_P___M_S_G_S-1 messages. DDeeffaauulltt: do not suppress repeated
+              messages.  _N_._B_.:  the  behaviour with this option is affected by
+              --cc, --CC and --nn options.
+
+       --LL ----ssuupppprreessss--lleevveennsshhtteeiinn--tthhrreesshhoolldd _L_E_V___D_I_S_T _(_i_n_t_e_g_e_r_)
+              Suppress repeated messages using  Levenshtein  difference,  i.e.
+              suppress  messages  which  differ less than or equal to _L_E_V___D_I_S_T
+              (inserted, deleted or substituted) characters from at least  one
+              of  the  previous _C_O_M_P___M_S_G_S-1 messages. DDeeffaauulltt: do not suppress
+              repeated messages. _N_._B_.:  the  behaviour  with  this  option  is
+              affected by --cc, --CC and --nn options.
+
+       --WW ----ssuupppprreessss--wwoorrdd--tthhrreesshhoolldd _W_O_R_D___D_I_S_T _(_i_n_t_e_g_e_r_)
+              Suppress repeated messages using word difference, i.e.  suppress
+              messages which differ less than or equal to _W_O_R_D___D_I_S_T subsituted
+              word,  with  respect to at least one of the previous _C_O_M_P___M_S_G_S-1
+              messages. DDeeffaauulltt: do not suppress repeated messages. _N_._B_.:  the
+              behaviour with this option is affected by --cc, --CC and --nn options.
+
+       --nn ----ccoommppaarreedd--mmeessssaaggee--nnuumm _C_O_M_P___M_S_G_S _(_i_n_t_e_g_e_r_)
+              To suppress repeated messages, consider the last _C_O_M_P___M_S_G_S  mes-
+              sages,  i.e.  compare each message with the previous _C_O_M_P___M_S_G_S-1
+              messages. DDeeffaauulltt: 1 if  repeated  message  suppression  is  not
+              active,  2  if it is active. _N_._B_.: affect the behaviour with --EE,
+              --LL and --WW options.
+
+       --cc ----sskkiipp--cchhaarr--nnuumm _S_K_I_P___N_U_M___C_O_M_P _(_i_n_t_e_g_e_r_)
+              In the comparison for the  repeated  message  suppression,  skip
+              _S_K_I_P___N_U_M___C_O_M_P characters in each string, i.e. start the compari-
+              son between a couple of string from the _S_K_I_P___N_U_M___C_O_M_P-th charac-
+              ter. Affect the behaviour with --EE, --LL and --WW options.
+
+       --CC ----sskkiipp--cchhaarr--lliisstt _S_K_I_P___C_H_A_R___C_O_M_P _(_s_t_r_i_n_g_)
+              In  the  comparison  for  the repeated message suppression, skip
+              characters in each string until all the characters listed in the
+              string  _S_K_I_P___C_H_A_R___C_O_M_P are passed. Affect the behaviour with --EE,
+              --LL and --WW options.
+
+EENNVVIIRROONNMMEENNTT
+       DDIIMM__DDNNSS__NNOODDEE (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       LLDD__LLIIBBRRAARRYY__PPAATTHH (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries  "libdim"  and  "libFMCu-
+              tils".
+
+       UUTTGGIIDD (string, optional)
+              Printed  in  diagnostic messages, used to identify the llooggVViieewweerr
+              instance.
+
+       ddeeBBuugg (int, optional)
+              Debug level. Can be set to 0..0x2.
+
+              0x1: print signal received.
+
+              0x2: print diagnostics on repeated message suppression.
+
+       vveerrbbRReeggEExxpp (string, optional)
+              Regular expression used to identify unformatted VVEERRBB messages.
+              DDeeffaauulltt: "\bverb(|ose)\b".
+
+       ddeebbuuggRReeggEExxpp (string, optional)
+              Regular expression used to identify unformatted DDEEBBUUGG  messages.
+              DDeeffaauulltt: "\bdebug(\b|[0-f]+\:\W+)".
+
+       iinnffooRReeggEExxpp (string, optional)
+              Regular expression used to identify unformatted IINNFFOO messages.
+              DDeeffaauulltt: "\binfo\b".
+
+       wwaarrnnRReeggEExxpp (string, optional)
+              Regular  expression  used  to  identify unformatted WWAARRNNIINNGG mes-
+              sages.
+              DDeeffaauulltt: "\bwarn(|ing)\b|\bunknown\b|\bincomplete\b|\bunusual\b|
+              \brepeated\b|\btoo\b|\binterrupted\b|\bbusy\b|\bexceeded\b|
+              \bexpired\b|\bcancelled\b|\bdeadlock\b|\bhalted\b|\breset\b|
+              \bcan(\W|_)*not\b|\bout(\W|_)*of(\W|_)*(range|domain)\b|
+              \bno(\W|_)*locks\b|\bno(\W|_)*space\b|\bno(\W|_)*such\b|
+              \bno(\W|_)+(\w+(\W|_)+){0,2}available\b|\btry(\W|_)*again\b|
+              \bnot(\W|_)*a\b|\bnot(\W|_)*attached\b|
+              \bnot(\W|_)*representable\b|\bnot(\W|_)*implemented\b|
+              \bnot(\W|_)*installed\b|\bnot(\W|_)*supported\b|
+              \bnot(\W|_)*permitted\b|\bnot(\W|_)*synchronized\b|
+              \bnot(\W|_)*available\b|\bunavailable\b|\binappropriate\b|
+              \baddress(\W|_)*required\b|\btimed(\W|_)*out\b".
+
+       eerrrroorrRReeggEExxpp (string, optional)
+              Regular  expression used to identify unformatted EERRRROORR messages.
+              DDeeffaauulltt: "\berror\b|\bden(y|ied)\b|\billegal\b|\bfail(|ed)\b|
+              \brefuse(|d)\b|\breject(|ed)\b|\binvalid\b|\bunauthorized\b|
+              \bbad\b|\boverflow\b|\bhost(\W|_)+(\w+(\W|_)+){0,2}down\b|
+              \bnetwork(\W|_)+(\w+(\W|_)+){0,2}down\b|
+              \bnetwork(\W|_)+(\w+(\W|_)+){0,2}unreachable\b|
+              \bno(\W|_)*route(\W|_)*to(\W|_)*host\b|
+              \baddress(\W|_)*already(\W|_)*in(\W|_)*use\b|\bbroken\b|
+              \bwrong\b|\bcorrupt(|ed|ing)\b|\bstale\b".
+
+       ffaattaallRReeggEExxpp (string, optional)
+              Regular  expression used to identify unformatted FFAATTAALL messages.
+              DDeeffaauulltt: "\bfatal\b|\bpanic\b|\bsevere(|d)\b|\babort\b".
+
+EEXXAAMMPPLLEESS
+       Read messages from all the loggers:
+
+       _b_a_s_h_$ llooggVViieewweerr
+       _b_a_s_h_$ llooggVViieewweerr --mm ""**"" --ss ""**""
+       _b_a_s_h_$ llooggVViieewweerr --mm \\** --ss \\**
+
+       Read messages only from the logger "gaudi" at the node "farm0101":
+
+       _b_a_s_h_$ llooggVViieewweerr --mm ffaarrmm00110011 --ss ggaauuddii
+
+       Read  messages  from  the  loggers  "gaudi"  and  "fmc"  at  the  nodes
+       "farm0101" and "farm0102":
+
+       _b_a_s_h_$ llooggVViieewweerr --mm ffaarrmm00110011 --mm ffaarrmm00110022 --ss ggaauuddii --ss ffmmcc
+
+       Use wildcard patterns to select names and nodes:
+
+       _b_a_s_h_$ llooggVViieewweerr --mm ""ffaarrmm001100[[112233]]"" --mm ""ffaarrmm002200??"" --ss ""**aauu**"" --ss ""**mmcc""
+       _b_a_s_h_$ llooggVViieewweerr --mm ""ffaarrmm00[[00--22]]00[[00--99]]"" --mm ""ffaarrmm112200??"" --ss ""**aauu**"" --ss ""**mmcc""
+
+       Filter through the lines containing the string "Srv":
+
+       _b_a_s_h_$ llooggVViieewweerr --ss ggaauuddii --ff ""**SSrrvv**""
+       _b_a_s_h_$ llooggVViieewweerr --ss ggaauuddii --FF ""SSrrvv""
+
+       Filter out the lines containing the string "Srv":
+
+       _b_a_s_h_$ llooggVViieewweerr --ss ggaauuddii --xx ""**SSrrvv**""
+       _b_a_s_h_$ llooggVViieewweerr --ss ggaauuddii --XX ""SSrrvv""
+
+       Filter  through  the  lines containing the word "word1" near and before
+       the word "word2" (at most 4 words between):
+
+       _b_a_s_h_$ llooggVViieewweerr --FF ""\\bbwwoorrdd11\\WW++((\\ww++\\WW++)){{00,,44}}wwoorrdd22\\bb""
+
+       Filter through the lines containing the  word  "word1"  near  the  word
+       "word2" (at most 4 words between) in any order:
+
+       _b_a_s_h_$ llooggVViieewweerr --FF ""\\bbwwoorrdd11\\WW++((\\ww++\\WW++)){{00,,44}}wwoorrdd22\\bb||\\bbwwoorrdd22\\WW++((\\ww++\\WW++))
+       {{00,,44}}wwoorrdd11\\bb""
+
+       Filter through the lines containing a floating point number:
+
+       _b_a_s_h_$ llooggVViieewweerr --FF ""[[--++]]??[[00--99]]**\\..[[00--99]]++(([[eeEE]][[--++]]??[[00--99]]++))??""
+
+       Filter and send output to another FIFO:
+
+       _b_a_s_h_$ llooggVViieewweerr --mm ""ffaarrmm0011**"" --ss ffmmcc --oo //ttmmpp//lloogg__ff..ffiiffoo --FF ""iippmmiiSSrrvv""
+
+       Merge several message flows, filter and forward output to another FIFO:
+
+       _b_a_s_h_$ llooggVViieewweerr --mm ""ffaarrmm0011**"" --mm ""ffaarrmm0022**"" --ss ffmmcc --ss ggaauuddii
+       --oo //ttmmpp//lloogg__tt..ffiiffoo --FF ""iippmmiiSSrrvv""
+
+       Forward severe Task Manager Messages on node "farm0101" involving "gau-
+       di.exe" also to the Gaudi Logger:
+
+       _b_a_s_h_$ llooggVViieewweerr --mm ffaarrmm00110011 --ss ffmmcc --ll WWAARRNN --oo //ttmmpp//llooggGGaauuddii..ffiiffoo
+       --FF ""ggaauuddii..eexxee""
+
+       Suppress messages which are identical to the previous one:
+
+       _b_a_s_h_$ llooggVViieewweerr --EE 11
+
+       Suppress messages which are identical after the 30-th character to  the
+       previous one:
+
+       _b_a_s_h_$ llooggVViieewweerr --EE 11 --cc 3300
+
+       Suppress  messages which are identical after the 30-th character to one
+       of the previous 10 messages:
+
+       _b_a_s_h_$ llooggVViieewweerr --EE 11 --cc 3300 --nn 1100
+
+       Suppress messages which are identical, after  the  second  ":"  in  the
+       message, to one of the previous 10 messages:
+
+       _b_a_s_h_$ llooggVViieewweerr --EE 11 --CC ""::::"" --nn 1100
+
+       Suppress  messages  which  differ, in at most 2 words substituted after
+       the second ":" with respect to one of the previous 10 messages:
+
+       _b_a_s_h_$ llooggVViieewweerr --WW 22 --CC ""::::"" --nn 1100
+
+       Suppress messages which differs, in at most  6  character  substituted,
+       inserted  or  deleted  after  the second ":" with respect to one of the
+       previous 10 messages:
+
+       _b_a_s_h_$ llooggVViieewweerr --LL 66 --CC ""::::"" --nn 1100
+
+
+AAVVAAIILLAABBIILLIITTYY
+       Information on how to get the FMC (Farm Monitoring and Control  System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development Homepage
+       <http://lhcbweb2.bo.infn.it/bin/view/LHCbBologna/FmcLinux>.
+
+       CERN Engineering Department, JCOP, FMC
+       <http://j2eeps.cern.ch/wikis/display/EN/
+       JCOP+Framework+Farm+Monitoring+and+Control+Tool>.
+
+       LHCb Online RPMs
+       <http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/index.html>.
+
+AAUUTTHHOORRSS
+       Domenico Galli <domenico.galli@bo.infn.it>
+
+VVEERRSSIIOONN
+       Source:  logViewer.C,v 3.35 2012/12/07 15:48:07 galli
+       Package: FMC-3.9.14
+
+SSEEEE AALLSSOO
+   FFMMCC MMeessssaaggee LLooggggeerr SSeerrvveerr aanndd UUsseerr CCoommmmaannddss
+       llooggSSrrvv(8), llooggGGeettPPrrooppeerrttiieess(1), llooggSSeettPPrrooppeerrttiieess(1).
+
+   UUII ffoorr wwrriittiinngg ttoo aann aarrbbiittrraarryy FFMMCC MMeessssaaggee LLooggggeerr ffrroomm aa sshheellll ssccrriipptt
+       mmPPrriinntt(1).
+
+   AAPPII ffoorr ffoorrmmaatttteedd wwrriittiinngg ttoo tthhee ddeeffaauulltt FFMMCC MMeessssaaggee LLooggggeerr
+       ddffllttLLooggggeerrOOppeenn(3), ggeettDDffllttFFiiffooFFDD(3), mmPPrriinnttff(3), rrPPrriinnttff(3),
+       ddffllttLLooggggeerrCClloossee(3).
+
+   AAPPII ffoorr ffoorrmmaatttteedd wwrriittiinngg ttoo aann aarrbbiittrraarryy FFMMCC MMeessssaaggee LLooggggeerr
+       llooggggeerrOOppeenn(3), mmffPPrriinnttff(3), rrffPPrriinnttff(3), llooggggeerrCClloossee(3).
+
+   RReegguullaarr eexxpprreessssiioonn aanndd wwiillddccaarrdd ppaatttteerrnn ssyynnttaaxx
+       rreeggeexx(7), gglloobb(7).
+
+
+
+FMC-3.9.14                        2012-12-19                      logViewer(1)

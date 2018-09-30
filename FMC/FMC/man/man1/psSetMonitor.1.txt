@@ -1,0 +1,138 @@
+psSetMonitor(1)                FMC User Commands               psSetMonitor(1)
+
+
+
+NNAAMMEE
+       ppssSSeettMMoonniittoorr -- Send a signal to one or more running process(es) using
+                      the FMC Task Manager
+
+SSYYNNOOPPSSIISS
+       ppssSSeettMMoonniittoorr [--vv] [--NN _D_I_M___D_N_S___N_O_D_E] [--mm _N_O_D_E___P_A_T_T_E_R_N_._._.]
+                    [----nnoo--aauutthheennttiiccaattiioonn] [--ss _S_I_G_N_A_L] _U_T_G_I_D___P_A_T_T_E_R_N
+
+       ppssSSeettMMoonniittoorr { --hh | ----hheellpp }
+
+DDEESSCCRRIIPPTTIIOONN
+       The  command  ppssSSeettMMoonniittoorr sends the signal _S_I_G_N_A_L (ddeeffaauulltt: signal 15,
+       SSIIGGTTEERRMM, if the --ss flag is omitted) to all the  processes  whose  UUTTGGIIDD
+       matches the wildcard pattern _U_T_G_I_D___P_A_T_T_E_R_N at all the nodes whose hhoosstt--
+       nnaammee matches at least one of the wildcard patterns _N_O_D_E___P_A_T_T_E_R_N.
+
+       The DIM Name Server, looked up to seek for Task Manager Servers, can be
+       chosen (in decreasing order of priority) by:
+
+              1. Specifying the --NN _D_I_M___D_N_S___N_O_D_E command-line option;
+
+              2. Specifying the _D_I_M___D_N_S___N_O_D_E eennvviirroonnmmeenntt vvaarriiaabbllee;
+
+              3. Defining the _D_I_M___D_N_S___N_O_D_E in the file "//eettcc//ssyyssccoonnffiigg//ddiimm".
+
+OOPPTTIIOONNSS
+       --hh ----hheellpp
+              Get basic usage help from the command line.
+
+       --vv     Increase verbosity for debugging.
+
+       --NN _D_I_M___D_N_S___N_O_D_E _(_s_t_r_i_n_g_)
+              Use _D_I_M___D_N_S___N_O_D_E as DIM Name Server node.
+
+       --mm _N_O_D_E___P_A_T_T_E_R_N _(_s_t_r_i_n_g_, _r_e_p_e_a_t_a_b_l_e_)
+              Send  the  signal only to process(es) running on the nodes whose
+              hostname matches at least one of the wildcard patterns _N_O_D_E___P_A_T_-
+              _T_E_R_N (ddeeffaauulltt: send the signal to process(es) running at all the
+              nodes).
+
+       ----nnoo--aauutthheennttiiccaattiioonn
+              Do not send authentication string (compatible with  ttmmSSrrvv,  ver-
+              sion  <  2.0).  Works also with ttmmSSrrvv version >= 2.0 if ttmmSSrrvv is
+              started with the ----nnoo--aauutthheennttiiccaattiioonn command-line switch.
+
+       --ss _S_I_G_N_A_L _(_i_n_t_e_g_e_r_)
+              Send the signal _S_I_G_N_A_L to the process(es) (ddeeffaauulltt:  signal  15,
+              SSIIGGTTEERRMM).
+
+EENNVVIIRROONNMMEENNTT
+       DDIIMM__DDNNSS__NNOODDEE (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       LLDD__LLIIBBRRAARRYY__PPAATTHH (string, mandatory if not set using ldconfig)
+              Must  include  the  path to the libraries "libdim" and "libFMCu-
+              tils".
+
+EEXXAAMMPPLLEESS
+       Send the signal SSIIGGTTEERRMM to the processes with UUTTGGIIDD  "counter_0",  exe-
+       cuting at all the nodes running the Task Manager Server registered with
+       the current DIM DNS:
+
+       _b_a_s_h_$ ppssSSeettMMoonniittoorr ccoouunntteerr__00
+
+       Send the signal SSIIGGTTEERRMM  to  the  processes  whose  UUTTGGIIDD  starts  with
+       "count",  executing  at  all  the nodes running the Task Manager Server
+       registered with the current DIM DNS:
+
+       _b_a_s_h_$ ppssSSeettMMoonniittoorr ""ccoouunntt**""
+       _b_a_s_h_$ ppssSSeettMMoonniittoorr ccoouunntt\\**
+
+       Use another wildcard pattern to select the UUTTGGIIDD:.
+
+       _b_a_s_h_$ ppssSSeettMMoonniittoorr ""ccoouunntt**[[22--55]]""
+
+       Send the signal SSIIGGTTEERRMM only to the processes with  UUTTGGIIDD  "counter_0",
+       executing at nodes "farm0101" and "farm0102":
+
+       _b_a_s_h_$ ppssSSeettMMoonniittoorr --mm ffaarrmm00110011 --mm ffaarrmm00110022 ccoouunntteerr__00
+
+       Use wildcard patterns to select the UUTTGGIIDD and the nodes:
+
+       _b_a_s_h_$ ppssSSeettMMoonniittoorr --mm ""ffaarrmm00**"" --mm ""ffaarrmm11**"" ""ccoouunntt**""
+       _b_a_s_h_$ ppssSSeettMMoonniittoorr --mm ffaarrmm00\\** --mm ffaarrmm11\\** ccoouunntt\\**
+       _b_a_s_h_$ ppssSSeettMMoonniittoorr --mm ""ffaarrmm00[[33--77]]0011"" ""ccoouunntt**[[22--55]]""
+       _b_a_s_h_$ ppssSSeettMMoonniittoorr --mm ""ffaarrmm00[[33--77]]????"" ""ccoouunntt**[[22--55]]""
+       _b_a_s_h_$ ppssSSeettMMoonniittoorr --mm ""ffaarrmm001100[[11335577]]"" ccoouunntteerr__\\**
+
+       Send the signal 2 (SSIIGGIINNTT) instead of default signal 15 (SSIIGGTTEERRMM):
+
+       _b_a_s_h_$ ppssSSeettMMoonniittoorr --ss 22 ccoouunntteerr__00
+       _b_a_s_h_$ ppssSSeettMMoonniittoorr --ss 22 ""ccoouunntt**[[22--55]]""
+       _b_a_s_h_$ ppssSSeettMMoonniittoorr --mm ffaarrmm00110033 --mm ffaarrmm00220011 --ss 22 ccoouunntteerr__00
+       _b_a_s_h_$ ppssSSeettMMoonniittoorr --mm ""ffaarrmm00**"" --ss 22 ""ccoouunntt**""
+
+       Send  the  signal  to  all  the  processes  started by the Task Manager
+       Servers registered with the current DIM DNS:
+
+       _b_a_s_h_$ ppssSSeettMMoonniittoorr ""**""
+       _b_a_s_h_$ ppssSSeettMMoonniittoorr \\**
+       _b_a_s_h_$ ppssSSeettMMoonniittoorr --ss 22 ""**""
+       _b_a_s_h_$ ppssSSeettMMoonniittoorr --ss 22 \\**
+
+
+AAVVAAIILLAABBIILLIITTYY
+       Information on how to get the FMC (Farm Monitoring and Control  System)
+       package and related information is available at the web sites:
+
+       FMC  Linux  Development Homepage <https://lhcbweb.bo.infn.it/twiki/bin/
+       view.cgi/LHCbBologna/FmcLinux>.
+
+       CERN ITCOBE: FW Farm Monitor  and  Control  <http://itcobe.web.cern.ch/
+       itcobe/Projects/Framework/Download/Components/SystemOverview/fwFMC/wel-
+       come.html>.
+
+       LHCb Online RPMs <http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/
+       index.html>.
+
+
+AAUUTTHHOORRSS
+       Domenico Galli <domenico.galli@bo.infn.it>
+
+VVEERRSSIIOONN
+       Source:  psSetMonitor.C,v 1.1 2009/01/22 10:17:26 galli
+
+       Package: FMC-3.9.6
+
+SSEEEE AALLSSOO
+       ttmmSSrrvv(8).  ttmmSSttaarrtt(1).  ttmmSSttoopp(1).  ttmmLLss(1).  ttmmLLll(1).  gglloobb(7).
+       kkiillll(2).  ssiiggnnaall(7).
+
+
+
+FMC-3.9.6                         2009-01-29                   psSetMonitor(1)

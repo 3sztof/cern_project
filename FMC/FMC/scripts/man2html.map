@@ -1,0 +1,3 @@
+$SectionHead{'DIM INFORMATION'}='<H2>';
+$SectionHead{'INTRODUCTION'}='<H2>';
+$SectionHead{'OVERVIEW'}='<H2>';

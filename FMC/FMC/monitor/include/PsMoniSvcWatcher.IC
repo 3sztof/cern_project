@@ -1,0 +1,129 @@
+/* ######################################################################### */
+/*
+ * $Log: PsMoniSvcWatcher.IC,v $
+ * Revision 1.9  2012/11/29 15:52:27  galli
+ * Compatibility with gcc/g++ 4.4.6
+ *
+ * Revision 1.8  2009/07/23 09:27:50  galli
+ * added variable ihCallCount to recognize new processes
+ *
+ * Revision 1.7  2009/03/19 07:58:30  galli
+ * added variable active
+ * added inlined methods setActive(), setInactive() and isActive().
+ *
+ * Revision 1.6  2009/03/17 16:45:19  galli
+ * cancel colors on the first refresh
+ *
+ * Revision 1.5  2009/03/17 14:44:52  galli
+ * added member variables: data, oldData and psLine
+ *
+ * Revision 1.4  2009/03/12 09:44:15  galli
+ * bug fixed
+ *
+ * Revision 1.3  2009/02/26 20:18:07  galli
+ * first working version
+ *
+ * Revision 1.1  2009/02/24 10:47:35  galli
+ * Initial revision
+ */
+/* ######################################################################### */
+/* Class which inherits from DimInfo and subscribes to a DIM service         */
+/* "/FMC/ps/details/monitored/processes/CMD{UTGID}TID/data". Instantiated    */
+/* once per each published process-dedicated psSrv SVC.                      */
+/* ######################################################################### */
+#ifndef _PS_MONI_SVC_WATCHER_IC
+#define _PS_MONI_SVC_WATCHER_IC 1
+/* ######################################################################### */
+#include <list>
+#include <vector>
+#include <string>
+/* ------------------------------------------------------------------------- */
+#include <stdint.h>                                              /* uint32_t */
+#include <fnmatch.h>                               /* fnmatch(), FNM_NOMATCH */
+/* ------------------------------------------------------------------------- */
+#include <dic.hxx>
+/* ------------------------------------------------------------------------- */
+/* in include */
+#include "fmcPar.h"                                             /* UTGID_LEN */
+#include "fmcMacro.h"                                          /* unlikely() */
+#include "fmcMacro.H"                                              /* METHOD */
+#include "fmcVersion.h"                                          /* SVC_HEAD */
+/* ------------------------------------------------------------------------- */
+/* in sensors/include */
+#include "getPsFromProc.h"                              /* USER_LEN, CMD_LEN */
+/* ------------------------------------------------------------------------- */
+/* in utils/include */
+#include "fmcMsgUtils.h"                                  /* INFO, mPrintf() */
+#include "FmcUtils.IC"                                          /* toLower() */
+/* ------------------------------------------------------------------------- */
+/* in monitor/include */
+#include "psSrv.h"                                         /* UPDATETIME_LEN */
+/* ######################################################################### */
+using namespace std;
+/* ######################################################################### */
+typedef struct psData
+{
+  int32_t updated;
+  int32_t status;
+  int32_t hStatus; 
+  uint32_t tid;
+  uint32_t nlwp;
+  uint32_t processor;
+  uint32_t vm_size;
+  uint32_t vm_lock;
+  uint32_t vm_rss;
+  uint32_t vm_data;
+  uint32_t vm_stack;
+  uint32_t vm_exe;
+  uint32_t vm_lib;
+  uint32_t share;
+  int32_t rtprio;
+  int32_t nice;
+  int32_t prio;
+  float pcpu;
+  float pmem;
+  float minFltRate;
+  float majFltRate;
+  char lastUpdateTimeStr[UPDATETIME_LEN+1];
+  char cmd[CMD_LEN+1];
+  char utgid[UTGID_LEN+1];
+  char euser[USER_LEN+1];
+  // char cmdline[?];
+}psData_t;
+/* ######################################################################### */
+class PsMoniSvcWatcher: public DimInfo
+{
+  string psSvcPath;
+  string hostName;
+  psData_t *data;
+  psData_t oldData;
+  pid_t tid;
+  string psLine;
+  bool firstInfoHandlerCall;
+  bool active;
+  int ihCallCount;
+  /***************************************************************************/
+  /* called when a Logger server is added or removed */
+  void infoHandler();
+  string getHost(string outLine);
+  pid_t getTid(string outLine);
+  /***************************************************************************/
+  public:
+  /***************************************************************************/
+  string getPsSvcPath(void);
+  /***************************************************************************/
+  void setActive(void) {active=true;}
+  void setInactive(void) {active=false;}
+  bool isActive(void) {return active;}
+  /***************************************************************************/
+  /* constructor */
+  PsMoniSvcWatcher(const char* psSvcPath);
+  /***************************************************************************/
+  /* destructor                                                              */
+  virtual ~PsMoniSvcWatcher();
+  /***************************************************************************/
+};
+/* ######################################################################### */
+#endif                                            /* _PS_MONI_SVC_WATCHER_IC */
+/* ######################################################################### */
+

@@ -1,0 +1,70 @@
+/* ######################################################################### */
+/*
+ * $Log: PsMoniSrvSeeker.IC,v $
+ * Revision 1.3  2012/11/29 15:52:27  galli
+ * Compatibility with gcc/g++ 4.4.6
+ *
+ * Revision 1.2  2009/02/26 20:19:07  galli
+ * first working version
+ *
+ * Revision 1.1  2009/02/24 10:47:35  galli
+ * Initial revision
+ */
+/* ######################################################################### */
+/* Class which inherits from DimInfo and subscribes to the DIM service       */
+/* "DIS_DNS/SERVER_LIST". Instantiated only once.                            */
+/* ######################################################################### */
+#ifndef _PS_MONI_SRV_SEEKER_IC
+#define _PS_MONI_SRV_SEEKER_IC 1
+/* ######################################################################### */
+#include <list>
+#include <vector>
+#include <string>
+/* ------------------------------------------------------------------------- */
+#include <fnmatch.h> /* fnmatch(), FNM_NOMATCH */
+/* ------------------------------------------------------------------------- */
+#include <dic.hxx>
+/* ------------------------------------------------------------------------- */
+/* in include */
+#include "fmcPar.h"
+#include "fmcMacro.h"    /* unlikely() */
+#include "fmcMacro.H"    /* METHOD */
+#include "fmcVersion.h" /* SVC_HEAD */
+/* ------------------------------------------------------------------------- */
+/* in utils/include */
+#include "fmcMsgUtils.h"   /* INFO, mPrintf() */
+/* ------------------------------------------------------------------------- */
+#include "PsMoniSvcSeeker.IC"
+/* ######################################################################### */
+using namespace std;
+/* ######################################################################### */
+class PsMoniSrvSeeker: public DimInfo
+{
+  string dnsSrvLsSvcPath;                              /* got by constructor */
+  vector<string> srvPttnLs;                            /* got by constructor */
+  vector<string> cmdPttnLs;                            /* got by constructor */
+  vector<string> utgidPttnLs;                          /* got by constructor */
+  list<PsMoniSvcSeeker*> psSrvLs;
+  vector<string> knwnPsSrvNames;
+  /***************************************************************************/
+  /* called when a Logger server is added or removed */
+  void infoHandler();
+  void getServer(char* s, string& srv, string& node);
+  int matchSrvPattern(string srv);
+  void addPsSrv(const string &srv, const string &node);
+  void rmPsSrv(const string &srv, const string &node, char status);
+  /***************************************************************************/
+  public:
+  /***************************************************************************/
+  /* constructor */
+  PsMoniSrvSeeker(const char* srvPath, vector<string>& srvPttnLs,
+                  vector<string>& cmdPttnLs, vector<string>& utgidPttnLs);
+  /***************************************************************************/
+  /* destructor                                                              */
+  virtual ~PsMoniSrvSeeker() {}
+  /***************************************************************************/
+};
+/* ######################################################################### */
+#endif                                             /* _PS_MONI_SRV_SEEKER_IC */
+/* ######################################################################### */
+

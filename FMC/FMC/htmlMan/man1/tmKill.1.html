@@ -1,0 +1,164 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/tmKill.1.html">tmKill(1)</A></B>                      FMC User Commands                     <B><A HREF="../../htmlMan/man1/tmKill.1.html">tmKill(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>tmKill</B> <B>-</B> Send a signal to one or more running process(es) using the FMC
+                Task Manager
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>tmKill</B> [<B>-v</B>] [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-m</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]
+              [<B>--no-authentication</B>] [<B>-s</B> <I>SIGNAL</I>] <I>UTGID</I><B>_</B><I>PATTERN</I>
+
+       <B>tmKill</B> { <B>-h</B> | <B>--help</B> }
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The  command  <B>tmKill</B>  sends  the  signal  <I>SIGNAL</I>  (<B>default</B>:  signal 15,
+       <B>SIGTERM</B>, if the <B>-s</B> flag is omitted) to all the  processes  whose  <B>UTGID</B>
+       matches the wildcard pattern <I>UTGID</I><B>_</B><I>PATTERN</I> at all the nodes whose <B>host-</B>
+       <B>name</B> matches at least one of the wildcard patterns <I>NODE</I><B>_</B><I>PATTERN</I>.
+
+       The DIM Name Server, looked up to seek for Task Manager Servers, can be
+       chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file "<B>/etc/sysconfig/dim</B>".
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B> <B>--help</B>
+              Get basic usage help from the command line.
+
+       <B>-v</B>     Increase verbosity for debugging.
+
+       <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-m</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Send  the  signal only to process(es) running on the nodes whose
+              hostname matches at least one of the wildcard patterns <I>NODE</I><B>_</B><I>PAT-</I>
+              <I>TERN</I> (<B>default</B>: send the signal to process(es) running at all the
+              nodes).
+
+       <B>--no-authentication</B>
+              Do not send authentication string (compatible with  <B>tmSrv</B>,  ver-
+              sion  &lt;  2.0).  Works also with <B>tmSrv</B> version &gt;= 2.0 if <B>tmSrv</B> is
+              started with the <B>--no-authentication</B> command-line switch.
+
+       <B>-s</B> <I>SIGNAL</I> <I>(integer)</I>
+              Send the signal <I>SIGNAL</I> to the process(es) (<B>default</B>:  signal  15,
+              <B>SIGTERM</B>).
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must  include  the  path to the libraries "libdim" and "libFMCu-
+              tils".
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Send the signal <B>SIGTERM</B> to the processes with <B>UTGID</B>  "counter_0",  exe-
+       cuting at all the nodes running the Task Manager Server registered with
+       the current DIM DNS:
+
+       <I>bash$</I> <B>tmKill</B> <B>counter_0</B>
+
+       Send the signal <B>SIGTERM</B>  to  the  processes  whose  <B>UTGID</B>  starts  with
+       "count",  executing  at  all  the nodes running the Task Manager Server
+       registered with the current DIM DNS:
+
+       <I>bash$</I> <B>tmKill</B> <B>"count*"</B>
+       <I>bash$</I> <B>tmKill</B> <B>count\*</B>
+
+       Use another wildcard pattern to select the <B>UTGID</B>:.
+
+       <I>bash$</I> <B>tmKill</B> <B>"count*[2-5]"</B>
+
+       Send the signal <B>SIGTERM</B> only to the processes with  <B>UTGID</B>  "counter_0",
+       executing at nodes "farm0101" and "farm0102":
+
+       <I>bash$</I> <B>tmKill</B> <B>-m</B> <B>farm0101</B> <B>-m</B> <B>farm0102</B> <B>counter_0</B>
+
+       Use wildcard patterns to select the <B>UTGID</B> and the nodes:
+
+       <I>bash$</I> <B>tmKill</B> <B>-m</B> <B>"farm0*"</B> <B>-m</B> <B>"farm1*"</B> <B>"count*"</B>
+       <I>bash$</I> <B>tmKill</B> <B>-m</B> <B>farm0\*</B> <B>-m</B> <B>farm1\*</B> <B>count\*</B>
+       <I>bash$</I> <B>tmKill</B> <B>-m</B> <B>"farm0[3-7]01"</B> <B>"count*[2-5]"</B>
+       <I>bash$</I> <B>tmKill</B> <B>-m</B> <B>"farm0[3-7]??"</B> <B>"count*[2-5]"</B>
+       <I>bash$</I> <B>tmKill</B> <B>-m</B> <B>"farm010[1357]"</B> <B>counter_\*</B>
+
+       Send the signal 2 (<B>SIGINT</B>) instead of default signal 15 (<B>SIGTERM</B>):
+
+       <I>bash$</I> <B>tmKill</B> <B>-s</B> <B>2</B> <B>counter_0</B>
+       <I>bash$</I> <B>tmKill</B> <B>-s</B> <B>2</B> <B>"count*[2-5]"</B>
+       <I>bash$</I> <B>tmKill</B> <B>-m</B> <B>farm0103</B> <B>-m</B> <B>farm0201</B> <B>-s</B> <B>2</B> <B>counter_0</B>
+       <I>bash$</I> <B>tmKill</B> <B>-m</B> <B>"farm0*"</B> <B>-s</B> <B>2</B> <B>"count*"</B>
+
+       Send  the  signal  to  all  the  processes  started by the Task Manager
+       Servers registered with the current DIM DNS:
+
+       <I>bash$</I> <B>tmKill</B> <B>"*"</B>
+       <I>bash$</I> <B>tmKill</B> <B>\*</B>
+       <I>bash$</I> <B>tmKill</B> <B>-s</B> <B>2</B> <B>"*"</B>
+       <I>bash$</I> <B>tmKill</B> <B>-s</B> <B>2</B> <B>\*</B>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information on how to get the FMC (Farm Monitoring and Control  System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development Homepage
+       &lt;http://lhcbweb2.bo.infn.it/bin/view/LHCbBologna/FmcLinux&gt;.
+
+       CERN Engineering Department, JCOP, FMC
+       &lt;http://j2eeps.cern.ch/wikis/display/EN/
+       JCOP+Framework+Farm+Monitoring+and+Control+Tool&gt;.
+
+       LHCb Online RPMs
+       &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  tmKill.C,v 2.14 2012/12/13 15:36:29 galli
+
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO</H2><PRE>
+       <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>.  <B><A HREF="../../htmlMan/man1/tmStart.1.html">tmStart(1)</A></B>.  <B><A HREF="../../htmlMan/man1/tmStop.1.html">tmStop(1)</A></B>.  <B><A HREF="../../htmlMan/man1/tmLs.1.html">tmLs(1)</A></B>.  <B><A HREF="../../htmlMan/man1/tmLl.1.html">tmLl(1)</A></B>.  <B><A HREF="../../htmlMan/man7/glob.7.html">glob(7)</A></B>.
+       <B><A HREF="../../htmlMan/man2/kill.2.html">kill(2)</A></B>.  <B><A HREF="../../htmlMan/man7/signal.7.html">signal(7)</A></B>.
+
+FMC-3.9.14                        2012-12-19                         <B><A HREF="../../htmlMan/man1/tmKill.1.html">tmKill(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

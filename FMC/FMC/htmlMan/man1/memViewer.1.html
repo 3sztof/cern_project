@@ -1,0 +1,470 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/memViewer.1.html">memViewer(1)</A></B>                   FMC User Commands                  <B><A HREF="../../htmlMan/man1/memViewer.1.html">memViewer(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>memViewer</B> <B>-</B> Get memory usage statistic information from the FMC Memory
+                   Monitor Servers
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>memViewer</B> [<B>-v</B> | <B>--debug</B>] [<B>-N</B> | <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>]
+                 [<B>-m</B> | <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]  [<B>-c</B> | <B>--compact</B>]
+
+       <B>memViewer</B> { <B>-V</B> | <B>--version</B> } [<B>-v</B> | <B>--debug</B>]
+                 [<B>-N</B> | <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>]
+                 [<B>-m</B> | <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]
+
+       <B>memViewer</B> { <B>-h</B> | <B>--help</B> }
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       Get  the  information  about  the  <B>memory</B> <B>usage</B> of the farm nodes whose
+       hostname matches at least one of the  wildcard  patterns  <I>NODE</I><B>_</B><I>PATTERN</I>,
+       specified  using  the <B>-m</B> <I>NODE</I><B>_</B><I>PATTERN</I> command line option (<B>default</B>: all
+       the nodes registered with the DIM name server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>).
+
+       The data about total, used and free memory  are  partitioned  into  low
+       memory and high memory. The <B>high</B> <B>memory</B> is all the memory above 896 MiB
+       of physical memory. The high memory areas can be used by the user-space
+       programs,  or  for the page-cache (but not for kernel data structures).
+       The kernel must use some tricks to access the high memory (it temporar-
+       ily  maps pages from high memory into the lower page tables), making it
+       slower to access than low memory. The <B>low</B> <B>memory</B>, on the other side, is
+       memory  which  can  be used for everything that high memory can be used
+       for, but it is also available for the kernel's use  for  its  own  data
+       structures  (e.g. kernel slabs). The kernel cannot work if it is out of
+       low memory.
+
+       Datum <B>Committed_AS</B> refers to the Linux  kernel  memory  <B>over-committing</B>
+       policy.  When  a  process  dynamically allocate memory calling the <B>mal-</B>
+       <B><A HREF="../../htmlMan/man3/loc.3.html">loc(3)</A></B> library call, and hence the <B><A HREF="../../htmlMan/man2/brk.2.html">brk(2)</A></B> system call, nothing happens,
+       really. Only when the process start using the memory allocated with the
+       <B><A HREF="../../htmlMan/man2/brk.2.html">brk(2)</A></B>, it get real memory, and just as much it uses. The hope is  that
+       programs  ask for more than they actually need or that not all the run-
+       ning programs need the memory they have demanded  with  <B><A HREF="../../htmlMan/man2/brk.2.html">brk(2)</A></B>  at  the
+       same  time.  If the hope is fulfilled, the kernel can run more programs
+       in the same memory space, or can run a program that requires more  vir-
+       tual memory than is available. If the hope is not fulfilled, an <B>out-of-</B>
+       <B>memory</B> (<B>OOM</B>) condition occurs: as a  consequence,  the  <B>OOM</B>  <B>killer</B>  is
+       invoked  to  choose a process (following certain criteria) and kill it.
+       Since kernel version 2.5.30 the over-committing behavior is  controlled
+       by the two user-settable parameters in /proc/sys/vm/: <B>overcommit_memory</B>
+       and <B>overcommit_ratio</B>. Since kernel 2.5.30 the parameter <B>overcommit_mem-</B>
+       <B>ory</B> can be set to three different values:
+
+              0:     heuristic over-commit handling (default);
+
+              1:     never refuse any <B><A HREF="../../htmlMan/man2/brk.2.html">brk(2)</A></B>;
+
+              2:     strict  over-commit. Never commit a virtual address space
+                     larger than swap space plus a  fraction  <B>overcommit_ratio</B>
+                     (default 50%) of the physical memory.
+
+       Previous kernel allowed only values 0 and 1 for <B>overcommit_memory</B>.
+
+       Data with <B>Vmalloc</B> prefix concern a mechanism to map physically non-con-
+       tiguous memory areas to a contiguous area in virtual memory.  The  size
+       of  this  region  will be always at least <I>VMALLOC</I><B>_</B><I>RESERVE</I>, which on the
+       x86 is 128 MiB, located between <I>VMALLOC</I><B>_</B><I>START</I> and <I>VMALLOC</I><B>_</B><I>END</I> addresses
+       in  virtual memory. The page tables in this region are adjusted as nec-
+       essary to point to physical pages which are allocated with  the  normal
+       physical  page allocator. Since allocations require altering the kernel
+       page tables, there is a limitation on how much  memory  can  be  mapped
+       with  <B>vmalloc</B>()  as  only  the  virtual  addresses  space between <I>VMAL-</I>
+       <I>LOC</I><B>_</B><I>START</I> and <I>VMALLOC</I><B>_</B><I>END</I> is available. Usually, it is  only  used  for
+       storing  the  swap  map information and for loading kernel modules into
+       memory.
+
+       The DIM Name Server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>, looked up to seek for FMC CPU  Infor-
+       mation Servers, can be chosen (in decreasing order of priority) by:
+
+              1.     Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2.     Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3.     Defining  the  <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>  in  the  file  "<B>/etc/syscon-</B>
+                     <B>fig/dim</B>".
+
+       Retrieved parameters depend on the kernel version. They are a subset of
+       the following:
+
+              <B>Active</B> (uint64_t)
+                     Amount  of  memory  that  has been used more recently and
+                     usually not reclaimed unless absolutely necessary.
+
+              <B>ActiveAnon</B> (uint64_t)
+                     Amount  of  program  memory  that  has  been  used   more
+                     recently. Specific of Linux kernel 2.4.
+
+              <B>ActiveCache</B> (uint64_t)
+                     Amount  of cache memory that has been used more recently.
+                     Specific of Linux kernel 2.4.
+
+              <B>AnonPages</B> (uint64_t)
+                     Non-file backed pages mapped into userspace page  tables.
+
+              <B>Bounce</B> (uint64_t)
+                     Memory used for block device "bounce buffers".
+
+              <B>Buffers</B> (uint64_t)
+                     Relatively   temporary   storage   for  raw  disk  blocks
+                     shouldn't get tremendously large (20MB or so).
+
+              <B>Cached</B> (uint64_t)
+                     In-memory cache for files read from the disk  (the  page-
+                     cache). Doesn't include SwapCached.
+
+              <B>CommitLimit</B> (uint64_t)
+                     Based  on  the  overcommit ratio ('vm.overcommit_ratio'),
+                     this is the total amount of memory currently available to
+                     be allocated on the system. This limit is only adhered to
+                     if strict overcommit accounting is  enabled  (mode  2  in
+                     'vm.overcommit_memory').  The  CommitLimit  is calculated
+                     with the following formula: CommitLimit  =  ('vm.overcom-
+                     mit_ratio' * Physical RAM) + Swap. For example, on a sys-
+                     tem with 1 GiB of physical RAM and 7 GiB of swap  with  a
+                     'vm.overcommit_ratio'  of 30 it would yield a CommitLimit
+                     of 7.3 GiB.
+
+              <B>Committed_AS</B> (uint64_t)
+                     The amount of memory presently allocated on  the  system.
+                     The  committed memory is a sum of all of the memory which
+                     has been allocated by processes, even if it has not  been
+                     "used"  by  them  as of yet. A process which malloc()'s 1
+                     GiB of memory, but only touches 300 MiB of it  will  only
+                     show  up  as  using  300 MiB of memory even if it has the
+                     address space allocated for the entire 1 GiB. This 1  GiB
+                     is memory which has been "committed" to by the VM and can
+                     be used at any time by the allocating  application.  With
+                     strict  overcommit  enabled  on  the  system  (mode  2 in
+                     'vm.overcommit_memory'), allocations which  would  exceed
+                     the  CommitLimit  (detailed above) will not be permitted.
+                     This is useful if one needs to guarantee  that  processes
+                     will  not fail due to lack of memory once that memory has
+                     been successfully allocated.
+
+              <B>Dirty</B> (uint64_t)
+                     The amount of memory which is waiting to get written back
+                     to the disk.
+
+              <B>HighFree</B> (uint64_t)
+                     The amount of High Memory free. High memory is all memory
+                     above ~860 MiB of physical memory. High memory areas  are
+                     for  use by userspace programs, or for the pagecache. The
+                     kernel must use tricks to access this memory,  making  it
+                     slower to access than lowmem.
+
+              <B>HighTotal</B> (uint64_t)
+                     The  total amount of High Memory. High memory is all mem-
+                     ory above ~860 MiB of physical memory. High memory  areas
+                     are  for use by userspace programs, or for the pagecache.
+                     The kernel must use tricks to access this memory,  making
+                     it slower to access than lowmem.
+
+              <B>HugePages_Free</B> (uint64_t)
+                     The  number  of the Linux Huge Pages in the pool that are
+                     not yet allocated. Hugepages is a mechanism  that  allows
+                     the  Linux kernel to utilize the multiple page size capa-
+                     bilities  of  modern  hardware  architectures,  by  using
+                     "Transaction  Lookaside  Buffers" (TLB) in the CPU archi-
+                     tecture. The default page size is 4 KiB in the x86 archi-
+                     tecture,  while the Huge Page Size is typically 2048 KiB.
+
+              <B>HugePages_Rsvd</B> (uint64_t)
+                     The number of huge pages for which a commitment to  allo-
+                     cate  from  the pool has been made, but no allocation has
+                     yet been made. Reserved  huge  pages  guarantee  that  an
+                     application will be able to allocate a huge page from the
+                     pool of huge pages at fault time. Hugepages is  a  mecha-
+                     nism that allows the Linux kernel to utilize the multiple
+                     page size capabilities of modern hardware  architectures,
+                     by using "Transaction Lookaside Buffers" (TLB) in the CPU
+                     architecture. The default page size is 4 KiB in  the  x86
+                     architecture,  while the Huge Page Size is typically 2048
+                     KiB.
+
+              <B>HugePages_Total</B> (uint64_t)
+                     The size of the pool of huge pages. Hugepages is a mecha-
+                     nism that allows the Linux kernel to utilize the multiple
+                     page size capabilities of modern hardware  architectures,
+                     by using "Transaction Lookaside Buffers" (TLB) in the CPU
+                     architecture. The default page size is 4 KiB in  the  x86
+                     architecture,  while the Huge Page Size is typically 2048
+                     KiB.
+
+              <B>Hugepagesize</B> (uint64_t)
+                     The size of a Linux Huge Page. Hugepages is  a  mechanism
+                     that allows the Linux kernel to utilize the multiple page
+                     size capabilities of modern  hardware  architectures,  by
+                     using  "Transaction  Lookaside  Buffers" (TLB) in the CPU
+                     architecture. The default page size is 4 KiB in  the  x86
+                     architecture,  while the Huge Page Size is typically 2048
+                     KiB.
+
+              <B>Inact_clean</B> (uint64_t)
+                     The amount of memory which has been  less  recently  used
+                     and  has  been already copied to the swap device. Because
+                     clean pages are  already  synchronized  with  respect  to
+                     their  backing  store, the OS can reuse Inact_clean pages
+                     without having to write the page to a swap  device.  Spe-
+                     cific of kernel 2.4.
+
+              <B>Inact_dirty</B> (uint64_t)
+                     The  amount  of  memory which has been less recently used
+                     and has not yet been copied to the swap device. When mem-
+                     ory  is  required,  the  OS  chooses to steal Inact_clean
+                     pages before swapping Inact_dirty pages. Specific of ker-
+                     nel 2.4.
+
+              <B>Inact_laundry</B> (uint64_t)
+                     The  amount  of  memory which has been less recently used
+                     and which is being copied to the swap device. Specific of
+                     kernel 2.4.
+
+              <B>Inact_target</B> (uint64_t)
+                     The amount of memory which OS ought to have, to be possi-
+                     bly reclaimed for other purposes, calculated as  the  sum
+                     of  Active,  Inact_dirty,  and  Inact_clean divided by 5.
+                     When exceeded, the kernel will not do work to move  pages
+                     from  active  to  inactive.  This is an indicator of when
+                     page cleaning should be  performed.  Specific  of  kernel
+                     2.4.
+
+              <B>Inactive</B> (uint64_t)
+                     The  amount  of memory which has been less recently used.
+                     It is more eligible to be reclaimed for  other  purposes.
+                     Since kernel 2.5.41+. In kernel 2.4 this value is the sum
+                     Inact_dirty + Inact_laundry + Inact_clean.
+
+              <B>LowFree</B> (uint64_t)
+                     The amount of low memory free. Low memory is memory which
+                     can  be  used for everything that high memory can be used
+                     for, but it is also available for the  kernel's  use  for
+                     its  own  data structures. Among many other things, it is
+                     where everything from the Slab is allocated.  Bad  things
+                     happen when you're out of low memory.
+
+              <B>LowTotal</B> (uint64_t)
+                     The  total  amount  of  low  memory. Low memory is memory
+                     which can be used for everything that high memory can  be
+                     used  for,  but it is also available for the kernel's use
+                     for its own data structures. Among many other things,  it
+                     is  where  everything  from  the  Slab  is allocated. Bad
+                     things happen when you're out of low memory.
+
+              <B>LowUsed</B> (uint64_t)
+                     The amount of low memory used. Low memory is memory which
+                     can  be  used for everything that high memory can be used
+                     for, but it is also available for the  kernel's  use  for
+                     its  own  data structures. Among many other things, it is
+                     where everything from the Slab is allocated.  Bad  things
+                     happen when you're out of low memory.
+
+              <B>Mapped</B> (uint64_t)
+                     The  amount of memory used to store files which have been
+                     mmapped, such as libraries. Since kernel 2.5.41+..
+
+              <B>MemFree</B> (uint64_t)
+                     The amount of free memory (The sum  of  LowFree  +  High-
+                     Free).
+
+              <B>MemShared</B> (uint64_t)
+                     The  amount  of  memory  shared between processes. Set to
+                     zero since kernel 2.4.
+
+              <B>MemTotal</B> (uint64_t)
+                     The total usable ram  (i.e.  physical  ram  minus  a  few
+                     reserved  bits  and the kernel binary code). = LowTotal +
+                     HighTotal.
+
+              <B>MemUsed</B> (uint64_t)
+                     The amount of used memory (The difference MemTotal - Mem-
+                     Free).
+
+              <B>NFS_Unstable</B> (uint64_t)
+                     NFS  pages  sent  to the server, but not yet committed to
+                     stable storage.
+
+              <B>PageTables</B> (uint64_t)
+                     Amount of memory dedicated to the lowest  level  of  page
+                     tables.
+
+              <B>ReverseMaps</B> (uint64_t)
+                     The number of reverse mappings performed.
+
+              <B>SReclaimable</B> (uint64_t)
+                     Part of Slab, that might be reclaimed, such as caches.
+
+              <B>SUnreclaim</B> (uint64_t)
+                     Part  of  Slab,  that cannot be reclaimed on memory pres-
+                     sure.
+
+              <B>Slab</B> (uint64_t)
+                     The amount of memory used for in-kernel  data  structures
+                     cache. Since kernel 2.5.41+.
+
+              <B>SwapCached</B> (uint64_t)
+                     Amount  of  memory  that once was swapped out, is swapped
+                     back in but still also is in the swapfile (if  memory  is
+                     needed it doesn't need to be swapped out AGAIN because it
+                     is already in the swapfile. This saves I/O).
+
+              <B>SwapFree</B> (uint64_t)
+                     The amount of swap memory  free.  Swap  space  is  memory
+                     which  has  been  evicted from RAM, and is temporarily on
+                     the disk.
+
+              <B>SwapTotal</B> (uint64_t)
+                     The total amount of physical swap space  available.  Swap
+                     space  is  memory which has been evicted from RAM, and is
+                     temporarily on the disk.
+
+              <B>SwapUsed</B> (uint64_t)
+                     The amount of swap space used. Swap space is memory which
+                     has  been  evicted  from  RAM,  and is temporarily on the
+                     disk.
+
+              <B>VmallocChunk</B> (uint64_t)
+                     Largest contiguous block of vmalloc area which  is  free.
+                     Vmalloc area is a memory area which is seen by the kernel
+                     as a contiguous range of addresses in the virtual address
+                     space, although the pages are not consecutive in physical
+                     memory.
+
+              <B>VmallocTotal</B> (uint64_t)
+                     Total size of vmalloc memory area. Vmalloc area is a mem-
+                     ory  area  which  is  seen  by the kernel as a contiguous
+                     range of addresses in the virtual address space, although
+                     the pages are not consecutive in physical memory.
+
+              <B>VmallocUsed</B> (uint64_t)
+                     Amount of vmalloc memory area which is used. Vmalloc area
+                     is a memory area which is seen by the kernel  as  a  con-
+                     tiguous  range of addresses in the virtual address space,
+                     although the pages are not consecutive in  physical  mem-
+                     ory.
+
+              <B>Writeback</B> (uint64_t)
+                     Amount  of memory which is actively being written back to
+                     the disk.
+
+              <B>WritebackTmp</B> (uint64_t)
+                     Memory used by FUSE for temporary writeback buffers.
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+   <B>General</B> <B>Options</B>
+       <B>-h</B> <B>--help</B>
+              Get basic usage help from the command line, then terminate.
+
+       <B>-v</B> <B>--debug</B>
+              Increase verbosity for debugging.
+
+       <B>-N</B> <B>--dim-dns</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-m</B> <B>--hostname</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Print only the memory usage information of the farm nodes  whose
+              hostname   matches   at  least  one  of  the  wildcard  patterns
+              <I>NODE</I><B>_</B><I>PATTERN</I> (<B>default</B>: print the memory usage information of all
+              the nodes registered with the DIM name server <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>).
+
+       <B>-V</B> <B>--version</B>
+              For  each selected node print the FMC Memory Monitor Server ver-
+              sion and the FMC version, than terminate.
+
+       <B>-c</B> <B>--compact</B>
+              Print the memory usage information in compact format (easier  to
+              parse): one node per line, no separator lines.
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must  include  the  path to the libraries "libdim" and "libFMCu-
+              tils".
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Show the memory sytatistics of all the farm nodes:
+
+       <I>bash$</I> <B>memViewer</B>
+
+       Print output in compact format:
+
+       <I>bash$</I> <B>memViewer</B> <B>-c</B>
+       <I>bash$</I> <B>memViewer</B> <B>--compact</B>
+
+       Show only the memory sytatistics of selected nodes:
+
+       <I>bash$</I> <B>memViewer</B> <B>-m</B> <B>farm0101</B> <B>-m</B> <B>farm0102</B>
+       <I>bash$</I> <B>memViewer</B> <B>--host</B> <B>farm0101</B> <B>--host</B> <B>farm0102</B>
+
+       Show only the memory sytatistics of wildcard-selected nodes:
+
+       <I>bash$</I> <B>memViewer</B> <B>-m</B> <B>farm01*</B> <B>-m</B> <B>farm02*</B>
+       <I>bash$</I> <B>memViewer</B> <B>--host</B> <B>farm01*</B> <B>--host</B> <B>farm02*</B>
+       <I>bash$</I> <B>memViewer</B> <B>-m</B> <B>farm010[1357]</B>
+       <I>bash$</I> <B>memViewer</B> <B>--hostname</B> <B>farm010[1357]</B>
+
+       Show the server version installed on the farm nodes:
+
+       <I>bash$</I> <B>memViewer</B> <B>-V</B>
+       <I>bash$</I> <B>memViewer</B> <B>--version</B>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information on how to get the FMC (Farm Monitoring and Control  System)
+       package and related information is available at the web sites:
+
+       FMC  Linux  Development Homepage &lt;https://lhcbweb.bo.infn.it/twiki/bin/
+       view.cgi/LHCbBologna/FmcLinux&gt;.
+
+       CERN ITCOBE: FW Farm Monitor  and  Control  &lt;http://itcobe.web.cern.ch/
+       itcobe/Projects/Framework/Download/Components/SystemOverview/fwFMC/wel-
+       come.html&gt;.
+
+       LHCb Online RPMs &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/
+       index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  memViewer.C,v 3.2 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO:</H2><PRE>
+       <B><A HREF="../../htmlMan/man8/memSrv.8.html">memSrv(8)</A></B>,
+       <B><A HREF="../../htmlMan/man8/vmstat.8.html">vmstat(8)</A></B>,
+       <B>/proc/meminfo,</B>
+       <B>http://www.kernel.org/doc/Documentation/filesystems/proc.txt.</B>
+
+FMC-3.9.14                        2012-12-19                      <B><A HREF="../../htmlMan/man1/memViewer.1.html">memViewer(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

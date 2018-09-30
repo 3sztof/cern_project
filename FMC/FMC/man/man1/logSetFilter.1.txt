@@ -1,0 +1,86 @@
+
+NAME
+       logSetFilter - Set the Filter Settings of a FMC Message Logger Server
+
+SYNOPSIS
+       logSetFilter [-v] [-N DIM_DNS_NODE] [-m NODE_PATTERN...]
+                    [-s SERVICE_PATTERN...] [-l SEVERITY_THRESHOLD]
+                    [-f WILDCARD_PATTERN] [-F REGULAR_EXPRESSION]
+       logSetFilter -h
+
+DESCRIPTION
+       Set the Filter Settings of a FMC Message Logger Server.
+       DIM Name Server can be chosen (in decreasing order of priority) by:
+              1. Specifying the -N DIM_DNS_NODE command-line option;
+              2. Specifying the DIM_DNS_NODE environment variable;
+              3. Defining the DIM_DNS_NODE in the file "/etc/sysconfig/dim".
+
+OPTIONS
+       -h     Get basic usage help from the command line.
+       -v     Increase output verbosity.
+       -N DIM_DNS_NODE (string)
+              Use DIM_DNS_NODE as DIM Name Server node.
+       -m NODE_PATTERN (string, repeatable)
+              Set filter settings to loggers running on nodes whose
+              hostname matches the wildcard pattern NODE_PATTERN
+              (default: all the nodes).
+       -s SERVICE_PATTERN (string, repeatable)
+              Set filter settings to loggers whose specific name
+              matches the wildcard pattern SERVICE_PATTERN (default: all
+              the logger). The specific name of the logger is the one set
+              using -s option in logSrv command line. The specific name of
+              the default logger is "logger".
+       -l SEVERITY_THRESHOLD (integer)
+              Filter out messages with severity<SEVERITY_THRESHOLD.
+              Default: SEVERITY_THRESHOLD=0.
+       -f WILDCARD_PATTERN (string)
+              Filter through messages by using the wildcard pattern
+              WILDCARD_PATTERN. Default: no wildcard pattern filter.
+       -F REGULAR_EXPRESSION (string)
+              Filter through messages by using the extended regular
+              expression regular_expresion. Default: no extended regular
+              expression filter.
+
+ENVIRONMENT
+       DIM_DNS_NODE (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+       LD_LIBRARY_PATH (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries "libdim.so"
+              and "libFMCutils-2.so".
+
+EXAMPLES
+       Filter out messages with severity < ERROR:
+              logSetFilter -m farm0101 -m farm0102 -s logger -s logger_1 -l 4
+              logSetFilter -m farm0101 -m farm0102 -s logger -s logger_1
+                           -l ERROR
+       Filter using extended regular expression "Srv":
+              logSetFilter -m farm0101 -m farm0102 -s logger -s logger_1
+                           -F "Srv"
+              logSetFilter -m "farm01*" -s logger -s logger_1 -F "Srv"
+       Filter using wildcard pattern "*Srv*":
+              logSetFilter -m "farm01*" -s logger -s logger_1 -f "*Srv*"
+       Do not filter at all:
+              logSetFilter -m farm0101 -m farm0102 -s logger -s logger_1 ""
+       Select nodes and loggers using wildcard pattern:
+              logSetFilter -m "farm01[1-5]?" -s "logger_[0-3]" -F "Srv"
+       Filter through the lines containing the word "word1" near and
+       before the word "word2" (at most 4 words between):
+              logSetFilter -m farm0101 -s logger_1
+                           -F "\bword1\W+(\w+\W+){0,4}word2\b"
+       Filter through the lines containing a floating point number:
+              logSetFilter -s logger_1
+                           -F "[-+]?[0-9]*\.[0-9]+([eE][-+]?[0-9]+)?"
+       Filter through the lines containing the string "ERROR":
+              logSetFilter -F ERROR
+
+AUTHOR
+       Domenico Galli <domenico.galli@bo.infn.it>
+
+VERSION
+       Source:  logSetFilter.C,v 1.6 2007/12/13 14:03:02 galli
+       Package: FMC-3.9.2
+
+SEE ALSO
+       logGetDupSup(FMC), logGetFilter(FMC), logGetStored(FMC),
+       logSetDupSup(FMC), logSetStored(FMC), logSrv(FMC), logViewer(FMC).
+

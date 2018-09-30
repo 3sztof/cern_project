@@ -1,0 +1,173 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/cmUnset.1.html">cmUnset(1)</A></B>                     FMC User Commands                    <B><A HREF="../../htmlMan/man1/cmUnset.1.html">cmUnset(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>cmUnset</B> <B>-</B> Remove a file from one or more farm nodes through the FMC
+                 Configuration Manager
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>cmUnset</B> [<B>-v...</B>]  [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-m</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]  [<B>-f</B>]
+               [<B>-t</B> <I>RPC</I><B>_</B><I>TIME</I><B>_</B><I>OUT</I>] <B>-p</B> <I>FILE</I><B>_</B><I>PATH</I>
+
+       <B>cmUnset</B> <B>-V</B> [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-m</B> <I>NODE</I><B>_</B><I>PATTERN</I>]
+
+       <B>cmUnset</B> <B>-h</B>
+
+
+</PRE>
+<H2>INTRODUCTION</H2><PRE>
+       The  FMC <B>Configuration</B> <B>Manager</B> is a tool to <B>read</B>, <B>write</B> and <B>remove</B> <B>con-</B>
+       <B>figuration</B> <B>files</B> (more generally, ASCII files) to/from the farm  nodes.
+
+       The  Process  Controller  Server, <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B>, typically runs on each farm
+       node and allows to access the files on the node it is running on.
+
+       The Process Controller Clients <B><A HREF="../../htmlMan/man1/cmSet.1.html">cmSet(1)</A></B>, <B><A HREF="../../htmlMan/man1/cmUnset.1.html">cmUnset(1)</A></B>  and  <B><A HREF="../../htmlMan/man1/cmGet.1.html">cmGet(1)</A></B>  can
+       contact  one or more Process Controller Servers running on remote nodes
+       to write files, remove files and read files respectively.
+
+       File access can be <B>restricted</B> in 2 different ways  simultaneously:  (a)
+       by  means  of  a username/hostname access control and (b) by means of a
+       filename access control. See <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B> for more information.
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The command <B><A HREF="../../htmlMan/man1/cmUnset.1.html">cmUnset(1)</A></B> <B>removes</B> the file at the absolute path  <I>FILE</I><B>_</B><I>PATH</I>
+       from  all  the  farm  nodes  whose hostname matches at least one of the
+       wildcard patterns <I>NODE</I><B>_</B><I>PATTERN</I>.
+
+       Unless the option <B>-f</B> (force) is specified, before  proceeding  removing
+       the  files,  the  list  of  the  nodes  matching  the wildcard patterns
+       <I>NODE</I><B>_</B><I>PATTERN</I> is shown and a <B>confirmation</B> is asked.
+
+       The DIM Name Server, looked  up  to  seek  for  Configuration  Managers
+       Servers, can be chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file "<B>/etc/sysconfig/dim</B>".
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B>     Get basic usage help from the command line, then terminate.
+
+       <B>-v</B>     Increase verbosity for debugging.
+
+       <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-m</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Operate  only with the nodes whose hostname matches at least one
+              of the wildcard patterns <I>NODE</I><B>_</B><I>PATTERN</I> (<B>default</B>: operate with all
+              the nodes).
+
+       <B>-V</B>     For  each  selected  node  print  the  FMC Configuration Manager
+              Server version and the FMC version, than terminate.
+
+       <B>-p</B> <I>FILE</I><B>_</B><I>PATH</I> <I>(string,</I> <I>mandatory)</I>
+              Remove the files at path <I>FILE</I><B>_</B><I>PATH</I> from the selected nodes.
+
+       <B>-f</B>     Do not ask for a confirmation  before  proceeding  removing  the
+              files. <B>Default</B> before proceeding removing the files, the list of
+              the nodes matching the wildcard patterns <I>NODE</I><B>_</B><I>PATTERN</I>  is  shown
+              and a confirmation is asked.
+
+       <B>-t</B> <I>RPC</I><B>_</B><I>TIME</I><B>_</B><I>OUT</I> <I>(integer)</I>
+              Set  the timeout for the Remote Procedure Call to <I>RPC</I><B>_</B><I>TIME</I><B>_</B><I>OUT</I> .
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries  "libdim"  and  "libFMCu-
+              tils".
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Remove  the  file  "/tmp/test.conf"  from all the farm nodes registered
+       with the current DIM name server:
+
+       <I>bash$</I> <B>cmUnset</B> <B>-p</B> <B>/tmp/test.conf</B>
+
+       Remove the file "/tmp/test.conf" only from the farm node "farm0101":
+
+       <I>bash$</I> <B>cmUnset</B> <B>-m</B> <B>farm0101</B> <B>-p</B> <B>/tmp/test.conf</B>
+
+       Remove the file "/tmp/test.conf" from the  farm  nodes  "farm0101"  and
+       "farm0102":
+
+       <I>bash$</I> <B>cmUnset</B> <B>-m</B> <B>farm0101</B> <B>-m</B> <B>farm0102</B> <B>-p</B> <B>/tmp/test.conf</B>
+
+       Use wildcard patterns to select the nodes:
+
+       <I>bash$</I> <B>cmUnset</B> <B>-m</B> <B>"farm0[0-5]*"</B> <B>-m</B> <B>"farm07[135][0-5]"</B> <B>-p</B> <B>/tmp/test.conf</B>
+
+       Do not ask for confirmation:
+
+       <I>bash$</I> <B>cmUnset</B> <B>-f</B> <B>-m</B> <B>farm0101</B> <B>-m</B> <B>farm0102</B> <B>-p</B> <B>/tmp/test.conf</B>
+       <I>bash$</I> <B>cmUnset</B> <B>-f</B> <B>-m</B> <B>"farm0[0-5]*"</B> <B>-m</B> <B>"farm07[135][0-5]"</B>
+       <B>-p</B> <B>/tmp/test.conf</B>
+
+       Check the version of the Configuration Manager Servers installed on the
+       farm nodes:
+
+       <I>bash$</I> <B>cmUnset</B> <B>-V</B>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information  on how to get the FMC (Farm Monitoring and Control System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development  Homepage  &lt;https://lhcbweb.bo.infn.it/twiki/bin/
+       view.cgi/LHCbBologna/FmcLinux&gt;.
+
+       CERN  ITCOBE:  FW  Farm Monitor and Control &lt;http://itcobe.web.cern.ch/
+       itcobe/Projects/Framework/Download/Components/SystemOverview/fwFMC/wel-
+       come.html&gt;.
+
+       LHCb Online RPMs &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/
+       index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  cmUnset.C,v 1.7 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO:</H2><PRE>
+       <B><A HREF="../../htmlMan/man1/cmSet.1.html">cmSet(1)</A></B>, <B><A HREF="../../htmlMan/man1/cmGet.1.html">cmGet(1)</A></B>, <B><A HREF="../../htmlMan/man8/cmSrv.8.html">cmSrv(8)</A></B>,
+       <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/ipmiSrv.8.html">ipmiSrv(8)</A></B>, <B><A HREF="../../htmlMan/man8/pcSrv.8.html">pcSrv(8)</A></B>.
+       <B><A HREF="../../htmlMan/man7/glob.7.html">glob(7)</A></B>.
+
+FMC-3.9.14                        2012-12-19                        <B><A HREF="../../htmlMan/man1/cmUnset.1.html">cmUnset(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

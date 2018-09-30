@@ -1,0 +1,229 @@
+<HTML>
+<BODY>
+<PRE>
+<!-- Manpage converted by man2html 3.0.1 -->
+<B><A HREF="../../htmlMan/man1/psSetProperties.1.html">psSetProperties(1)</A></B>             FMC User Commands            <B><A HREF="../../htmlMan/man1/psSetProperties.1.html">psSetProperties(1)</A></B>
+
+
+</PRE>
+<H2>NAME</H2><PRE>
+       <B>psSetProperties</B> <B>-</B> Set the filter options of the FMC Process Monitor
+                         Server
+
+
+</PRE>
+<H2>SYNOPSIS</H2><PRE>
+       <B>psSetProperties</B> [<B>-v</B>] [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>] [<B>-m</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]
+                       { <B>--start</B> | <B>--stop</B> } [<B>-t</B> | <B>--tid</B> <I>TID</I>]
+                       [<B>-u</B> | <B>--utgid</B> <I>UTGID</I><B>_</B><I>PATTERN</I>] [<B>-c</B> | <B>--cmd</B> <I>CMD</I><B>_</B><I>PATTERN</I>]
+                       [<B>-C</B> | <B>--cmdline</B> <I>CMDLINE</I><B>_</B><I>PATTERN</I>] [<B>--a1</B> <I>ARG1</I><B>_</B><I>PATTERN</I>]
+                       [<B>--a2</B> <I>ARG2</I><B>_</B><I>PATTERN</I>] [<B>--a3</B> <I>ARG3</I><B>_</B><I>PATTERN</I>]
+                       [<B>--a4</B> <I>ARG4</I><B>_</B><I>PATTERN</I>] [<B>--a5</B> <I>ARG5</I><B>_</B><I>PATTERN</I>]
+                       [<B>--a6</B> <I>ARG6</I><B>_</B><I>PATTERN</I>] [<B>--a7</B> <I>ARG7</I><B>_</B><I>PATTERN</I>]
+                       [<B>--a8</B> <I>ARG8</I><B>_</B><I>PATTERN</I>] [<B>--a9</B> <I>ARG9</I><B>_</B><I>PATTERN</I>]
+
+       <B>psSetProperties</B> { <B>-V</B> | <B>--version</B> } [<B>-v</B>] [<B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I>]
+                       [<B>-m</B> <I>NODE</I><B>_</B><I>PATTERN...</I>]
+
+       <B>psSetProperties</B> { <B>-h</B> | <B>--help</B> }
+
+
+</PRE>
+<H2>DESCRIPTION</H2><PRE>
+       The command <B>psSetProperties</B> sets the filter properties to the FMC  Pro-
+       cess Monitor Server <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>, which are used to select the processes to
+       be monitored by means of a dedicated DIM service.
+
+       <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B> keeps the filter properties in a <I>filter</I>  <I>expression</I>  which  is
+       published  in  the  DIM service "/FMC/<I>HOSTNAME</I>/ps/monitored/properties"
+       and can be read by means of <B><A HREF="../../htmlMan/man1/did.1.html">did(1)</A></B>.
+
+       The option <B>--start</B> adds a new (<I>OR</I>ed) <I>term</I>  to  the  <I>filter</I>  <I>expression</I>,
+       while  the option <B>--stop</B> removes an (<I>OR</I>ed) <I>term</I> from the <I>filter</I> <I>expres-</I>
+       <I>sion</I>.
+
+       Different filter options specified in the same <B>psSetProperties</B>  <B>--start</B>
+       command  are put in logical <I>AND</I> among them, while filter options speci-
+       fied in different <B>psSetProperties</B> <B>--start</B> commands are put  in  logical
+       <I>OR</I> among them.
+
+       The DIM Name Server, looked up to seek for Task Manager Servers, can be
+       chosen (in decreasing order of priority) by:
+
+              1. Specifying the <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> command-line option;
+
+              2. Specifying the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <B>environment</B> <B>variable</B>;
+
+              3. Defining the <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> in the file "<B>/etc/sysconfig/dim</B>".
+
+
+</PRE>
+<H2>OPTIONS</H2><PRE>
+       <B>-h</B> <B>--help</B>
+              Get basic usage help from the command line.
+
+       <B>-v</B>     Increase verbosity for debugging.
+
+       <B>-N</B> <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> <I>(string)</I>
+              Use <I>DIM</I><B>_</B><I>DNS</I><B>_</B><I>NODE</I> as DIM Name Server node.
+
+       <B>-m</B> <I>NODE</I><B>_</B><I>PATTERN</I> <I>(string,</I> <I>repeatable)</I>
+              Set the filter properties only to the process(es) running on the
+              nodes  whose  hostname matches at least one of the wildcard pat-
+              terns <I>NODE</I><B>_</B><I>PATTERN</I> (<B>default</B>: set the filter  properties  to  the
+              process(es) running at all the nodes).
+
+       <B>-V</B> <B>--version</B>
+              For each selected node print the FMC Process Monitor Server ver-
+              sion and the FMC version, than terminate.
+
+       <B>--start</B>
+              Add a new <I>term</I> to the <I>filter</I> <I>expression</I> used to select the  pro-
+              cesses  to be monitored by means of a dedicated DIM SVC. Differ-
+              ent options specified within the  same  <B>psSetProperties</B>  <B>--start</B>
+              command  are put in logical <I>AND</I> among them, while options speci-
+              fied in different <B>psSetProperties</B> <B>--start</B> commands  are  put  in
+              logical  <I>OR</I>  among  them.  The  current <I>filter</I> <I>expression</I> can be
+              viewed by means of the ".../monitored/properties" DIM SVC  (e.g.
+              by using <B><A HREF="../../htmlMan/man1/did.1.html">did(1)</A></B>).
+
+       <B>--stop</B> Remove  an  <I>term</I>  from  the <I>filter</I> <I>expression</I> used to select the
+              processes to be monitored by means of a dedicated DIM  SVC.  The
+              command  to  remove  a certain filter <I>term</I> must have <I>exactly</I> the
+              same options used before to add the same filter <I>term</I>. E.g., if a
+              filter <I>term</I> was added by means of the command:
+              <I>bash$</I> <B>psSetProperties</B> <B>--start</B> <B>-c</B> <B>*Srv</B> <B>-u</B> <B>*Srv_u</B>
+              it can be removed by means of the command:
+              <I>bash$</I> <B>psSetProperties</B> <B>--stop</B> <B>-c</B> <B>*Srv</B> <B>-u</B> <B>*Srv_u</B>
+              The  current  <I>filter</I>  <I>expression</I>  can  be viewed by means of the
+              ".../monitored/properties" DIM SVC (e.g. by using <B><A HREF="../../htmlMan/man1/did.1.html">did(1)</A></B>).
+
+       <B>-t</B> <B>--tid</B> <I>TID</I> <I>(unsigned</I> <I>integer)</I>
+              Select/deselect the process which has <I>TID</I> as Thread  Identifier.
+
+       <B>-u</B> <B>--utgid</B> <I>UTGID</I><B>_</B><I>PATTERN</I> <I>(string)</I>
+              Select/deselect the process(es) whose UTGID matches the wildcard
+              pattern <I>UTGID</I><B>_</B><I>PATTERN</I>.
+
+       <B>-c</B> <B>--cmd</B> <I>CMD</I><B>_</B><I>PATTERN</I> <I>(string)</I>
+              Select/deselect the process(es) whose  command  name  (basename,
+              w/o path, of the executable image file, without arguments, even-
+              tually truncated at 15 characters) matches the wildcard  pattern
+              <I>CMD</I><B>_</B><I>PATTERN</I>.
+
+       <B>-C</B> <B>--cmdline</B> <I>CMDLINE</I><B>_</B><I>PATTERN</I> <I>(string)</I>
+              Select/deselect  the  process(es)  whose  command line (complete
+              name of the executable image file, including path but  excluding
+              arguments,  up  to PATH_MAX = 4096 characters) matches the wild-
+              card pattern <I>CMDLINE</I><B>_</B><I>PATTERN</I>.
+
+       <B>--a</B><I>n</I> <I>ARGn</I><B>_</B><I>PATTERN</I> <I>(string)</I>
+              Select/deselect the process(es) whose <I>n</I>-th argument on the  com-
+              mand-line matches the wildcard pattern <I>ARGn</I><B>_</B><I>PATTERN</I> (the digit <I>n</I>
+              ranges in 1..9).
+
+
+</PRE>
+<H2>ENVIRONMENT</H2><PRE>
+       <B>DIM_DNS_NODE</B> (string, mandatory if not defined otherwise, see above)
+              Host name of the node which is running the DIM DNS.
+
+       <B>LD_LIBRARY_PATH</B> (string, mandatory if not set using ldconfig)
+              Must include the path to the libraries  "libdim"  and  "libFMCu-
+              tils".
+
+
+</PRE>
+<H2>EXAMPLES</H2><PRE>
+       Start monitoring the process whose command is "gnome-terminal"
+
+       <I>bash$</I> <B>psSetProperties</B> <B>--start</B> <B>-c</B> <B>gnome-terminal</B>
+
+       Stop monitoring the process whose command is "gnome-terminal"
+
+       <I>bash$</I> <B>psSetProperties</B> <B>--stop</B> <B>-c</B> <B>gnome-terminal</B>
+
+       Start monitoring the process whose UTGID is "ipmiSrv_u"
+
+       <I>bash$</I> <B>psSetProperties</B> <B>--start</B> <B>-u</B> <B>ipmiSrv_u</B>
+
+       Stop monitoring the process whose UTGID is "ipmiSrv_u"
+
+       <I>bash$</I> <B>psSetProperties</B> <B>--stop</B> <B>-u</B> <B>ipmiSrv_u</B>
+
+       Start  monitoring  the process whose UTGID matches the wildcard pattern
+       "*Log" and whose command matches the wildcard  pattern  "*Srv"  on  the
+       nodes whose hostname matches the wildcard pattern "lhcb*"
+
+       <I>bash$</I> <B>psSetProperties</B> <B>--start</B> <B>-m</B> <B>lhcb\*</B> <B>-u</B> <B>\*Log</B> <B>-c</B> <B>\*Srv</B>
+
+       Stop  monitoring  the  process whose UTGID matches the wildcard pattern
+       "*Log" and whose command matches the wildcard  pattern  "*Srv"  on  the
+       nodes whose hostname matches the wildcard pattern "lhcb*"
+
+       <I>bash$</I> <B>psSetProperties</B> <B>--stop</B> <B>-m</B> <B>lhcb\*</B> <B>-u</B> <B>\*Log</B> <B>-c</B> <B>\*Srv</B>
+
+       Start monitoring the process whose PID is 137
+
+       <I>bash$</I> <B>psSetProperties</B> <B>--start</B> <B>-t</B> <B>137</B>
+
+       Stop monitoring the process whose PID is 137
+
+       <I>bash$</I> <B>psSetProperties</B> <B>--stop</B> <B>-t</B> <B>137</B>
+
+       Start monitoring the process whose command line is
+       "syslogd -m 0 -r -a /var/empty/sshd/dev/log":
+
+       <I>bash$</I> <B>psSetProperties</B> <B>--start</B> <B>"--cmdline</B> <B>syslogd</B> <B>--a1</B> <B>-m</B> <B>--a2</B> <B>0</B> <B>--a3</B> <B>-r</B>
+       <B>--a4</B> <B>-a</B> <B>--a5</B> <B>/var/empty/sshd/dev/log"</B>
+
+       Stop monitoring the process whose command line is
+       "syslogd -m 0 -r -a /var/empty/sshd/dev/log":
+
+       <I>bash$</I> <B>psSetProperties</B> <B>--stop</B> <B>"--cmdline</B> <B>syslogd</B> <B>--a1</B> <B>-m</B> <B>--a2</B> <B>0</B> <B>--a3</B> <B>-r</B>
+       <B>--a4</B> <B>-a</B> <B>--a5</B> <B>/var/empty/sshd/dev/log"</B>
+
+
+</PRE>
+<H2>AVAILABILITY</H2><PRE>
+       Information  on how to get the FMC (Farm Monitoring and Control System)
+       package and related information is available at the web sites:
+
+       FMC Linux Development  Homepage  &lt;https://lhcbweb.bo.infn.it/twiki/bin/
+       view.cgi/LHCbBologna/FmcLinux&gt;.
+
+       CERN  ITCOBE:  FW  Farm Monitor and Control &lt;http://itcobe.web.cern.ch/
+       itcobe/Projects/Framework/Download/Components/SystemOverview/fwFMC/wel-
+       come.html&gt;.
+
+       LHCb Online RPMs &lt;http://lhcb-daq.web.cern.ch/lhcb-daq/online-rpm-repo/
+       index.html&gt;.
+
+
+</PRE>
+<H2>AUTHORS</H2><PRE>
+       Domenico Galli &lt;domenico.galli@bo.infn.it&gt;
+
+
+</PRE>
+<H2>VERSION</H2><PRE>
+       Source:  psSetProperties.C,v 1.6 2012/11/29 15:52:27 galli
+       Package: FMC-3.9.14
+
+
+</PRE>
+<H2>SEE ALSO</H2><PRE>
+       <B><A HREF="../../htmlMan/man1/psMonitor.1.html">psMonitor(1)</A></B>, <B><A HREF="../../htmlMan/man8/psSrv.8.html">psSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/psViewer.1.html">psViewer(1)</A></B>.
+       <B><A HREF="../../htmlMan/man8/tmSrv.8.html">tmSrv(8)</A></B>, <B><A HREF="../../htmlMan/man1/tmStart.1.html">tmStart(1)</A></B>.
+       <B><A HREF="../../htmlMan/man1/top.1.html">top(1)</A></B>, <B><A HREF="../../htmlMan/man1/ps.1.html">ps(1)</A></B>, <B><A HREF="../../htmlMan/man5/proc.5.html">proc(5)</A></B>.
+       <B>/usr/share/doc/kernel-doc-2.6.9/Documentation/filesystems/proc.txt.</B>
+
+FMC-3.9.14                        2012-12-19                <B><A HREF="../../htmlMan/man1/psSetProperties.1.html">psSetProperties(1)</A></B>
+</PRE>
+<HR>
+<ADDRESS>
+Man(1) output converted with
+<a href="http://www.oac.uci.edu/indiv/ehood/man2html.html">man2html</a>
+</ADDRESS>
+</BODY>
+</HTML>

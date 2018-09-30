@@ -1,0 +1,34 @@
+# /etc/pcSrv.allow
+# FMC Process Controller (pcSrv) Access Control File.
+# Since FMC 3.8.0
+#
+# Description:
+#      The file /etc/pcSrv.allow must contain the list of the couples of pat-
+#      terns  user_pattern@hostname_pattern  allowed to issue commands to the
+#      Process Controller Server running on the current node.
+#
+# File format:
+#      One couple user_pattern@hostname_pattern per record. Records are sepa-
+#      rated  using ’\n’ (new-line, line-feed, LF, ASCII 0x0a). Blank records
+#      as well as comment records (i.e. records starting with the ’#’ charac-
+#      ter) are skipped.
+#
+# Record format:
+#      user_pattern@hostname_pattern.
+#      user_pattern and host_pattern are separated by the ’@’ (at) character.
+#
+# Fields description:
+#      user_pattern
+#             User name wildcard pattern (see glob(7)).
+#      host_pattern
+#             Host name wildcard pattern (see glob(7)).
+#
+# Record Examples:
+#      online@farm0101.mydomain
+#      *@farm0101.mydomain
+#      online@*
+#      *@*
+#      online@farm01??.mydomain
+#      online@farm01?[0-9].mydomain
+#      online@farm01[0-9][0-9].mydomain
+#
