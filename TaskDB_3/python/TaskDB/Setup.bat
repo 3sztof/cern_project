@@ -1,0 +1,1 @@
+SET PYTHONPATH=%CD%\python

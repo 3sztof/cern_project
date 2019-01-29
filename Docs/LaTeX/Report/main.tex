@@ -13,9 +13,9 @@
 % Code listing setup
 \lstset{showstringspaces=false}
 \definecolor{logocolor}{rgb}{0.11, 0.19, 0.33}
-\newtcblisting[auto counter]{sexylisting}[2][]{sharp corners,
-    fonttitle=\bfseries, colframe=logocolor, listing only,
-    listing options={basicstyle=\ttfamily,language=java},
+\newtcblisting[auto counter]{sexylisting}[2][]{sharp corners, 
+    fonttitle=\bfseries, colframe=logocolor, listing only, 
+    listing options={basicstyle=\ttfamily,language=java}, 
     title=Code example \thetcbcounter: #2, #1}
 
 
@@ -37,9 +37,9 @@
 \eleves{\href{https://www.linkedin.com/in/3sztof/}{\underline{Krzysztof \textsc{Wilczyński}}}}
 
 %----------- Initialization -------------------
-
-\fairemarges
-\fairepagedegarde
+        
+\fairemarges 
+\fairepagedegarde 
 
 \begin{Large}
 \centerline{\textbf{Abstract}}
@@ -55,7 +55,7 @@ During the boot sequence, the LHCb Online system consisting of about 1700 CPUs n
 \newline
 
 \noindent
-Starting from the database model, a set of utility applications were derived. These include a command line interface, a web based graphical user interface and a program to verify the existence of the processes on a given node. Future extensions can easily be implemented using the provided application programming interface.
+Starting from the database model, a set of utility applications were derived. These include a command line interface, a web based graphical user interface and a program to verify the existence of the processes on a given node. Future extensions can easily be implemented using the provided application programming interface. 
 
 
 
@@ -65,7 +65,7 @@ In the current LHCb Online farm process controller, all of the permanent task co
 \newline
 
 \noindent
-To overcome the deficiencies of the present solution and to have a single source of information about the processes that should execute on a given node, the idea of developing a database-driven, flexible and expandable system emerged.
+To overcome the deficiencies of the present solution and to have a single source of information about the processes that should execute on a given node, the idea of developing a database-driven, flexible and expandable system emerged. 
 \end{comment}
 
 
@@ -78,7 +78,7 @@ To overcome the deficiencies of the present solution and to have a single source
 %               Introduction
 %==============================================
 
-\section{Introduction}
+\section{Introduction} 
 \hspace{0.6cm}
 
 As a part of LHCb Online group activities, the project had purely applied nature. It could be classified as full-stack IT development, from database back-end, trough application programming interface and unit testing, to command line and graphical user interfaces. There was some time scheduled for experiments and technology / protocol comparison that was very enriching for the author - a Summer Student.
@@ -92,7 +92,7 @@ This document aims to give a brief description of the project, without going int
 \noindent\fcolorbox{logocolor}{white}{%
     \parbox{\textwidth}{%
         \centering
-        \href{https://bitbucket.org/3sztof/lhcb_online/src/master/Docs/Project_Report/Summer_Student_Project_Technical_Report.pdf}{Summer Student Project Technical Report (LINK)}
+        \href{https://bitbucket.org/3sztof/lhcb_online/src/master/Docs/Project_Report/Summer_Student_Project_Technical_Report.pdf}{Summer Student Project Technical Report (LINK)} 
     }%
 }
 \end{comment}
@@ -142,15 +142,15 @@ Special nodes - "control PCs" are hosts of "pcSrv" process that allows them to s
 
 \noindent
 The above description can be perceived as over-simplified. To find more details about the process controller and underlying DIM (Distributed Information Management system) services, please consult the Researchgate article by Federico Bonifazi, Daniela Bortolotti, Angelo Carbone, Domenico Galli, Daniele Gregori, Umberto Marconi, Gianluca Peco and Vincenzo M. Vagnoni linked below.
-\newline
+\newline 
 
 \noindent\fcolorbox{logocolor}{white}{%
     \parbox{\textwidth}{%
         \centering
-        \href{https://www.researchgate.net/publication/268357086_The_Process_Controller_for_the_LHCb_On-Line_Farm_Prepared_by}{The Process Controller for the LHCb Online Farm (LINK)}.
+        \href{https://www.researchgate.net/publication/268357086_The_Process_Controller_for_the_LHCb_On-Line_Farm_Prepared_by}{The Process Controller for the LHCb Online Farm (LINK)}. 
     }%
 }
-
+    
 %==============================================
 %               Motivation
 %==============================================
@@ -174,7 +174,7 @@ Here is a simplified structure of a pcAdd command (pseudocode):
 \newline
 
 \begin{sexylisting}[colback=white]{pcAdd command essential parameters}
-pcAdd(NodeName(regular expression), ScriptToStart.sh,
+pcAdd(NodeName(regular expression), ScriptToStart.sh, 
       ScriptParameters, pcAddParameters (execution))
 \end{sexylisting}
 
@@ -188,7 +188,7 @@ This method of defining and executing the boot sequence had many clear disadvant
 \end{itemize}
 
 \noindent
-The boot script in this form was born as a "quick hack" about ten years ago, when the LHCb Online Farm Monitoring and Control system was installed.
+The boot script in this form was born as a "quick hack" about ten years ago, when the LHCb Online Farm Monitoring and Control system was installed. 
 \newline
 
 \noindent
@@ -200,7 +200,7 @@ The time has come for an improvement!
 \hspace{0.6cm}
 
 The main goal of the summer student project was to create a cleverly designed database-driven system that would replace the old solution, bringing aid to all of its major problems.
-\newline
+\newline 
 
 \newpage
 \noindent
@@ -223,7 +223,7 @@ Trough the usage of database back-end, it was possible to achieve the following 
 The core concepts and solutions developed during the summer student project can be classified as one of the three following categories:
 
 \begin{itemize}
-    \item Back-end
+    \item Back-end 
         \begin{itemize}
             \item Database schema architecture
             \item Main database API
@@ -262,7 +262,7 @@ The database schema - organization of data in tables and creation of association
 \newline
 
 \noindent
-Many technologies have been considered - from classic SQL (Structured Querying Language) databases to unconventional non-relational solutions such as MongoDB. As a result of LHCb Online's policy of keeping the foreign dependencies as low as possible, SQLite database engine (an integral part of Python) has been chosen in the end. It is, however relatively simple to change the database back-end's engine to Oracle or any other mainstream SQL solution, should it be needed in the future.
+Many technologies have been considered - from classic SQL (Structured Querying Language) databases to unconventional non-relational solutions such as MongoDB. As a result of LHCb Online's policy of keeping the foreign dependencies as low as possible, SQLite database engine (an integral part of Python) has been chosen in the end. It is, however relatively simple to change the database back-end's engine to Oracle or any other mainstream SQL solution, should it be needed in the future. 
 
 %==============================================
 
@@ -308,8 +308,8 @@ An important part of the summer student project was to experiment and find the o
 \end{itemize}
 
 \noindent
-All of the listed solutions were implemented as Python web servers and then tested.
-\newline
+All of the listed solutions were implemented as Python web servers and then tested. 
+\newline 
 
 \noindent
 REST is a unified way of navigating trough data based on URL routing. For instance, if one would like to delete task called Task\_1, a DELETE HTTP request should be sent to http://server/tasks/Task\_1 (URL routed to the data point). In short, the Main API methods are mapped onto regular HTTP methods and the data affected is chosen by the URL respecting REST standard.
@@ -334,10 +334,10 @@ In the end, JSONRPC has been chosen over XMLRPC and REST. It was the optimal sol
 
     \subsection{Merge of the back-end solutions}
     \hspace{0.6cm}
-
-    When all of the back-end prototype solutions have been finished and tested, the time has come to merge them into a system that would be easy to start and configure (to run on a given port, use given database, run in debug mode et cetera). This integration took a lot of work from Markus Frank's side as he will be the main user and maintainer of the solution.
+    
+    When all of the back-end prototype solutions have been finished and tested, the time has come to merge them into a system that would be easy to start and configure (to run on a given port, use given database, run in debug mode et cetera). This integration took a lot of work from Markus Frank's side as he will be the main user and maintainer of the solution. 
     \newline
-
+    
     \noindent
     All of the front-end connectors have been merged into a single, elegant web server hosting all of the services at once (as well as file hosting for the main HTML of the graphical user interface). Therefore the system can be fully started and configured with a single command.
 
@@ -437,7 +437,7 @@ To be qualified for the prize, the students had to give a brief (10 minutes + 5 
 \noindent\fcolorbox{logocolor}{white}{%
     \parbox{\textwidth}{%
         \centering
-        \href{https://lhcb.web.cern.ch/lhcb/Collaboration_prizes/Moritz_Karbach_summer_student_prize.html}{The Moritz Karbach summer student prize (LINK)}.
+        \href{https://lhcb.web.cern.ch/lhcb/Collaboration_prizes/Moritz_Karbach_summer_student_prize.html}{The Moritz Karbach summer student prize (LINK)}. 
     }%
 }
 \vspace{0.6cm}
@@ -465,16 +465,16 @@ To be qualified for the prize, the students had to give a brief (10 minutes + 5 
 \hspace{0.6cm}
 
 
-By using the described data-driven solution, it will be a lot more convenient to review, modify and diagnose the configuration of the tasks running on the Online farm nodes. The software is obeying modern development standards that make it flexible and future-proof.
+By using the described data-driven solution, it will be a lot more convenient to review, modify and diagnose the configuration of the tasks running on the Online farm nodes. The software is obeying modern development standards that make it flexible and future-proof. 
 Unlike its predecessor, the new system can handle rapid growth of CPU number in the future upgrades of the LHCb detector while not making the maintaining, debugging, modification and testing incredibly complex.
 \newline
 
 \noindent
-All of the project's goals have been successfully achieved and the system will be deployed in the production environment - the LHCb Online farm. The summer student has built and tested functional prototypes of each part of the solution which will be maintained and improved further by project supervisor - Markus Frank.
+All of the project's goals have been successfully achieved and the system will be deployed in the production environment - the LHCb Online farm. The summer student has built and tested functional prototypes of each part of the solution which will be maintained and improved further by project supervisor - Markus Frank. 
 \newline
 
 \noindent
-The summer student project in LHCb Online group was a great opportunity to develop programming skills under guidance of immensely experienced supervisor while attending lectures covering various topics ranging from particle physics, through computing, to accelerator engineering. The lectures, together with numerous visits in research facilities, fascinating workshops and the applied project made up the best, horizon-broadening summer a curious student could dream of.
+The summer student project in LHCb Online group was a great opportunity to develop programming skills under guidance of immensely experienced supervisor while attending lectures covering various topics ranging from particle physics, through computing, to accelerator engineering. The lectures, together with numerous visits in research facilities, fascinating workshops and the applied project made up the best, horizon-broadening summer a curious student could dream of. 
 \newline  \newline
 The Summer Student Programme was indeed an experience like nowhere else on Earth.
 \vspace{3cm}
@@ -527,8 +527,9 @@ Equation number reference: \ref{eq: exemple}
 
 % ---------- Math in text ----------------------
 
-Blablabla \$ blablabla $\rho$.
+Blablabla \$ blablabla $\rho$. 
 
 \end{comment}
 
 \end{document}
+
