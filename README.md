@@ -4,6 +4,14 @@
 > Author: [Krzysztof Wilczynski](https://www.linkedin.com/in/3sztof/)
 > Supervisor: [Markus Frank]()
 
+## Contents
+- [Resources](https://github.com/3sztof/cern_project#resources)
+- [Repository structure](https://github.com/3sztof/cern_project#repository-structure)
+- [Quickstart guide](https://github.com/3sztof/cern_project#quickstart-guide)
+    - [Windows](#windows)
+    - [Linux](#linux)
+    - [Docker (coming sometime in the future)](#docker)
+
 ## Resources
 | Resource | Description |
 | ------ | ------ |
@@ -32,7 +40,7 @@ $ cd TaskDB_3
 
 Depending on the host operating system:
 
-- **Windows**
+- **Windows** <a name="windows"></a>
     - Set up the Python environment to the local Python dependencies (while in \lhcb_online\TaskDB_3):
         ```sh
         > python\TaskDB\Setup.bat
@@ -55,7 +63,7 @@ Depending on the host operating system:
             > python --version
             ```
     - The web GUI should now be served under: http://localhost:8081/LHCb
-- **Linux**
+- **Linux** <a name="linux"></a>
     - Set up the Python environment to the local Python dependencies (while in /lhcb_online/TaskDB_3):
         ```sh
         $ export PYTHONPATH=$(pwd)/python
@@ -79,8 +87,8 @@ Depending on the host operating system:
             ```
         
     - The web GUI should now be served under: http://localhost:8081/LHCb
-- **Docker** 
-	not yet done, too busy
+- **Docker** <a name="docker"></a> 
+    not yet done, too busy
 
 
 
